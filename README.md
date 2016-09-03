@@ -1,4 +1,4 @@
-![](https://github.com/snoopython/fmflow/wiki/images/fmflow-logo.png)
+![](https://github.com/snoopython/fmflow/wiki/images/fmflow-logo-header.png)
 
 FMflow is an integrated package for the FMLO, a new *off-point-less* observivg method for single dish spectroscopy in radio astronomy.
 
