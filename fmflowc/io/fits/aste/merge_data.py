@@ -161,4 +161,31 @@ def _load_antlog(antlog):
     '''
 
     '''
-    pass
+    header = fits.Header()
+    header['EXTNAME'] = 'ANTLOG'
+    header['ORGFILE'] = antlog
+
+    datetime = np.loadtxt(antlog, dtype=str, usecols=(0,), skiprows=1)
+    ra       = np.loadtxt(antlog, dtype=float, usecols=(1,), skiprows=1)
+    dec      = np.loadtxt(antlog, dtype=float, usecols=(2,), skiprows=1)
+    azprog   = np.loadtxt(antlog, dtype=float, usecols=(3,), skiprows=1)
+    elprog   = np.loadtxt(antlog, dtype=float, usecols=(4,), skiprows=1)
+    azcoll   = np.loadtxt(antlog, dtype=float, usecols=(5,), skiprows=1)
+    elcoll   = np.loadtxt(antlog, dtype=float, usecols=(6,), skiprows=1)
+    azopterr = np.loadtxt(antlog, dtype=float, usecols=(7,), skiprows=1)
+    elopterr = np.loadtxt(antlog, dtype=float, usecols=(8,), skiprows=1)
+
+    columns = []
+    columns.append(fits.Column('datetime', 'A15', '%y%m%d%H%M%S.%f', array=datetime))
+    columns.append(fits.Column('ra', 'D', 'deg', array=ra))
+    columns.append(fits.Column('dec', 'D', 'deg', array=dec))
+    columns.append(fits.Column('azprog', 'D', 'deg', array=azprog))
+    columns.append(fits.Column('elprog', 'D', 'deg', array=elprog))
+    columns.append(fits.Column('azcoll', 'D', 'deg', array=azcoll))
+    columns.append(fits.Column('elcoll', 'D', 'deg', array=elcoll))
+    columns.append(fits.Column('azopterr', 'D', 'deg', array=azopterr))
+    columns.append(fits.Column('elopterr', 'D', 'deg', array=elopterr))
+
+    hdu = fits.BinTableHDU.from_columns(columns, header)
+
+    return hdu
