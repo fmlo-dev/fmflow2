@@ -18,7 +18,7 @@ from fmflowc.utils import binary
 
 
 def fromaste(speclog, fmlolog, antlog=None, fitsname=None, spectrometer=None):
-    '''Merge data taken with ASTE and save them in a FMFITS.
+    '''Dump data taken with ASTE and merge them into a FMFITS.
 
     Args:
     - speclog (str): name of spectrometer (MAC or WHSF) logging file.
@@ -31,8 +31,7 @@ def fromaste(speclog, fmlolog, antlog=None, fitsname=None, spectrometer=None):
         to detect the spectrometer type from speclog (i.e. ACG or FFX).
 
     Returns:
-    - None (NoneType): this function returns nothing.
-
+    - hdulist (HDUList): HDU list which contains the dumped data.
     '''
     if spectrometer is None:
         prefix = speclog.split('.')[0]
@@ -80,13 +79,7 @@ def fromaste(speclog, fmlolog, antlog=None, fitsname=None, spectrometer=None):
         hdu = _load_antlog(antlog)
         hdulist.append(hdu)
 
-    # output FITS
-    try:
-        hdulist.writeto(fitsname)
-    except IOError as e:
-        message = '{}\nDo you want to overwrite it? [y/n] '.format(e)
-        if raw_input(message).lower() == 'y':
-            hdulist.writeto(fitsname, clobber=True)
+    return hdulist
 
 
 def _load_speclog(speclog, HEAD, CTL, OBS, DAT):
@@ -129,6 +122,7 @@ def _load_speclog(speclog, HEAD, CTL, OBS, DAT):
         columns.append(fits.Column(key, struct[key], array=data[key]))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
+
     return hdu
 
 
