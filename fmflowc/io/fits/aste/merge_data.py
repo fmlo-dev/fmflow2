@@ -147,13 +147,14 @@ def _load_fmlolog(fmlolog):
     vrad     = np.loadtxt(fmlolog, dtype=float, usecols=(4,), skiprows=1)
 
     columns = []
-    columns.append(fits.Column('datetime', 'A19', array=datetime))
-    columns.append(fits.Column('scantype', 'A4', array=scantype))
-    columns.append(fits.Column('fmfreq', 'D', array=fmfreq))
-    columns.append(fits.Column('lofreq', 'D', array=lofreq))
-    columns.append(fits.Column('vrad', 'D', array=vrad))
+    columns.append(fits.Column('datetime', 'A19', '%Y%m%d%H%M%S.%f', array=datetime))
+    columns.append(fits.Column('scantype', 'A4', '', array=scantype))
+    columns.append(fits.Column('fmfreq', 'D', 'Hz', array=fmfreq))
+    columns.append(fits.Column('lofreq', 'D', 'Hz', array=lofreq))
+    columns.append(fits.Column('vrad', 'D', 'm/s', array=vrad))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
+
     return hdu
 
 
