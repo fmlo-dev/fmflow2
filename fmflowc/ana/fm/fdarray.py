@@ -13,7 +13,7 @@ import numpy.ma as ma
 from numpy.ma import MaskedArray
 
 # sub modules/functions
-from fmflowc.utils.exceptions import FMflowError
+from fmflowc.utils import exceptions as e
 
 
 class FDDataArray(np.ndarray):
@@ -27,7 +27,7 @@ class FDDataArray(np.ndarray):
             obj.fmch = cls._init_param(fmch, np.zeros(obj.shape[0], int))
             obj.fmid = cls._init_param(fmid, (0, obj.shape[1]))
         else:
-            raise FMflowError('dimension of array must be <= 2')
+            raise e.FMflowError('dimension of array must be <= 2')
 
         obj.cutch = cls._init_param(cutch, (0, 0))
         obj.info  = cls._init_param(info, {})
@@ -64,7 +64,7 @@ class FDArray(MaskedArray, FDDataArray):
         return obj
 
     def modulate(self):
-        from fmflowc import fm
+        from fmflowc.ana import fm
 
         shape = (self.shape[0], self.shape[1]+np.sum(self.cutch))
         array = ma.zeros(shape, dtype=float)

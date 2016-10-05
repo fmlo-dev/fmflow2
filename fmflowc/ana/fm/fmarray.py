@@ -13,7 +13,7 @@ import numpy.ma as ma
 from numpy.ma import MaskedArray
 
 # sub modules/functions
-from fmflowc.utils.exceptions import FMflowError
+from fmflowc.utils import exceptions as e
 
 
 class FMDataArray(np.ndarray):
@@ -25,7 +25,7 @@ class FMDataArray(np.ndarray):
         elif obj.ndim == 2:
             obj.fmch = cls._init_param(fmch, np.zeros(obj.shape[0], int))
         else:
-            raise FMflowError('dimension of array must be <= 2')
+            raise e.FMflowError('dimension of array must be <= 2')
 
         obj.info = cls._init_param(info, {})
         return obj
@@ -57,7 +57,7 @@ class FMArray(MaskedArray, FMDataArray):
         return obj
 
     def demodulate(self):
-        from fmflowc import fm
+        from fmflowc.ana import fm
 
         fmid  = (-np.min(self.fmch), self.shape[1])
         shape = (self.shape[0], self.shape[1]+np.ptp(self.fmch))
