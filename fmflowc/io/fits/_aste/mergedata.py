@@ -14,78 +14,58 @@ from collections import OrderedDict
 # dependent libraries
 import numpy as np
 from astropy.io import fits
+
+# sub modules/functions
 from fmflowc.utils import binary
+from fmflowc.utils import exceptions as e
 
 
-def fromaste(speclog, fmlolog, antlog=None, fitsname=None, spectrometer=None):
+def astemerge(speclog, fmlolog, antlog=None):
     '''Dump data taken with ASTE and merge them into a FMFITS.
 
     Args:
     - speclog (str): name of spectrometer (MAC or WHSF) logging file.
     - fmlolog (str): name of FMLO logging file.
     - antlog (str): name of antenna logging file (optional).
-    - fitsname (str): name of output fits file (optional).
-        if not spacified, then <speclog>.fits will be created.
-    - spectrometer (str): name of spectromter used in the observation.
-        options: MAC or WHSF . if not spacified, then the function will try
-        to detect the spectrometer type from speclog (i.e. ACG or FFX).
 
     Returns:
-    - hdulist (HDUList): HDU list which contains the dumped data.
+    - hdus (HDUList): HDU list which contains the dumped data.
     '''
-    if spectrometer is None:
-        prefix = speclog.split('.')[0]
-        if prefix == 'ACG':
-            spectrometer = 'MAC'
-        elif prefix == 'FFX':
-            spectrometer = 'WHSF'
-        else:
-            message = 'spectrometer type is not detected from {}'.format(speclog)
-            raise ValueError, message
-    else:
-        if spectrometer not in ['MAC', 'WHSF']:
-            raise ValueError, spectrometer
-
-    if fitsname is None:
-        fitsname = speclog + '.fits'
-
-    # hdu list
-    hdulist = fits.HDUList()
+    hdus = fits.HDUList()
 
     # primary hdu
-    header = fits.Header()
-    header['FITSTYPE'] = 'FMFITSv0'
-    header['MERGEDAT'] = dt.now().isoformat()
-    header['TELESCOP'] = 'ASTE'
-    header['SPECTROM'] = spectrometer
-    hdu = fits.PrimaryHDU(header=header)
-    hdulist.append(hdu)
+    hdu = fits.PrimaryHDU()
+    hdus.append(hdu)
+    
+    h = fits.Header()
+    h['FITSTYPE'] = 'FMFITSv1'
+    h['MERGEDAT'] = dt.now().isoformat()
+    h['TELESCOP'] = 'ASTE'
 
     # speclog hdu
-    if spectrometer == 'MAC':
-        from .mac_otf_def import HEAD, CTL, OBS, DAT
-    elif spectrometer == 'WHSF':
-        from .whsf_otf_def import HEAD, CTL, OBS, DAT
-
-    hdu = _load_speclog(speclog, HEAD, CTL, OBS, DAT)
-    hdulist.append(hdu)
+    hdu = _load_speclog(speclog)
+    hdus.append(hdu)
+    h['SPECTROM'] = hdu.header['SPECTROM']
 
     # fmlolog hdu
     hdu = _load_fmlolog(fmlolog)
-    hdulist.append(hdu)
+    hdus.append(hdu)
 
     # antlog hdu (optional)
     if antlog is not None:
         hdu = _load_antlog(antlog)
-        hdulist.append(hdu)
+        hdus.append(hdu)
 
-    return hdulist
+    hdus[0].header.update(h)
+    return hdus
 
 
-def _load_speclog(speclog, HEAD, CTL, OBS, DAT):
+def _load_speclog(speclog):
     '''
 
     '''
+    from .defotf_ctl import HEAD, CTL
+
     header = fits.Header()
     header['EXTNAME'] = 'SPECLOG'
     header['ORGFILE'] = speclog
@@ -94,7 +74,16 @@ def _load_speclog(speclog, HEAD, CTL, OBS, DAT):
         # control info
         binary.dumpstruct(f, HEAD)
         struct = binary.dumpstruct(f, CTL)
+        header['SPECTROM'] = struct['cbe_type']
         header['CTLINFO'] = json.dumps(struct)
+
+        if header['SPECTROM'] == 'AC45':
+            from .defotf_mac import OBS, DAT
+        elif header['SPECTROM'] == 'FFX':
+            #from .defotf_whsf import OBS, DAT
+            raise e.FMflowError('WHSF logging is not supported yet')
+        else:
+            raise e.FMflowError('invalid logging type')
 
         # observation info
         binary.dumpstruct(f, HEAD)

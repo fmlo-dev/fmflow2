@@ -11,17 +11,6 @@ from collections import OrderedDict
 ARYMAX = 8
 CHMAX  = 1024
 
-# record header info
-HEAD = OrderedDict()
-HEAD['crec_type'] = ('<4s',)
-HEAD['irec_len']  = ('<i',)
-
-# control info
-CTL = OrderedDict()
-CTL['cversion']  = ('<8s',)
-CTL['clog_name'] = ('<60s',)
-CTL['cbe_type']  = ('<8s',)
-
 # observation info
 OBS = OrderedDict()
 OBS['cgroup']          = ('<8s',)
