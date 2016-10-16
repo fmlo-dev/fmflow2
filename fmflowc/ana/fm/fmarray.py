@@ -11,8 +11,6 @@ from copy import deepcopy
 import numpy as np
 import numpy.ma as ma
 from numpy.ma import MaskedArray
-
-# sub modules/functions
 from fmflowc.utils import exceptions as e
 
 
