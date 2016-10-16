@@ -10,3 +10,4 @@ from numpy import *
 # sub modules/functions
 from .fmarray import FMArray
 from .fdarray import FDArray
+from .fmfunc import *
