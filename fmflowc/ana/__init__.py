@@ -5,4 +5,4 @@ from __future__ import division
 from __future__ import print_function
 
 # sub modules/functions
-from . import array
+from . import fm
