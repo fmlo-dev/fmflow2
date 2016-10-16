@@ -6,4 +6,5 @@ from __future__ import print_function
 
 # sub modules/functions
 from . import binary
+from . import dateformat
 from . import exceptions
