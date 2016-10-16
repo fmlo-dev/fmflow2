@@ -86,6 +86,7 @@ def fitsformat(defobj):
 
 def parseformat(fmt, shape=1):
     '''Return a FITS format code from fmt and shape.
+
     Args:
     - fmt (str): format of the data that is compatible with the Python's
         struct module. for example: '>i' (int with big endian), '10s' (10 chars).
