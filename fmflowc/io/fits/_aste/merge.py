@@ -84,6 +84,7 @@ def _make_obsinfo(fitsobj):
     header = fits.Header()
     header['EXTNAME']  = 'OBSINFO'
     header['FITSTYPE'] = 'FMFITSv1'
+    header['TELESCOP'] = 'ASTE'
     header['FRONTEND'] = np.unique(np.array(d_obs['cfe_type'])[flag])[0]
     header['BACKEND']  = backend
 
@@ -131,9 +132,9 @@ def _load_fmlolog(fmlolog):
     header['FILENAME'] = fmlolog
 
     # datetime converter
-    f = partial(dateformat.to_isoformat, fmt='%Y%m%d%H%M%S.%f')
+    c = partial(dateformat.to_isoformat, fmt='%Y%m%d%H%M%S.%f')
 
-    starttime = np.loadtxt(fmlolog, str, usecols=(0,), skiprows=1, converters={0: f})
+    starttime = np.loadtxt(fmlolog, str, usecols=(0,), skiprows=1, converters={0: c})
     scantype  = np.loadtxt(fmlolog, str, usecols=(1,), skiprows=1)
     fmfreq    = np.loadtxt(fmlolog, float, usecols=(2,), skiprows=1)
     lofreq    = np.loadtxt(fmlolog, float, usecols=(3,), skiprows=1)
@@ -165,9 +166,9 @@ def _load_antennalog(antennalog):
     header['FILENAME'] = antennalog
 
     # datetime converter
-    f = partial(dateformat.to_isoformat, fmt='%y%m%d%H%M%S.%f')
+    c = partial(dateformat.to_isoformat, fmt='%y%m%d%H%M%S.%f')
 
-    starttime = np.loadtxt(antennalog, str, usecols=(0,), skiprows=1, converters={0: f})
+    starttime = np.loadtxt(antennalog, str, usecols=(0,), skiprows=1, converters={0: c})
     ra        = np.loadtxt(antennalog, float, usecols=(1,), skiprows=1)
     dec       = np.loadtxt(antennalog, float, usecols=(2,), skiprows=1)
     az_0      = np.loadtxt(antennalog, float, usecols=(3,), skiprows=1)
@@ -226,7 +227,6 @@ def _load_backendlog_mac(backendlog):
 
     def EOF(f):
         struct = binary.dumpstruct(f, HEAD)
-        print(struct)
         return struct['crec_type'] == 'ED'
 
     header = fits.Header()
@@ -255,7 +255,12 @@ def _load_backendlog_mac(backendlog):
             for key in data:
                 data[key].append(struct[key])
 
-    # array data
+    # starttime
+    c = partial(dateformat.to_isoformat, fmt='%Y%m%d%H%M%S.%f')
+    t = data['cint_sttm']
+    starttime = [c(t[i][:-2]) for i in range(len(t))]
+
+    # arraydata
     ary_dat = np.asarray(data['iary_data'], dtype=int)
     ary_scf = np.asarray(data['dary_scf'], dtype=float)
     ary_off = np.asarray(data['dary_offset'], dtype=float)
@@ -267,7 +272,7 @@ def _load_backendlog_mac(backendlog):
     struct = binary.fitsformat(DAT)
     for key in data:
         if re.search('int_sttm', key):
-            columns.insert(0, fits.Column('STARTTIME', struct[key], array=data[key]))
+            columns.insert(0, fits.Column('STARTTIME', 'A26', array=starttime))
         elif re.search('ary_name', key):
             columns.insert(1, fits.Column('ARRAYID', struct[key], array=data[key]))
         elif re.search('scan_type', key):
