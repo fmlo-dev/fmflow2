@@ -10,7 +10,7 @@ from astropy.io import fits
 from fmflowc.utils import exceptions as e
 
 
-def fromfits(fitsname, arrayid, scantype):
+def getarray(fitsname, arrayid, scantype):
     '''Make a FMArray from a FMFITS.
     
     Args:

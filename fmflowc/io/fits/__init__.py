@@ -8,5 +8,5 @@ from __future__ import print_function
 from astropy.io.fits import *
 
 # sub modules/functions
-from ._array import fromfits
+from ._array import getarray
 from ._aste.merge import fromaste
