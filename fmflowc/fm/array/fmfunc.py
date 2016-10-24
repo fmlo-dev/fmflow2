@@ -14,7 +14,15 @@ from .fmarray import FMArray
 from .fdarray import FDArray
 
 
-fromfits = fits.fromfits
+fromfits = fits.getarray
+
+
+def getfreq():
+    pass
+
+
+def getspec():
+    pass
 
 
 def zeros(shape):

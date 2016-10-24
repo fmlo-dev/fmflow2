@@ -8,6 +8,7 @@ from __future__ import print_function
 from numpy import *
 
 # sub modules/functions
-from .fmarray import FMArray
-from .fdarray import FDArray
-from .fmfunc import *
+from .array.fmarray import FMArray
+from .array.fdarray import FDArray
+from .array.fmfunc import *
+from .array.fdfunc import *

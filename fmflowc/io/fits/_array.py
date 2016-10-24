@@ -21,7 +21,7 @@ def fromfits(fitsname, arrayid, scantype):
     Returns
     - array (FMArray):
     '''
-    from fmflowc.ana import fm
+    from fmflowc import fm
     
     with fits.open(fitsname) as f:
         oi = f['OBSINFO']

@@ -10,7 +10,6 @@ from copy import deepcopy
 # dependent libraries¬
 import numpy as np
 import numpy.ma as ma
-from numpy.ma import MaskedArray
 from fmflowc.utils import exceptions as e
 
 
@@ -42,19 +41,22 @@ class FDDataArray(np.ndarray):
             self.cutch = getattr(obj, 'cutch', None)
             self.info  = getattr(obj, 'info', None)
 
+    def __array_wrap__(self, obj):
+        return np.ndarray.__array_wrap__(self, obj)
+
     def __repr__(self):
         repr_string = 'FDDataArray({})'.format(self.__str__())
         repr_string = repr_string.replace('\n', '\n' + ' '*12)
         return repr_string
 
 
-class FDArray(MaskedArray, FDDataArray):
+class FDArray(ma.MaskedArray):
     def __new__(cls, array, fmch=None, fmid=None, cutch=None, info=None):
-        array = ma.asarray(array)
+        array = ma.asarray(array, dtype=float)
         data = FDDataArray(array.data, fmch, fmid, cutch, info)
         mask = array.mask
 
-        obj = MaskedArray.__new__(cls, data, mask)
+        obj = ma.MaskedArray.__new__(cls, data, mask)
         obj.fmch  = data.fmch
         obj.fmid  = data.fmid
         obj.cutch = data.cutch
@@ -62,7 +64,7 @@ class FDArray(MaskedArray, FDDataArray):
         return obj
 
     def modulate(self):
-        from fmflowc.ana import fm
+        from fmflowc import fm
 
         shape = (self.shape[0], self.shape[1]+np.sum(self.cutch))
         array = ma.zeros(shape, dtype=float)
@@ -79,7 +81,7 @@ class FDArray(MaskedArray, FDDataArray):
     def tomaskedarray(self):
         data = deepcopy(np.asarray(self.data))
         mask = deepcopy(np.asarray(self.mask))
-        return MaskedArray(data, mask)
+        return ma.MaskedArray(data, mask)
 
     def _parse_index_row(self, index):
         if type(index) == tuple:
@@ -107,8 +109,10 @@ class FDArray(MaskedArray, FDDataArray):
 
     def __array_finalize__(self, obj):
         if obj is not None:
-            MaskedArray.__array_finalize__(self, obj)
-            FDDataArray.__array_finalize__(self, obj)
+            ma.MaskedArray.__array_finalize__(self, obj)
+
+    def __array_wrap__(self, obj):
+        return ma.MaskedArray.__array_wrap__(self, obj)
 
     def __repr__(self):
         repr_string = 'FDArray({})'.format(self.__str__())
