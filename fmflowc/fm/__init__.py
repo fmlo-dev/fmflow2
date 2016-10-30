@@ -11,4 +11,4 @@ from numpy import *
 from .array.fmarray import FMArray
 from .array.fdarray import FDArray
 from .array.fmfunc import *
-from .array.fdfunc import *
+from .array.fdfunc import *from .array.arrayfunc import *
