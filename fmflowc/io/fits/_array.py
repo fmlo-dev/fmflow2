@@ -7,6 +7,7 @@ from __future__ import print_function
 # dependent libraries¬
 import numpy as np
 from astropy.io import fits
+from fmflowc import fm
 from fmflowc.utils import exceptions as e
 
 
@@ -19,10 +20,8 @@ def getarray(fitsname, arrayid, scantype):
     - scantype (str):
     
     Returns
-    - array (FMArray):
+    - fmarray (FMArray):
     '''
-    from fmflowc import fm
-    
     with fits.open(fitsname) as f:
         oi = f['OBSINFO']
         fl = f['FMLOLOG']
@@ -42,7 +41,7 @@ def getarray(fitsname, arrayid, scantype):
         # info
         info = dict(zip(oi.data[flag_oi].names, oi.data[flag_oi][0]))
         info['FITSTYPE'] = oi.header['FITSTYPE']
-        #info['TELESCOP'] = oi.header['TELESCOP']
+        info['TELESCOP'] = oi.header['TELESCOP']
         info['FRONTEND'] = oi.header['FRONTEND']
         info['BACKEND']  = oi.header['BACKEND']
 
@@ -52,7 +51,7 @@ def getarray(fitsname, arrayid, scantype):
         fmfreq = fl.data.FMFREQ[flag_fl]
 
         if len(set(t_be)-set(t_fl)) > 0:
-            e.FMflowError('time range of FMLOLOG does not cover that of BACKEND')
+            raise e.FMflowError('time range of FMLOLOG does not cover that of BACKEND')
 
         fmfreq_matched = []
         for t in t_be:
@@ -60,5 +59,5 @@ def getarray(fitsname, arrayid, scantype):
 
         fmch = (np.asarray(fmfreq_matched) / info['CHANWIDTH']).astype(int)
         
-        array = fm.FMArray(array, fmch, info)
+        array = fm.array(array, fmch, info=info)
         return array
