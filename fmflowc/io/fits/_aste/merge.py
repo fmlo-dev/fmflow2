@@ -13,6 +13,7 @@ from collections import OrderedDict
 # dependent libraries
 import numpy as np
 from astropy.io import fits
+from astropy.coordinates import Angle
 from fmflowc.utils import binary
 from fmflowc.utils import dateformat
 from fmflowc.utils import exceptions as e
@@ -140,13 +141,17 @@ def _load_fmlolog(fmlolog):
     lofreq    = np.loadtxt(fmlolog, float, usecols=(3,), skiprows=1)
     vrad      = np.loadtxt(fmlolog, float, usecols=(4,), skiprows=1)
 
+    # fmflag
+    fmflag = scantype == 'ON'
+
     # bintable HDU
     columns = []
     columns.append(fits.Column('STARTTIME', 'A26', 'ISO 8601', array=starttime))
-    columns.append(fits.Column('SCANTYPE', 'A4', '', array=scantype))
-    columns.append(fits.Column('FMFREQ', 'D', 'Hz', array=fmfreq))
-    columns.append(fits.Column('LOFREQ', 'D', 'Hz', array=lofreq))
-    columns.append(fits.Column('VRAD', 'D', 'm/s', array=vrad))
+    columns.append(fits.Column('SCANTYPE',  'A4', '', array=scantype))
+    columns.append(fits.Column('FMFLAG',    'L', 'bool', array=fmflag))
+    columns.append(fits.Column('FMFREQ',    'D', 'Hz', array=fmfreq))
+    columns.append(fits.Column('LOFREQ',    'D', 'Hz', array=lofreq))
+    columns.append(fits.Column('VRAD',      'D', 'm/s', array=vrad))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
@@ -169,26 +174,41 @@ def _load_antennalog(antennalog):
     c = partial(dateformat.to_isoformat, fmt='%y%m%d%H%M%S.%f')
 
     starttime = np.loadtxt(antennalog, str, usecols=(0,), skiprows=1, converters={0: c})
-    ra        = np.loadtxt(antennalog, float, usecols=(1,), skiprows=1)
-    dec       = np.loadtxt(antennalog, float, usecols=(2,), skiprows=1)
-    az_0      = np.loadtxt(antennalog, float, usecols=(3,), skiprows=1)
-    el_0      = np.loadtxt(antennalog, float, usecols=(4,), skiprows=1)
-    az_1      = np.loadtxt(antennalog, float, usecols=(5,), skiprows=1)
-    el_1      = np.loadtxt(antennalog, float, usecols=(6,), skiprows=1)
-    az_2      = np.loadtxt(antennalog, float, usecols=(7,), skiprows=1)
-    el_2      = np.loadtxt(antennalog, float, usecols=(8,), skiprows=1)
+    ra_prog   = np.loadtxt(antennalog, float, usecols=(1,), skiprows=1)
+    dec_prog  = np.loadtxt(antennalog, float, usecols=(2,), skiprows=1)
+    az_prog   = np.loadtxt(antennalog, float, usecols=(3,), skiprows=1)
+    el_prog   = np.loadtxt(antennalog, float, usecols=(4,), skiprows=1)
+    az_real   = np.loadtxt(antennalog, float, usecols=(5,), skiprows=1)
+    el_real   = np.loadtxt(antennalog, float, usecols=(6,), skiprows=1)
+    az_error  = np.loadtxt(antennalog, float, usecols=(7,), skiprows=1)
+    el_error  = np.loadtxt(antennalog, float, usecols=(8,), skiprows=1)
+
+    # RA,Dec real
+    lat = Angle('-22d58m17.69447s').deg # ASTE latitude
+    degsin = lambda deg: np.sin(np.deg2rad(deg))
+    degcos = lambda deg: np.cos(np.deg2rad(deg))
+    q = -np.arcsin(degsin(az_prog)*degcos(lat)/degcos(dec_prog))
+
+    ra_error  = -np.cos(q)*az_error + np.sin(q)*el_error
+    dec_error = np.sin(q)*az_error + np.cos(q)*el_error
+    ra_real   = ra_prog - ra_error
+    dec_real  = dec_prog - ra_error
 
     # bintable HDU
     columns = []
     columns.append(fits.Column('STARTTIME', 'A26', 'ISO 8601', array=datetime))
-    columns.append(fits.Column('RA', 'D', 'deg', array=ra))
-    columns.append(fits.Column('DEC', 'D', 'deg', array=dec))
-    columns.append(fits.Column('AZ_0', 'D', 'deg', array=az_0))
-    columns.append(fits.Column('EL_0', 'D', 'deg', array=el_0))
-    columns.append(fits.Column('AZ_1', 'D', 'deg', array=az_1))
-    columns.append(fits.Column('EL_1', 'D', 'deg', array=el_1))
-    columns.append(fits.Column('AZ_2', 'D', 'deg', array=az_2))
-    columns.append(fits.Column('EL_2', 'D', 'deg', array=el_2))
+    columns.append(fits.Column('RA',        'D', 'deg', array=ra_real))
+    columns.append(fits.Column('DEC',       'D', 'deg', array=dec_real))
+    columns.append(fits.Column('AZ',        'D', 'deg', array=az_real))
+    columns.append(fits.Column('EL',        'D', 'deg', array=el_real))
+    columns.append(fits.Column('RA_PROG',   'D', 'deg', array=ra_prog))
+    columns.append(fits.Column('DEC_PROG',  'D', 'deg', array=dec_prog))
+    columns.append(fits.Column('AZ_PROG',   'D', 'deg', array=az_prog))
+    columns.append(fits.Column('EL_PROG',   'D', 'deg', array=el_prog))
+    columns.append(fits.Column('RA_ERROR',  'D', 'deg', array=ra_error))
+    columns.append(fits.Column('DEC_ERROR', 'D', 'deg', array=dec_error))
+    columns.append(fits.Column('AZ_ERROR',  'D', 'deg', array=az_error))
+    columns.append(fits.Column('EL_ERROR',  'D', 'deg', array=el_error))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
