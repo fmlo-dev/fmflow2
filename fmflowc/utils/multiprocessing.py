@@ -15,7 +15,30 @@ class Pool(object):
     def __init__(self, processes=None):
         self.processes = processes or mp.cpu_count()-1
 
+        # check multiprocessing compatibility
+        lapack_opt_info = np.__config__.lapack_opt_info
+
+        if 'libraries' in lapack_opt_info:
+            libraries = lapack_opt_info['libraries']
+
+            if any([('mkl' in lib) for lib in libraries]):
+                self.mpcompatible = True
+            elif any([('blas' in lib) for lib in libraries]):
+                self.mpcompatible = True
+            elif any([('atlas' in lib) for lib in libraries]):
+                self.mpcompatible = True
+            else:
+                self.mpcompatible = False
+        else:
+            self.mpcompatible = False
+
     def map(self, func, iterable):
+        if self.mpcompatible:
+            return self.mpmap(func, iterable)
+        else:
+            return map(func, iterable)
+
+    def mpmap(self, func, iterable):
         def pipefunc(conn, arg):
             conn.send(map(func, arg))
             conn.close()
