@@ -39,11 +39,14 @@ def getarray(fitsname, arrayid, scantype):
             return array
 
         # info
-        info = dict(zip(oi.data[flag_oi].names, oi.data[flag_oi][0]))
-        info['FITSTYPE'] = oi.header['FITSTYPE']
-        info['TELESCOP'] = oi.header['TELESCOP']
-        info['FRONTEND'] = oi.header['FRONTEND']
-        info['BACKEND']  = oi.header['BACKEND']
+        keys = [name.lower() for name in oi.data[flag_oi].names]
+        values = oi.data[flag_oi][0]
+
+        info = dict(zip(keys, values))
+        info['fitstype'] = oi.header['FITSTYPE']
+        info['telescop'] = oi.header['TELESCOP']
+        info['frontend'] = oi.header['FRONTEND']
+        info['backend']  = oi.header['BACKEND']
 
         # fmch
         t_fl = fl.data.STARTTIME[flag_fl]
@@ -57,7 +60,7 @@ def getarray(fitsname, arrayid, scantype):
         for t in t_be:
             fmfreq_matched.append(fmfreq[t_fl==t][0])
 
-        fmch = (np.asarray(fmfreq_matched) / info['CHANWIDTH']).astype(int)
+        fmch = (np.asarray(fmfreq_matched) / info['chanwidth']).astype(int)
         
         array = fm.array(array, fmch, info=info)
         return array
