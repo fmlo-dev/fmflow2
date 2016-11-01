@@ -118,7 +118,7 @@ class FMArray(ma.MaskedArray):
             obj.table.coord = coord.copy()
 
         if info is not None:
-            obj.update(deepcopy(info))
+            obj.info.update(deepcopy(info))
 
         return obj
 
