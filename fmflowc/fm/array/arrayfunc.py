@@ -67,7 +67,7 @@ def fmfunc(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         fmarray_in  = kwargs.pop('array_in', args[0])
-        fmarray_out = array_in.copy()
+        fmarray_out = fmarray_in.copy()
 
         array_in = np.asarray(fmarray_in)
         array_out = func(array_in, *args[1:], **kwargs)
