@@ -51,7 +51,7 @@ def concatenate(arrays):
 
     if len(arrays) > 2:
         array_0 = arrays[0]
-        array_1 = concat(arrays[1:])
+        array_1 = concatenate(arrays[1:])
     else:
         array_0 = arrays[0]
         array_1 = arrays[1]
