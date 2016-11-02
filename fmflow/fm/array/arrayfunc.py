@@ -27,6 +27,12 @@ def asarray(array):
 def asmaskedarray(array):
     return array.asmaskedarray()
 
+def demodulate(array):
+    return array.demodulate()
+
+def modulate(array):
+    return array.modulate()
+
 def zeros(shape, dtype=float):
     return FMArray(np.zeros(shape, dtype))
 
