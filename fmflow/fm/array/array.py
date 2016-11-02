@@ -152,14 +152,23 @@ class FMArray(ma.MaskedArray):
             return (0, 0)
 
     def __getitem__(self, index):
+        # masked array
         array = self.asmaskedarray()[index]
-        table = self.table[self._row(index)]
-        info  = self.info.copy()
 
-        # update cutch (if possible)
-        cutch  = np.array(info['cutch'])
-        dcutch = np.array(self._cutch(index))
-        info['cutch'] = tuple(cutch+dcutch)
+        # table
+        try:
+            table = self.table[self._row(index)]
+        except:
+            table = None
+
+        # info
+        try:
+            info = self.info.copy()
+            cutch = np.array(info['cutch'])
+            dcutch = np.array(self._cutch(index))
+            info['cutch'] = tuple(cutch+dcutch)
+        except:
+            info = None
 
         return FMArray(array, table, info)
 
@@ -169,4 +178,3 @@ class FMArray(ma.MaskedArray):
     def __repr__(self):
         string = 'fmarray({})'.format(self.__str__())
         return string.replace('\n', '\n'+' '*8)
-
