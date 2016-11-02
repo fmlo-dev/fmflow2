@@ -12,9 +12,13 @@ from fmflow.utils import exceptions as e
 
 class FMArray(ma.MaskedArray):
     def __new__(cls, array, table=None, info=None):
+        # masked array
         array = ma.asarray(array).copy()
         data, mask = array.data, array.mask
         obj = super(FMArray, cls).__new__(cls, data, mask)
+
+        if obj.ndim == 0:
+            return obj.item()
 
         # table
         _shape = 1 if obj.ndim<=1 else len(obj)
@@ -38,7 +42,7 @@ class FMArray(ma.MaskedArray):
     def fromeach(cls, array=None, fmch=None, coord=None, info=None):
         obj = cls.__new__(cls, array, info=info)
 
-        # update table and info of array
+        # update table of array
         if fmch is not None:
             obj.fmch = fmch.copy()
 
@@ -52,9 +56,9 @@ class FMArray(ma.MaskedArray):
         if self.isdemodulated:
             raise e.FMflowError('this array is already demodulated')
 
-
         fmid  = (-np.min(self.fmch), self.shape[1])
 
+        # masked array
         array = ma.zeros((self.shape[0], self.shape[1]+np.ptp(self.fmch)))
         array.mask = True
         array[:,:self.shape[1]] = self.asmaskedarray()
@@ -62,9 +66,13 @@ class FMArray(ma.MaskedArray):
         for i in range(len(array)):
             array[i] = np.roll(array[i], fmid[0]+self.fmch[i])
 
+        # table
         table = self.table
+
+        # info
         info  = self.info.copy()
         info.update({'modulated': False, 'cutch': (0,0), 'fmid': fmid})
+
         return FMArray(array, table, info)
 
     def modulate(self):
@@ -75,6 +83,7 @@ class FMArray(ma.MaskedArray):
         fmid = self.info['fmid']
         lcutch, rcutch = self.info['cutch']
 
+        # masked array
         array = ma.zeros((self.shape[0], self.shape[1]+lcutch+rcutch))
         array.mask = True
         array[:,lcutch:array.shape[1]-rcutch] = self.asmaskedarray()
@@ -83,10 +92,14 @@ class FMArray(ma.MaskedArray):
             array[i] = np.roll(array[i], -fmid[0]-self.fmch[i])
 
         array = array[:,:fmid[1]]
-        
+
+        # table
         table = self.table
+
+        # info
         info  = self.info.copy()
         info.update({'modulated': True, 'cutch': (0,0), 'fmid': (0,0)})
+
         return FMArray(array, table, info)
 
     def asmaskedarray(self):
