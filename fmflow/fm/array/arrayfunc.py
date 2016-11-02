@@ -63,6 +63,20 @@ def concatenate(arrays):
     
     return FMArray(array, table, info)
 
+def save(array, filename):
+    data = array.data
+    mask = array.mask
+    table = array.table
+    info  = array.info
+    np.savez(filename, data=data, mask=mask, table=table, info=info)
+
+def load(filename):
+    d = np.load(filename)
+    array = ma.MaskedArray(d['data'], d['mask'])
+    table = d['table']
+    info  = d['info']
+    return FMArray(array, table, info)
+
 def fmfunc(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
