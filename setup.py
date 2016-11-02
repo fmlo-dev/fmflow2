@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name = 'fmflowc',
+    name = 'fmflow',
     version = '0.0.1',
     author = 'Akio Taniguchi',
     author_email = 'taniguchi@ioa.s.u-tokyo.ac.jp',
