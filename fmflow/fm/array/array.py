@@ -7,7 +7,7 @@ from __future__ import print_function
 # dependent libraries¬
 import numpy as np
 import numpy.ma as ma
-from fmflowc.utils import exceptions as e
+from fmflow.utils import exceptions as e
 
 
 class FMArray(ma.MaskedArray):

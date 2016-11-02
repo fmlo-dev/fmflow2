@@ -7,8 +7,8 @@ from __future__ import print_function
 # dependent libraries¬
 import numpy as np
 from astropy.io import fits
-from fmflowc import fm
-from fmflowc.utils import exceptions as e
+from fmflow import fm
+from fmflow.utils import exceptions as e
 
 
 def getarray(fitsname, arrayid, scantype):

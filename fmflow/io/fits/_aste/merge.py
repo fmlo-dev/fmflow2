@@ -14,9 +14,9 @@ from collections import OrderedDict
 import numpy as np
 from astropy.io import fits
 from astropy.coordinates import Angle
-from fmflowc.utils import binary
-from fmflowc.utils import dateformat
-from fmflowc.utils import exceptions as e
+from fmflow.utils import binary
+from fmflow.utils import dateformat
+from fmflow.utils import exceptions as e
 
 
 def fromaste(fmlolog, backendlog, antennalog=None):

@@ -11,8 +11,8 @@ from inspect import getargspec
 # dependent libraries
 import numpy as np
 import numpy.ma as ma
-from fmflowc.utils import exceptions as e
-from fmflowc.utils import multiprocessing as mp
+from fmflow.utils import exceptions as e
+from fmflow.utils import multiprocessing as mp
 
 # sub modules/functions
 from .array import FMArray
