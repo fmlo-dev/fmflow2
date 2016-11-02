@@ -15,17 +15,17 @@ from fmflowc.utils import exceptions as e
 from fmflowc.utils import multiprocessing as mp
 
 # sub modules/functions
-from .array import FMData, FMArray
+from .array import FMArray
 
 
 def array(array, fmch=None, coord=None, info=None):
-    return FMArray(array, fmch, coord, info)
+    return FMArray.fromeach(array, fmch, coord, info)
 
 def asarray(array):
     return FMArray(array)
 
 def asmaskedarray(array):
-    return array.tomaskedarray()
+    return array.asmaskedarray()
 
 def zeros(shape, dtype=float):
     return FMArray(np.zeros(shape, dtype))
@@ -37,16 +37,16 @@ def zeros_like(array, dtype=float, keepmeta=True):
     if keepmeta:
         return np.zeros_like(array, dtype)
     else:
-        return FMArray(np.zeros_like(array.tomaskedarray(), dtype))
+        return FMArray(np.zeros_like(array.asmaskedarray(), dtype))
 
 def ones_like(array, dtype=float, keepmeta=True):
     if keepmeta:
         return np.ones_like(array, dtype)
     else:
-        return FMArray(np.ones_like(array.tomaskedarray(), dtype))
+        return FMArray(np.ones_like(array.asmaskedarray(), dtype))
 
 def concatenate(arrays):
-    if not (type(arrays)==tuple or type(arrays)==list):
+    if type(arrays) not in (tuple, list):
         raise e.FMflowError('arrays must be tuple or list of arrays')
 
     if len(arrays) > 2:
@@ -61,7 +61,7 @@ def concatenate(arrays):
     info = array_0.info
     info.update(array_1.info)
     
-    return FMArray.frommaskedarray(array, table, info)
+    return FMArray(array, table, info)
 
 def fmfunc(func):
     @wraps(func)
@@ -69,10 +69,10 @@ def fmfunc(func):
         fmarray_in  = kwargs.pop('array_in', args[0])
         fmarray_out = fmarray_in.copy()
 
-        array_in = np.asarray(fmarray_in)
+        array_in = fmarray_in.asmaskedarray()
         array_out = func(array_in, *args[1:], **kwargs)
 
-        fmarray_out.data[:] = array_out
+        fmarray_out[:] = array_out
         return fmarray_out
 
     return wrapper
