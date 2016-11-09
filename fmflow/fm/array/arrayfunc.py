@@ -11,6 +11,7 @@ from inspect import getargspec
 # dependent libraries
 import numpy as np
 import numpy.ma as ma
+from fmflow.io import fits
 from fmflow.utils import exceptions as e
 from fmflow.utils import multiprocessing as mp
 
@@ -23,6 +24,9 @@ def array(array, fmch=None, coord=None, info=None):
 
 def asarray(array):
     return FMArray(array)
+
+def getarray(fitsname, arrayid, scantype):
+    return fits.getarray(fitsname, arrayid, scantype)
 
 def asmaskedarray(array):
     return array.asmaskedarray()
@@ -80,7 +84,7 @@ def load(filename):
     d = np.load(filename)
     array = ma.MaskedArray(d['data'], d['mask'])
     table = d['table']
-    info  = d['info']
+    info  = d['info'].item()
     return FMArray(array, table, info)
 
 def fmfunc(func):
