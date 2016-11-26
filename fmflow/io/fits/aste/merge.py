@@ -1,35 +1,45 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+"""Module for merging loggings of ASTE.
 
-# standard libraries
+Available functions:
+- fromaste: Read logging data of ASTE and merge them into a FITS object.
+"""
+
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
+
+# the standard library
 import re
 import json
-from functools import partial
 from collections import OrderedDict
 
-# dependent libraries
+# dependent packages
 import numpy as np
 from astropy.io import fits
 from astropy.coordinates import Angle
-from fmflow.utils import binary
-from fmflow.utils import dateformat
-from fmflow.utils import exceptions as e
+from fmflow import utils as ut
+
+# imported items
+__all__ = ['fromaste']
+
+# constants
+LAT = Angle('-22d58m17.69447s').deg # latitude of ASTE
+EFF = 0.92 # exposure time (s) / interval time (s)
 
 
 def fromaste(fmlolog, backendlog, antennalog=None):
-    '''Load logging data of ASTE and merge them into a FITS object.
+    """Read logging data of ASTE and merge them into a FITS object.
 
     Args:
-    - fmlolog (str): file name of FMLO logging.
-    - backendlog (str): file name of backend logging.
-    - antennalog (str): file name of antenna logging (optional).
+    - fmlolog (str): File name of FMLO logging.
+    - backendlog (str): File name of backend logging.
+    - antennalog (str): File name of antenna logging (optional).
 
     Returns:
     - fitsobj (HDUlist): HDU list containing the merged data.
-    '''
+    """
     # HDU list
     fitsobj = fits.HDUList()
     
@@ -38,25 +48,25 @@ def fromaste(fmlolog, backendlog, antennalog=None):
     fitsobj.append(hdu)
     
     # FMLOINFO HDU
-    hdu = _load_fmlolog(fmlolog)
+    hdu = _read_fmlolog(fmlolog)
     fitsobj.append(hdu)
 
     # BACKEND HDU
     backend = _check_backend(backendlog)
 
     if backend == 'AC45':
-        hdu = _load_backendlog_mac(backendlog)
+        hdu = _read_backendlog_mac(backendlog)
     elif backend == 'FFX':
-        # hdu = _load_backendlog_whsf(backendlog)
-        raise e.FMflowError('WHSF logging is not supported yet')
+        # hdu = _read_backendlog_whsf(backendlog)
+        raise ut.FMFlowError('WHSF logging is not supported yet')
     else:
-        raise e.FMflowError('invalid logging type')
+        raise ut.FMFlowError('invalid logging type')
 
     fitsobj.append(hdu)
     
     # ANTENNA HDU
     if antennalog is not None:
-        hdu = _load_antennalog(antennalog)
+        hdu = _read_antennalog(antennalog)
         fitsobj.append(hdu)
 
     # OBSINFO HDU
@@ -67,14 +77,14 @@ def fromaste(fmlolog, backendlog, antennalog=None):
 
 
 def _make_obsinfo(fitsobj):
-    '''Make a OBSINFO HDU from FITS object.
+    """Make a OBSINFO HDU from FITS object.
 
     Args:
     - fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.
 
     Returns:
     - hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
-    '''
+    """
     d_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
     d_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
 
@@ -119,21 +129,21 @@ def _make_obsinfo(fitsobj):
     return hdu
 
 
-def _load_fmlolog(fmlolog):
-    '''Load a FMLO logging of ASTE.
+def _read_fmlolog(fmlolog):
+    """Read a FMLO logging of ASTE.
 
     Args:
-    - fmlolog (str): file name of FMLO logging.
+    - fmlolog (str): File name of FMLO logging.
 
     Returns:
-    - hdu (BinTableHDU): HDU containing the loaded FMLO logging.
-    '''
+    - hdu (BinTableHDU): HDU containing the read FMLO logging.
+    """
     header = fits.Header()
     header['EXTNAME'] = 'FMLOLOG'
     header['FILENAME'] = fmlolog
 
     # datetime converter
-    c = partial(dateformat.to_isoformat, fmt='%Y%m%d%H%M%S.%f')
+    c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
 
     starttime = np.loadtxt(fmlolog, str, usecols=(0,), skiprows=1, converters={0: c})
     scantype  = np.loadtxt(fmlolog, str, usecols=(1,), skiprows=1)
@@ -142,7 +152,7 @@ def _load_fmlolog(fmlolog):
     vrad      = np.loadtxt(fmlolog, float, usecols=(4,), skiprows=1)
 
     # fmflag
-    fmflag = scantype == 'ON'
+    fmflag = (scantype == 'ON')
 
     # bintable HDU
     columns = []
@@ -157,21 +167,21 @@ def _load_fmlolog(fmlolog):
     return hdu
 
 
-def _load_antennalog(antennalog):
-    '''Load an antenna logging of ASTE.
+def _read_antennalog(antennalog):
+    """Read an antenna logging of ASTE.
 
     Args:
-    - antennalog (str): file name of antenna logging.
+    - antennalog (str): File name of antenna logging.
 
     Returns:
-    - hdu (BinTableHDU): HDU containing the loaded antenna logging.
-    '''
+    - hdu (BinTableHDU): HDU containing the read antenna logging.
+    """
     header = fits.Header()
     header['EXTNAME'] = 'ANTENNA'
     header['FILENAME'] = antennalog
 
     # datetime converter
-    c = partial(dateformat.to_isoformat, fmt='%y%m%d%H%M%S.%f')
+    c = ut.DatetimeConverter('%y%m%d%H%M%S.%f')
 
     starttime = np.loadtxt(antennalog, str, usecols=(0,), skiprows=1, converters={0: c})
     ra_prog   = np.loadtxt(antennalog, float, usecols=(1,), skiprows=1)
@@ -184,10 +194,9 @@ def _load_antennalog(antennalog):
     el_error  = np.loadtxt(antennalog, float, usecols=(8,), skiprows=1)
 
     # RA,Dec real
-    lat = Angle('-22d58m17.69447s').deg # ASTE latitude
     degsin = lambda deg: np.sin(np.deg2rad(deg))
     degcos = lambda deg: np.cos(np.deg2rad(deg))
-    q = -np.arcsin(degsin(az_prog)*degcos(lat)/degcos(dec_prog))
+    q = -np.arcsin(degsin(az_prog)*degcos(LAT)/degcos(dec_prog))
 
     ra_error  = -np.cos(q)*az_error + np.sin(q)*el_error
     dec_error = np.sin(q)*az_error + np.cos(q)*el_error
@@ -215,39 +224,39 @@ def _load_antennalog(antennalog):
 
 
 def _check_backend(backendlog):
-    '''Check backend type from a backend logging of ASTE.
+    """Check backend type from a backend logging of ASTE.
 
     Args:
-    - backendlog (str): file name of backend logging.
+    - backendlog (str): File name of backend logging.
 
     Returns:
-    - backend (str): backend type.
-    '''
+    - backend (str): Backend type.
+    """
     from .otflog_common import HEAD, CTL
 
     with open(backendlog, 'rb') as f:
-        binary.dumpstruct(f, HEAD)
-        struct = binary.dumpstruct(f, CTL)
+        ut.readbinary(f, HEAD)
+        readdata = ut.readbinary(f, CTL)
 
-    backend = struct['cbe_type']
+    backend = readdata['cbe_type']
     return backend
 
 
-def _load_backendlog_mac(backendlog):
-    '''Load a backend logging of ASTE/MAC.
+def _read_backendlog_mac(backendlog):
+    """Read a backend logging of ASTE/MAC.
 
     Args:
-    - backendlog (str): file name of backend logging.
+    - backendlog (str): File name of backend logging.
 
     Returns:
-    - hdu (BinTableHDU): HDU containing the loaded backend logging.
-    '''
+    - hdu (BinTableHDU): HDU containing the read backend logging.
+    """
     from .otflog_common import HEAD, CTL
     from .otflog_mac import OBS, DAT
 
     def EOF(f):
-        struct = binary.dumpstruct(f, HEAD)
-        return struct['crec_type'] == 'ED'
+        readdata = ut.readbinary(f, HEAD)
+        return readdata['crec_type'] == 'ED'
 
     header = fits.Header()
     header['EXTNAME'] = 'BACKEND'
@@ -255,14 +264,14 @@ def _load_backendlog_mac(backendlog):
     
     with open(backendlog, 'rb') as f:
         # control info
-        binary.dumpstruct(f, HEAD)
-        struct = binary.dumpstruct(f, CTL)
-        header['CTLINFO'] = json.dumps(struct)
+        ut.readbinary(f, HEAD)
+        readdata = ut.readbinary(f, CTL)
+        header['CTLINFO'] = json.dumps(readdata)
         
         # observation info
-        binary.dumpstruct(f, HEAD)
-        struct = binary.dumpstruct(f, OBS)
-        header['OBSINFO'] = json.dumps(struct)
+        ut.readbinary(f, HEAD)
+        readdata = ut.readbinary(f, OBS)
+        header['OBSINFO'] = json.dumps(readdata)
 
         # data info
         data = OrderedDict()
@@ -270,15 +279,22 @@ def _load_backendlog_mac(backendlog):
             if not re.search('dmy', key):
                 data[key] = []
 
+        i = 0
+        status = ut.inprogress('FMFlow: reading the backendlog')
+
         while not EOF(f):
-            struct = binary.dumpstruct(f, DAT)
+            readdata = ut.readbinary(f, DAT)
             for key in data:
-                data[key].append(struct[key])
+                data[key].append(readdata[key])
+            
+            if i%50 == 0:
+                next(status)
+            
+            i += 1
 
     # starttime
-    c = partial(dateformat.to_isoformat, fmt='%Y%m%d%H%M%S.%f')
-    t = data['cint_sttm']
-    starttime = [c(t[i][:-2]) for i in range(len(t))]
+    c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
+    starttime = [c(t[:-2]) for t in data['cint_sttm']]
 
     # arraydata
     ary_dat = np.asarray(data['iary_data'], dtype=int)
@@ -289,19 +305,20 @@ def _load_backendlog_mac(backendlog):
 
     # bintable HDU
     columns = []
-    struct = binary.fitsformat(DAT)
+    formats = ut.getfitsformat(DAT)
     for key in data:
         if re.search('int_sttm', key):
             columns.insert(0, fits.Column('STARTTIME', 'A26', array=starttime))
         elif re.search('ary_name', key):
-            columns.insert(1, fits.Column('ARRAYID', struct[key], array=data[key]))
+            columns.insert(1, fits.Column('ARRAYID', formats[key], array=data[key]))
         elif re.search('scan_type', key):
-            columns.insert(2, fits.Column('SCANTYPE', struct[key], array=data[key]))
+            columns.insert(2, fits.Column('SCANTYPE', formats[key], array=data[key]))
         elif re.search('ary_data', key):
-            fitsfmt = re.findall('\d+', struct[key])[0] + 'D'
-            columns.insert(3, fits.Column('ARRAYDATA', fitsfmt, array=arraydata))
+            fmt = re.findall('\d+', formats[key])[0] + 'D'
+            columns.insert(3, fits.Column('ARRAYDATA', fmt, array=arraydata))
         else:
-            columns.append(fits.Column(key, struct[key], array=data[key]))
+            columns.append(fits.Column(key, formats[key], array=data[key]))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
+
