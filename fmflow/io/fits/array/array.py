@@ -1,29 +1,32 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
-# standard libraries
+# the standard library
 import os
 
-# dependent libraries¬
+# dependent packages¬
 import numpy as np
 from astropy.io import fits
-from fmflow.utils import exceptions as e
+from fmflow import utils as ut
+
+# imported items
+__all__ = ['getarray']
 
 
 def getarray(fitsname, arrayid, scantype):
-    '''Make a FMArray from a FMFITS.
+    """Make a FMArray from a FMFITS.
     
     Args:
-    - fitsname (str):
-    - arrayid (str):
-    - scantype (str):
+    - fitsname (str): File name of a FITS.
+    - arrayid (str): An array ID with which the output fmarray is created.
+    - scantype (str): A scan type with which the output fmarray is created.
     
     Returns
-    - fmarray (FMArray):
-    '''
+    - array (FMArray): An output fmarray with spacified array ID and scan type.
+    """
     from fmflow import fm
     with fits.open(os.path.expanduser(fitsname)) as f:
         oi = f['OBSINFO']
@@ -57,7 +60,7 @@ def getarray(fitsname, arrayid, scantype):
         fmfreq = fl.data.FMFREQ[flag_fl]
 
         if len(set(t_be)-set(t_fl)) > 0:
-            raise e.FMflowError('time range of FMLOLOG does not cover that of BACKEND')
+            raise ut.FMFlowError('time range of FMLOLOG does not cover that of BACKEND')
 
         fmfreq_matched = []
         for t in t_be:
