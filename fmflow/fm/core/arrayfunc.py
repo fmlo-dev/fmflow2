@@ -1,47 +1,64 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
-# standard libraries
+# the standard library
 from functools import partial, wraps
 from inspect import getargspec
 
-# dependent libraries
+# dependent packages
 import numpy as np
 import numpy.ma as ma
+from fmflow import utils
 from fmflow.io import fits
-from fmflow.utils import exceptions as e
-from fmflow.utils import multiprocessing as mp
 
-# sub modules/functions
+# submodules
 from .array import FMArray
+
+# imported items
+__all__ = [
+    'array', 'asarray', 'asmaskedarray', 'getarray', 'demodulate', 'modulate',
+    'zeros', 'ones', 'zeros_like', 'ones_like', 'concatenate', 'save', 'load',
+    'fmfunc', 'timechunk'
+]
 
 
 def array(array, fmch=None, coord=None, info=None):
     return FMArray.fromeach(array, fmch, coord, info)
 
-def asarray(array):
-    return FMArray(array)
 
-def getarray(fitsname, arrayid, scantype):
-    return fits.getarray(fitsname, arrayid, scantype)
+def asarray(array):
+    if type(array) == FMArray:
+        return array
+    else:
+        return FMArray(array)
+
 
 def asmaskedarray(array):
     return array.asmaskedarray()
 
-def demodulate(array):
-    return array.demodulate()
+
+def getarray(fitsname, arrayid, scantype):
+    return fits.getarray(fitsname, arrayid, scantype)
+
+
+def demodulate(array, invert=False):
+    return array.demodulate(invert)
+
 
 def modulate(array):
     return array.modulate()
 
+
 def zeros(shape, dtype=float):
     return FMArray(np.zeros(shape, dtype))
 
+
 def ones(shape, dtype=float):
     return FMArray(np.ones(shape, dtype))
+
 
 def zeros_like(array, dtype=float, keepmeta=True):
     if keepmeta:
@@ -49,15 +66,17 @@ def zeros_like(array, dtype=float, keepmeta=True):
     else:
         return FMArray(np.zeros_like(array.asmaskedarray(), dtype))
 
+
 def ones_like(array, dtype=float, keepmeta=True):
     if keepmeta:
         return np.ones_like(array, dtype)
     else:
         return FMArray(np.ones_like(array.asmaskedarray(), dtype))
 
+
 def concatenate(arrays):
     if type(arrays) not in (tuple, list):
-        raise e.FMflowError('arrays must be tuple or list of arrays')
+        raise utils.FMFlowError('arrays must be tuple or list of arrays')
 
     if len(arrays) > 2:
         array_0 = arrays[0]
@@ -73,12 +92,14 @@ def concatenate(arrays):
     
     return FMArray(array, table, info)
 
+
 def save(array, filename):
     data = array.data
     mask = array.mask
     table = array.table
     info  = array.info
     np.savez(filename, data=data, mask=mask, table=table, info=info)
+
 
 def load(filename):
     d = np.load(filename)
@@ -87,19 +108,24 @@ def load(filename):
     info  = d['info'].item()
     return FMArray(array, table, info)
 
+
 def fmfunc(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         fmarray_in  = kwargs.pop('array_in', args[0])
         fmarray_out = fmarray_in.copy()
+        
+        if type(fmarray_in) == FMArray:
+            array_in = fmarray_in.asmaskedarray()
+        else:
+            array_in = ma.asarray(fmarray_in)
 
-        array_in = fmarray_in.asmaskedarray()
         array_out = func(array_in, *args[1:], **kwargs)
-
         fmarray_out[:] = array_out
         return fmarray_out
 
     return wrapper
+
 
 def timechunk(func):
     @wraps(func)
@@ -115,7 +141,7 @@ def timechunk(func):
         index = np.linspace(0, len(array_in), chunk_num+1, dtype=int)
         subs_in = [array_in[index[i]:index[i+1]] for i in range(len(index)-1)]
 
-        p = mp.Pool()
+        p = utils.Pool()
         pfunc = partial(func, **kwargs)
         subs_out = p.map(pfunc, subs_in)
         array_out = np.concatenate(subs_out)
