@@ -1,19 +1,47 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+"""Module for multiprocessing in FMFlow.
 
-# standard libraries
+This module provides helper classes for multiprocessing in FMFlow.
+
+Available classes:
+- Pool: Similar to multiprocessing.Pool, but compatible with local function.
+"""
+
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
+
+# importing items
+__all__ = ['Pool']
+
+# the standard library
 import multiprocessing as mp
 
-# dependent libraries
+# dependent packages
 import numpy as np
 
 
 class Pool(object):
+    """Return a process pool object.
+    
+    Public methods:
+    - map: Return a list of the results of applying the function to the sequence.
+    
+    Public attributes:
+    - mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.
+    """
     def __init__(self, processes=None):
-        self.processes = processes or mp.cpu_count()-1
+        """Initialize a process pool object.
+        
+        At this moment, whether your NumPy/SciPy is compatible with multiprocessing,
+        is automatically checked and the result is stored in self.mpcompatible.
+        
+        Args:
+        - processes (int): The number of processes to be created. Default is
+          <CPU count of your machine> -1 (one thread is saved for backup).
+        """
+        self.processes = processes or mp.cpu_count() - 1
 
         # check multiprocessing compatibility
         lapack_opt_info = np.__config__.lapack_opt_info
@@ -32,19 +60,32 @@ class Pool(object):
         else:
             self.mpcompatible = False
 
-    def map(self, func, iterable):
-        if self.mpcompatible:
-            return self.mpmap(func, iterable)
-        else:
-            return map(func, iterable)
+    def map(self, func, sequence):
+        """Return a list of the results of applying the function to the sequence.
+        
+        If self.mpcompatible is True, mapping is multiprocessed with the spacified
+        number of processes (default is <CPU count> - 1). If False, mapping is
+        singleprocessed (equivalent to the bulitin map function).
 
-    def mpmap(self, func, iterable):
+        Args:
+        - func (function): Applying function.
+        - sequence (list): List of items to which function is applied.
+
+        Returns:
+        - ret (list): The results of applying the function to the sequence.
+        """
+        if self.mpcompatible:
+            return self._mpmap(func, sequence)
+        else:
+            return map(func, sequence)
+
+    def _mpmap(self, func, sequence):
         def pipefunc(conn, arg):
             conn.send(map(func, arg))
             conn.close()
 
-        index = np.linspace(0, len(iterable), self.processes+1, dtype=int)
-        args = [iterable[index[i]:index[i+1]] for i in range(len(index)-1)]
+        index = np.linspace(0, len(sequence), self.processes+1, dtype=int)
+        args = [sequence[index[i]:index[i+1]] for i in range(len(index)-1)]
 
         ret = []
         plist, clist = [], []

@@ -1,10 +1,28 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+"""Module for the internal use in FMFlow.
 
-# sub modules/functions
-from . import binary
-from . import dateformat
-from . import exceptions
+Users may not use this module directly.
+Developers must use this module like:
+
+>>> from fmflow import utils as ut
+"""
+
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
+
+# submodules
+from .binary import *
+from .datetime import *
+from .exceptions import *
+from .multiprocessing import *
+from .progress import *
+
+# importing items
+__all__ = []
+__all__ += binary.__all__
+__all__ += datetime.__all__
+__all__ += exceptions.__all__
+__all__ += multiprocessing.__all__
+__all__ += progress.__all__

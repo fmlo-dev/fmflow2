@@ -1,109 +1,102 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+"""Module for reading binary data in FMFlow.
 
-# standard libraries
+Structure is an ordered dictionary (collections.OrderedDict),
+which defines each name of parameter and corresponding (format, shape)
+and will be used with the fmflow.utils.readbinary function.
+Format must be compatible with the Python's struct module.
+For example, '>i' (int with big endian), or '10s' (10 chars).
+For more information, see http://docs.python.jp/2/library/struct.html.
+
+Available functions:
+- readbinary: Sequentially read a data structure on a binary file object.
+- getfitsformat: Convert a data structure to the corresponding FITS format.
+"""
+
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
+
+# the standard library
 import re
-from struct import calcsize, unpack
 from collections import OrderedDict
+from struct import calcsize, unpack
 
-# dependent libraries
+# dependent packages
 import numpy as np
 
-
-def dumpstruct(f, defobj):
-    '''Sequentially read and dump a data structure on a file object.
-
-    Args:
-    - f (file): a file object of the logging.
-    - defobj (OrderedDict): ordered dict that defines the data structure.
-
-    Returns:
-    - struct (OrderedDict): ordered dict in which the data structure is stored.
-    '''
-    struct = OrderedDict()
-    for key in defobj:
-        struct[key] = dumpdata(f, *defobj[key])
-
-    return struct
+# imported items
+__all__ = ['readbinary', 'getfitsformat']
 
 
-def dumpdata(f, fmt, shape=1):
-    '''Sequentially read and unpack binary data on a file object.
+def readbinary(f, structure):
+    """Sequentially read a data structure on a binary file object.
 
     Args:
-    - f (file): a file object of the logging.
-    - fmt (str): format of the data that is compatible with the Python's
-        struct module. for example: '>i' (int with big endian), '10s' (10 chars).
-        for more information, see http://docs.python.jp/2/library/struct.html.
-    - shape (int or tuple of int): data shape (if the data type is array).
+    - f (file): A binary file object of the logging.
+    - structure (OrderedDict): An ordered dictionary defining the data structure.
 
     Returns:
-    - data (object): the data on the file object.
-    '''
+    - readdata (OrderedDict): An ordered dictionary which stores the read data.
+    """
+    readdata = OrderedDict()
+    for key in structure:
+        readdata[key] = _readstructure(f, *structure[key])
+
+    return readdata
+
+
+def getfitsformat(structure):
+    """Convert a data structure to the corresponding FITS format.
+
+    Args:
+    - structure (OrderedDict): An ordered dictionary defining the data structure.
+
+    Returns:
+    - formats (OrderedDict): An ordered dictionary which stores the FITS formats.
+    """
+    formats = OrderedDict()
+    for key in structure:
+        formats[key] = _convertformat(*structure[key])
+
+    return formats
+
+
+def _readstructure(f, structfmt, shape=1):
     try:
-        bytesize = calcsize(fmt)
+        bytesize = calcsize(structfmt)
     except:
-        raise ValueError, fmt
+        raise ValueError, structfmt
 
     try:
         length = np.prod(shape)
     except:
         raise ValueError, shape
 
-    data = []
+    readdata = []
     for i in range(length):
         bindata = f.read(bytesize)
-        if re.search('s', fmt):
-            data.append(unpack(fmt, bindata)[0].split('\x00')[0])
+        if re.search('s', structfmt):
+            readdata.append(unpack(structfmt, bindata)[0].split('\x00')[0])
         else:
-            data.append(unpack(fmt, bindata)[0])
+            readdata.append(unpack(structfmt, bindata)[0])
 
-    data = np.reshape(data, shape).tolist()
-    data = data[0] if length == 1 else data
+    readdata = np.reshape(readdata, shape).tolist()
+    readdata = readdata[0] if length == 1 else readdata
 
-    return data
-
-
-def fitsformat(defobj):
-    '''Return the FITS format corresponding the date structure.
-
-    Args:
-    - defobj (OrderedDict): ordered dict that defines the data structure.
-
-    Returns:
-    - struct (OrderedDict): ordered dict in which the FITS format
-        of the data structure is stored.
-    '''
-    struct = OrderedDict()
-    for key in defobj:
-        struct[key] = parseformat(*defobj[key])
-
-    return struct
+    return readdata
 
 
-def parseformat(fmt, shape=1):
-    '''Return a FITS format code from fmt and shape.
-
-    Args:
-    - fmt (str): format of the data that is compatible with the Python's
-        struct module. for example: '>i' (int with big endian), '10s' (10 chars).
-        for more information, see http://docs.python.jp/2/library/struct.html.
-    - shape (int or tuple of int): data shape (if the data type is array).
-
-    Returns:
-    - fitsfmt (str): format of the data that is compatible with FITS.
-    '''
-    if re.search('s', fmt):
-        code = 'A' + re.findall('\d+', fmt)[0]
-    elif re.search('i', fmt):
+def _convertformat(structfmt, shape=1):
+    if re.search('s', structfmt):
+        code = 'A' + re.findall('\d+', structfmt)[0]
+    elif re.search('i', structfmt):
         code = 'J'
-    elif re.search('d', fmt):
+    elif re.search('d', structfmt):
         code = 'D'
     else:
-        raise ValueError, fmt
+        raise ValueError, structfmt
 
     try:
         length = np.prod(shape)

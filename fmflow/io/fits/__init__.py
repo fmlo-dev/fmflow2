@@ -1,12 +1,20 @@
 # coding: utf-8
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
-# dependent libraries
-from astropy.io.fits import *
+# dependent packages
+from astropy.io import fits
+open = fits.open
+getdata = fits.getdata
+getheader = fits.getheader
 
-# sub modules/functions
-from ._array import getarray
-from ._aste.merge import fromaste
+# submodules
+from .array import *
+from .aste import *
+
+# imported items
+__all__ = ['open', 'getdata', 'getheader']
+__all__ += array.__all__
+__all__ += aste.__all__
