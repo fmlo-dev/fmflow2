@@ -44,8 +44,8 @@ def getarray(fitsname, arrayid, scantype):
     return fits.getarray(fitsname, arrayid, scantype)
 
 
-def demodulate(array, invert=False):
-    return array.demodulate(invert)
+def demodulate(array, reverse=False):
+    return array.demodulate(reverse)
 
 
 def modulate(array):

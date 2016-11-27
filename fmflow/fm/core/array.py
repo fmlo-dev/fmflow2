@@ -62,13 +62,13 @@ class FMArray(ma.MaskedArray):
 
         return obj
 
-    def demodulate(self, invert=False):
         """Return a demodulated array.
+    def demodulate(self, reverse=False):
         
         This method is only available when the original array is modulated.
         
         Args:
-        - invert (bool): If True, the original array is inverse-demodulated
+        - reverse (bool): If True, the original array is reverse-demodulated
           (i.e. fmch * -1 is used for demodulation). Default is False.
         
         Returns:
@@ -81,11 +81,11 @@ class FMArray(ma.MaskedArray):
         table = self.table.copy()
         info  = self.info.copy()
 
-        if invert:
+        if reverse:
             table.fmch *= -1
-            fmstatus = 'iFD'
+            fmstatus = '-FD'
         else:
-            fmstatus = 'FD'
+            fmstatus = '+FD'
 
         fmindex0 = -np.min(table.fmch)
         fmindex  = (fmindex0, fmindex0+self.shape[1])
@@ -132,7 +132,7 @@ class FMArray(ma.MaskedArray):
         array = array[:,:np.diff(fmindex)[0]]
 
         # finally
-        if fmstatus == 'iFD':
+        if fmstatus == '-FD':
             table.fmch *= -1
 
         info.update({'fmstatus': 'FM', 'fmindex': (0,0), 'fmcutcol': (0,0)})
@@ -170,11 +170,11 @@ class FMArray(ma.MaskedArray):
 
     @property
     def ismodulated(self):
-        return self._optinfo['info']['fmstatus'] in 'FM'
+        return 'FM' in self._optinfo['info']['fmstatus']
 
     @property
     def isdemodulated(self):
-        return self._optinfo['info']['fmstatus'] in 'iFD'
+        return 'FD' in self._optinfo['info']['fmstatus']
 
     def _rowindex(self, index):
         if type(index) in (tuple, list):
