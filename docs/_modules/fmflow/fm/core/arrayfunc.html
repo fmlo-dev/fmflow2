@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fmflow.fm.core.arrayfunc &mdash; FMFlow 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="FMFlow 0.1 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> FMFlow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">FMFlow</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>fmflow.fm.core.arrayfunc</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for fmflow.fm.core.arrayfunc</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="sd">&quot;&quot;&quot;Module for functions of basic fmarray operations.</span>
+
+<span class="sd">fmarray is created and operated with the functions defined in this module.</span>
+<span class="sd">These functions can be used as fmflow.fm.&lt;functions&gt; like:</span>
+
+<span class="sd">&gt;&gt;&gt; from fmflow import fm</span>
+<span class="sd">&gt;&gt;&gt; fmarray = fm.array(array, table, info) # create an fmarray</span>
+<span class="sd">&gt;&gt;&gt; fdarray = fm.demodulate(fmarray) # demodulate an fmarray</span>
+
+<span class="sd">For more information, see (https://github.com/snoopython/fmflow/wiki/fmarray).</span>
+
+<span class="sd">Available functions:</span>
+<span class="sd">- array: Create a modulated fmarray from each argument.</span>
+<span class="sd">- asarray: Convert the input array to a modulated fmarray.</span>
+<span class="sd">- asmaskedarray: Convert the fmarray to a NumPy masked array.</span>
+<span class="sd">- concatenate: Join a sequence of fmarrays along time axis.</span>
+<span class="sd">- demodulate: Create an demodulated fmarray from the modulated one.</span>
+<span class="sd">- getarray: Create a modulated fmarray from a FMFITS.</span>
+<span class="sd">- load: Load a fmarray from a npz file.</span>
+<span class="sd">- modulate: Create an modulated fmarray from the demodulated one.</span>
+<span class="sd">- ones: Create a modulated fmarray of given shape and type, filled with ones.</span>
+<span class="sd">- ones_like: Create a fmarray of ones with the same shape and type as an input array.</span>
+<span class="sd">- save: Save a fmarray into a single file in uncompressed npz format.</span>
+<span class="sd">- zeros: Create a modulated fmarray of given shape and type, filled with zeros.</span>
+<span class="sd">- zeros_like: Create a fmarray of zeros with the same shape and type as an input array.</span>
+
+<span class="sd">Available decorators:</span>
+<span class="sd">- fmfunc: Make a function compatible with fmarray.</span>
+<span class="sd">- chanchunk: Make a function compatible with multicore channel-chunk processing.</span>
+<span class="sd">- timechunk: Make a function compatible with multicore time-chunk processing.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+
+<span class="c1"># the standard library</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span><span class="p">,</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">getargspec</span>
+
+<span class="c1"># dependent packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">fmflow.io</span> <span class="k">import</span> <span class="n">fits</span>
+<span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">ut</span>
+
+<span class="c1"># submodules</span>
+<span class="kn">from</span> <span class="nn">.array</span> <span class="k">import</span> <span class="n">FMArray</span>
+
+<span class="c1"># imported items</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="s1">&#39;asarray&#39;</span><span class="p">,</span> <span class="s1">&#39;asmaskedarray&#39;</span><span class="p">,</span> <span class="s1">&#39;getarray&#39;</span><span class="p">,</span> <span class="s1">&#39;demodulate&#39;</span><span class="p">,</span> <span class="s1">&#39;modulate&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;zeros&#39;</span><span class="p">,</span> <span class="s1">&#39;ones&#39;</span><span class="p">,</span> <span class="s1">&#39;zeros_like&#39;</span><span class="p">,</span> <span class="s1">&#39;ones_like&#39;</span><span class="p">,</span> <span class="s1">&#39;concatenate&#39;</span><span class="p">,</span> <span class="s1">&#39;save&#39;</span><span class="p">,</span> <span class="s1">&#39;load&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;fmfunc&#39;</span><span class="p">,</span> <span class="s1">&#39;timechunk&#39;</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="array"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.array">[docs]</a><span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">fmch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a modulated fmarray from each argument.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - array (masked array): A timestream array (mask is optional).</span>
+<span class="sd">    - fmch (array): Array of modulation frequencies in units of channel.</span>
+<span class="sd">    - coord (array): Array of observed coordinates in units of degrees.</span>
+<span class="sd">    - info (dict): Information of the array, observation, etc.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): A modulated fmarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="o">.</span><span class="n">fromeach</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">fmch</span><span class="p">,</span> <span class="n">coord</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert the input array to a modulated fmarray.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - array (array-like): An input array-like object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output modulated fmarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="o">==</span> <span class="n">FMArray</span><span class="p">:</span>
+        <span class="n">fmarray</span> <span class="o">=</span> <span class="n">array</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="asmaskedarray"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.asmaskedarray">[docs]</a><span class="k">def</span> <span class="nf">asmaskedarray</span><span class="p">(</span><span class="n">fmarray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert the fmarray to a NumPy masked array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - fmarray (FMArray): An imput fmarray</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - array (masked array): An output NumPy masked array. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">fmarray</span><span class="o">.</span><span class="n">asmaskedarray</span><span class="p">()</span> 
+    <span class="k">return</span> <span class="n">array</span></div>
+
+
+<div class="viewcode-block" id="getarray"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.getarray">[docs]</a><span class="k">def</span> <span class="nf">getarray</span><span class="p">(</span><span class="n">fitsname</span><span class="p">,</span> <span class="n">arrayid</span><span class="p">,</span> <span class="n">scantype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a modulated fmarray from a FMFITS.</span>
+
+<span class="sd">    This functions is equivalent to the fmflow.io.fits.getarray function</span>
+<span class="sd">    for the convenience (users can use it w/o importing fmflow.io.fits).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - fitsname (str): File name of a FMFITS.</span>
+<span class="sd">    - arrayid (str): An array ID with which the output fmarray is created.</span>
+<span class="sd">    - scantype (str): A scan type with which the output fmarray is created.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">getarray</span><span class="p">(</span><span class="n">fitsname</span><span class="p">,</span> <span class="n">arrayid</span><span class="p">,</span> <span class="n">scantype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="demodulate"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.demodulate">[docs]</a><span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a demodulated fmarray from the modulated one.</span>
+
+<span class="sd">    This function is only available when the input fmarray is modulated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - fmarray_in (FMArray): An input modulated fmarray.</span>
+<span class="sd">    - reverse (bool): If True, the input fmarray is reverse-demodulated</span>
+<span class="sd">      (i.e. fmch * -1 is used for demodulation). Default is False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray_out (FMArray): An output demodulated fmarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="o">.</span><span class="n">demodulate</span><span class="p">(</span><span class="n">reverse</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
+
+
+<div class="viewcode-block" id="modulate"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.modulate">[docs]</a><span class="k">def</span> <span class="nf">modulate</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an modulated fmarray from the demodulated one.</span>
+
+<span class="sd">    This function is only available when the input fmarray is demodulated.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">    - fmarray_in (FMArray): An input demodulated fmarray.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray_out (FMArray): An output modulated fmarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="o">.</span><span class="n">modulate</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
+
+
+<div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.zeros">[docs]</a><span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a modulated fmarray of given shape and type, filled with zeros.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - shape (int or sequence of ints): Shape of the fmarray.</span>
+<span class="sd">    - dtype (data-type): The desired data-type for the fmarray.</span>
+<span class="sd">    - order (&#39;C&#39; or &#39;F&#39;): Whether to store multidimensional data</span>
+<span class="sd">      in C- or Fortran-contiguous (row- or column-wise) order in memory.</span>
+<span class="sd">    - kwargs (optional): Other arguments (fmch, coord, and info).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output modulated fmarray of zeros.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="o">.</span><span class="n">fromeach</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="ones"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.ones">[docs]</a><span class="k">def</span> <span class="nf">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a modulated fmarray of given shape and type, filled with ones.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - shape (int or sequence of ints): Shape of the fmarray.</span>
+<span class="sd">    - dtype (data-type): The desired data-type for the fmarray.</span>
+<span class="sd">    - order (&#39;C&#39; or &#39;F&#39;): Whether to store multidimensional data</span>
+<span class="sd">      in C- or Fortran-contiguous (row- or column-wise) order in memory.</span>
+<span class="sd">    - kwargs (optional): Other arguments (fmch, coord, and info).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output modulated fmarray of ones.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="o">.</span><span class="n">fromeach</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.zeros_like">[docs]</a><span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">keepmeta</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a fmarray of zeros with the same shape and type as an input array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - array (array-like): The shape and data-type of it define</span>
+<span class="sd">      these same attributes of the output fmarray.</span>
+<span class="sd">    - dtype (data-type): If spacified, this function overrides</span>
+<span class="sd">      the data-type of the output fmarray.</span>
+<span class="sd">    - order (&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, or &#39;K&#39;):  If spacified, this function overrides</span>
+<span class="sd">      the memory layout of the result. &#39;C&#39; means C-order, &#39;F&#39; means F-order,</span>
+<span class="sd">      &#39;A&#39; means &#39;F&#39; if `a` is Fortran contiguous, &#39;C&#39; otherwise.</span>
+<span class="sd">      &#39;K&#39; means match the layout of `a` as closely as possible.</span>
+<span class="sd">    - keepmeta (bool): Whether table and info are kept in the output fmarray</span>
+<span class="sd">      if the input array is fmarray. Default is True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output fmarray of zeros.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keepmeta</span><span class="p">:</span>
+        <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">fmarray</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="ones_like"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.ones_like">[docs]</a><span class="k">def</span> <span class="nf">ones_like</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">keepmeta</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a fmarray of ones with the same shape and type as an input array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - array (array-like): The shape and data-type of it define</span>
+<span class="sd">      these same attributes of the output fmarray.</span>
+<span class="sd">    - dtype (data-type): If spacified, this function overrides</span>
+<span class="sd">      the data-type of the output fmarray.</span>
+<span class="sd">    - order (&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, or &#39;K&#39;):  If spacified, this function overrides</span>
+<span class="sd">      the memory layout of the result. &#39;C&#39; means C-order, &#39;F&#39; means F-order,</span>
+<span class="sd">      &#39;A&#39; means &#39;F&#39; if `a` is Fortran contiguous, &#39;C&#39; otherwise.</span>
+<span class="sd">      &#39;K&#39; means match the layout of `a` as closely as possible.</span>
+<span class="sd">    - keepmeta (bool): Whether table and info are kept in the output fmarray</span>
+<span class="sd">      if the input array is fmarray. Default is True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output fmarray of ones.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>    
+    
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keepmeta</span><span class="p">:</span>
+        <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">fmarray</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="concatenate"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.concatenate">[docs]</a><span class="k">def</span> <span class="nf">concatenate</span><span class="p">(</span><span class="n">fmarray_ins</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Join a sequence of fmarrays along time axis.</span>
+<span class="sd">    </span>
+<span class="sd">    This function joins a sequence of fmarrays along time axis.</span>
+<span class="sd">    All input fmarrays must have the same width (i.e. same shape[1]).</span>
+<span class="sd">    Tables of fmarrays are also joined and infos are updated one after another.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - fmarray_ins (sequence): An input sequence of fmarrays</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray_out (FMarray): An output concatenated fmarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fmarray_ins</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;fmarray_ins must be sequence of fmarrays.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fmarray_ins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">fmarray_0</span> <span class="o">=</span> <span class="n">fmarray_ins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fmarray_1</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span><span class="n">fmarray_ins</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fmarray_0</span> <span class="o">=</span> <span class="n">fmarray_ins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fmarray_1</span> <span class="o">=</span> <span class="n">fmarray_ins</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">array</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">asmaskedarray</span><span class="p">,</span> <span class="p">[</span><span class="n">fmarray_0</span><span class="p">,</span> <span class="n">fmarray_1</span><span class="p">]),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">fmarray_0</span><span class="o">.</span><span class="n">table</span><span class="p">,</span> <span class="n">fmarray_1</span><span class="o">.</span><span class="n">table</span><span class="p">])</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">fmarray_0</span><span class="o">.</span><span class="n">info</span>
+    <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fmarray_1</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
+
+
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">fmarray</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Save a fmarray into a single file in uncompressed npz format.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - fmarray (FMArray): An fmarray to be saved.</span>
+<span class="sd">    - filename (str): A file name (used as &lt;filename&gt;.npz).</span>
+<span class="sd">      If not spacified, random 8-character name will be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">fmarray</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">fmarray</span><span class="o">.</span><span class="n">mask</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">fmarray</span><span class="o">.</span><span class="n">table</span>
+    <span class="n">info</span>  <span class="o">=</span> <span class="n">fmarray</span><span class="o">.</span><span class="n">info</span>
+    
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span>
+    
+    <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load a fmarray from a npz file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - filename (str): A file name (*.npz).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output fmarray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;mask&#39;</span><span class="p">])</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span>
+    <span class="n">info</span>  <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    
+    <span class="n">fmarray</span> <span class="o">=</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray</span></div>
+
+
+<div class="viewcode-block" id="fmfunc"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.fmfunc">[docs]</a><span class="k">def</span> <span class="nf">fmfunc</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make a function compatible with fmarray.</span>
+
+<span class="sd">    This function is used for decorator like:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; @fmfunc</span>
+<span class="sd">    &gt;&gt;&gt; def func(fmarray_in):</span>
+<span class="sd">    ...     return fmarray_in # do nothing</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; fmarray_out = func(fmarray_in)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - func (function): A function to be wrapped.</span>
+<span class="sd">      The first argument of the function must be fmarray_in.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - wrapper (function): A wrapped function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">fmarray_in</span>  <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fmarray_in&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span> <span class="o">==</span> <span class="n">FMArray</span><span class="p">:</span>
+            <span class="n">array_in</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="o">.</span><span class="n">asmaskedarray</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array_in</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span>
+
+        <span class="n">array_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">array_in</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">fmarray_out</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">array_out</span>
+        <span class="k">return</span> <span class="n">fmarray_out</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="timechunk"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.timechunk">[docs]</a><span class="k">def</span> <span class="nf">timechunk</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make a function compatible with multicore time-chunk processing.</span>
+
+<span class="sd">    This function is used for decorator like:</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; @fmfunc</span>
+<span class="sd">    &gt;&gt;&gt; @timechunk</span>
+<span class="sd">    &gt;&gt;&gt; def func(fmarray_in):</span>
+<span class="sd">    ...     return fmarray_in # do nothing</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; fmarray_out = func(fmarray_in, chunk_len=100)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - func (function): A function to be wrapped.</span>
+<span class="sd">      The first argument of the function must be fmarray_in.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - wrapper (function): A wrapped function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">argnames</span> <span class="o">=</span> <span class="n">getargspec</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">args</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">argnames</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">array_in</span>  <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;fmarray_in&#39;</span><span class="p">)</span>
+        <span class="n">chunk_len</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;chunk_len&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_in</span><span class="p">))</span>
+        <span class="n">chunk_num</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array_in</span><span class="p">)</span><span class="o">/</span><span class="n">chunk_len</span><span class="p">)</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">array_in</span><span class="p">),</span> <span class="n">chunk_num</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">subs_in</span> <span class="o">=</span> <span class="p">[</span><span class="n">array_in</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">Pool</span><span class="p">()</span>
+        <span class="n">pfunc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">subs_out</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pfunc</span><span class="p">,</span> <span class="n">subs_in</span><span class="p">)</span>
+        <span class="n">array_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">subs_out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">array_out</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Akio Taniguchi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

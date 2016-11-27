@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fmflow.utils.binary &mdash; FMFlow 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="FMFlow 0.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> FMFlow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FMFlow</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>fmflow.utils.binary</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for fmflow.utils.binary</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="sd">&quot;&quot;&quot;Module for reading binary data in FMFlow.</span>
+
+<span class="sd">Structure is an ordered dictionary (collections.OrderedDict),</span>
+<span class="sd">which defines each name of parameter and corresponding (format, shape)</span>
+<span class="sd">and will be used with the fmflow.utils.readbinary function.</span>
+<span class="sd">Format must be compatible with the Python&#39;s struct module.</span>
+<span class="sd">For example, &#39;&gt;i&#39; (int with big endian), or &#39;10s&#39; (10 chars).</span>
+<span class="sd">For more information, see (http://docs.python.jp/2/library/struct.html).</span>
+
+<span class="sd">Available functions:</span>
+<span class="sd">- readbinary: Sequentially read a data structure on a binary file object.</span>
+<span class="sd">- getfitsformat: Convert a data structure to the corresponding FITS format.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+
+<span class="c1"># the standard library</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">calcsize</span><span class="p">,</span> <span class="n">unpack</span>
+
+<span class="c1"># dependent packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># imported items</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;readbinary&#39;</span><span class="p">,</span> <span class="s1">&#39;getfitsformat&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="readbinary"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.binary.readbinary">[docs]</a><span class="k">def</span> <span class="nf">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sequentially read a data structure on a binary file object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - f (file): A binary file object of the logging.</span>
+<span class="sd">    - structure (OrderedDict): An ordered dictionary defining the data structure.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - readdata (OrderedDict): An ordered dictionary which stores the read data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">readdata</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
+        <span class="n">readdata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_readstructure</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">structure</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">readdata</span></div>
+
+
+<div class="viewcode-block" id="getfitsformat"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.binary.getfitsformat">[docs]</a><span class="k">def</span> <span class="nf">getfitsformat</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a data structure to the corresponding FITS format.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - structure (OrderedDict): An ordered dictionary defining the data structure.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - formats (OrderedDict): An ordered dictionary which stores the FITS formats.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">formats</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
+        <span class="n">formats</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_convertformat</span><span class="p">(</span><span class="o">*</span><span class="n">structure</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">formats</span></div>
+
+
+<span class="k">def</span> <span class="nf">_readstructure</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">structfmt</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bytesize</span> <span class="o">=</span> <span class="n">calcsize</span><span class="p">(</span><span class="n">structfmt</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">structfmt</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">shape</span>
+
+    <span class="n">readdata</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+        <span class="n">bindata</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">bytesize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">structfmt</span><span class="p">):</span>
+            <span class="n">readdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unpack</span><span class="p">(</span><span class="n">structfmt</span><span class="p">,</span> <span class="n">bindata</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">readdata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unpack</span><span class="p">(</span><span class="n">structfmt</span><span class="p">,</span> <span class="n">bindata</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">readdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">readdata</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">readdata</span> <span class="o">=</span> <span class="n">readdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">readdata</span>
+
+    <span class="k">return</span> <span class="n">readdata</span>
+
+
+<span class="k">def</span> <span class="nf">_convertformat</span><span class="p">(</span><span class="n">structfmt</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">,</span> <span class="n">structfmt</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">structfmt</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="n">structfmt</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;J&#39;</span>
+    <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">structfmt</span><span class="p">):</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">structfmt</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">shape</span>
+
+    <span class="n">fitsfmt</span> <span class="o">=</span> <span class="n">code</span> <span class="k">if</span> <span class="n">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">length</span><span class="p">)</span> <span class="o">+</span> <span class="n">code</span>
+
+    <span class="k">return</span> <span class="n">fitsfmt</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Akio Taniguchi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

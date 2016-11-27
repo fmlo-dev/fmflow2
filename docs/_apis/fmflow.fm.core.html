@@ -1,0 +1,826 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fmflow.fm.core package &mdash; FMFlow 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="FMFlow 0.1 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> FMFlow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">fmflow.fm.core package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-fmflow.fm.core.array">fmflow.fm.core.array module</a></li>
+<li><a class="reference internal" href="#module-fmflow.fm.core.arrayfunc">fmflow.fm.core.arrayfunc module</a></li>
+<li><a class="reference internal" href="#module-fmflow.fm.core">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FMFlow</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>fmflow.fm.core package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/_apis/fmflow.fm.core.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="fmflow-fm-core-package">
+<h1>fmflow.fm.core package<a class="headerlink" href="#fmflow-fm-core-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-fmflow.fm.core.array">
+<span id="fmflow-fm-core-array-module"></span><h2>fmflow.fm.core.array module<a class="headerlink" href="#module-fmflow.fm.core.array" title="Permalink to this headline">¶</a></h2>
+<p>Module for fmarray.</p>
+<p>fmarray is one of the fundamental data formats in FMFlow,
+which is created as an instance of FMArray class.</p>
+<p>FMArray is subclass of NumPy masked array, which handles timestream array
+together with timestream table (fmch, coord, etc) and info dictionary.</p>
+<p>Normally, fmarray is created and operated with the functions in fmflow.fm
+(e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.</p>
+<p>Available classes:
+- FMArray: A class for fmarray in FMFlow.</p>
+<p>For developers:
+- FMArray is imported only in the fmflow.fm.arrayfunc module.</p>
+<dl class="class">
+<dt id="fmflow.fm.core.array.FMArray">
+<em class="property">class </em><code class="descclassname">fmflow.fm.core.array.</code><code class="descname">FMArray</code><a class="reference internal" href="../_modules/fmflow/fm/core/array.html#FMArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.array.FMArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">numpy.ma.core.MaskedArray</span></code></p>
+<p>A class for fmarray in FMFlow.</p>
+<p>It is subclass of NumPy masked array, which handles timestream array
+together with timestream table (fmch, coord, etc) and info dictionary.</p>
+<p>Normally, fmarray is created and operated with the functions in fmflow.fm
+(e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.</p>
+<p>Public attributes:
+- table: A timestream table that stores fmch, coord, etc.
+- fmch: An array of modulation frequencies in units of channel.
+- coord: An array of observed coordinates in units of degrees.
+- info: A dictionary that stores information of the fmarray.
+- isdemodulate: A boolean that indicates whether the fmarray is demodulated.
+- ismodulate: A boolean that indicates whether the fmarray is modulated.</p>
+<p>Public methods:
+- demodulate: Create an demodulated fmarray from the modulated one.
+- modulate: Create an modulated fmarray from the demodulated one.
+- asmaskedarray: Convert the fmarray to a NumPy masked array.</p>
+<p>Public classmethods:
+- fromeach: Create an modulated fmarray from each argument.</p>
+<dl class="method">
+<dt id="fmflow.fm.core.array.FMArray.asmaskedarray">
+<code class="descname">asmaskedarray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/array.html#FMArray.asmaskedarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.array.FMArray.asmaskedarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the fmarray to a NumPy masked array.</p>
+<p>It is equivalent to the fm.asmaskedarray function (recommended to use).
+i.e. x.asmaskedarray() &lt;==&gt; fm.asmaskedarray(x)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fmflow.fm.core.array.FMArray.coord">
+<code class="descname">coord</code><a class="headerlink" href="#fmflow.fm.core.array.FMArray.coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array of observed coordinates in units of degrees.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="fmflow.fm.core.array.FMArray.demodulate">
+<code class="descname">demodulate</code><span class="sig-paren">(</span><em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/array.html#FMArray.demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.array.FMArray.demodulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a demodulated fmarray from the modulated one.</p>
+<p>This method is only available when the original fmarray is modulated.
+It is equivalent to the fm.demodulate function (recommended to use).
+i.e. x.demodulate(reverse) &lt;==&gt; fm.demodulate(x, reverse)</p>
+<p>Args:
+- reverse (bool): If True, the original fmarray is reverse-demodulated</p>
+<blockquote>
+<div>(i.e. fmch * -1 is used for demodulation). Default is False.</div></blockquote>
+<p>Returns:
+- array (FMArray): A demodulated fmarray.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fmflow.fm.core.array.FMArray.fmch">
+<code class="descname">fmch</code><a class="headerlink" href="#fmflow.fm.core.array.FMArray.fmch" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array of modulation frequencies in units of channel.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="fmflow.fm.core.array.FMArray.fromeach">
+<em class="property">classmethod </em><code class="descname">fromeach</code><span class="sig-paren">(</span><em>array=None</em>, <em>fmch=None</em>, <em>coord=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/array.html#FMArray.fromeach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.array.FMArray.fromeach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray from each argument.</p>
+<p>Normally, this method is for the internal use.
+It is equivalent to the fm.array function (recommended to use).
+i.e. FMArray.fromeach(...) &lt;==&gt; fm.array(...)</p>
+<p>Args:
+- array (masked array): A timestream array (mask is optional).
+- fmch (array): Array of modulation frequencies in units of channel.
+- coord (array): Array of observed coordinates in units of degrees.
+- info (dict): Information of the fmarray, observation, etc.</p>
+<p>Returns:
+- obj (FMArray): A modulated fmarray.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fmflow.fm.core.array.FMArray.info">
+<code class="descname">info</code><a class="headerlink" href="#fmflow.fm.core.array.FMArray.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary that stores information of the fmarray.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fmflow.fm.core.array.FMArray.isdemodulated">
+<code class="descname">isdemodulated</code><a class="headerlink" href="#fmflow.fm.core.array.FMArray.isdemodulated" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean that indicates whether the fmarray is modulated.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fmflow.fm.core.array.FMArray.ismodulated">
+<code class="descname">ismodulated</code><a class="headerlink" href="#fmflow.fm.core.array.FMArray.ismodulated" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean that indicates whether the fmarray is demodulated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="fmflow.fm.core.array.FMArray.modulate">
+<code class="descname">modulate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/array.html#FMArray.modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.array.FMArray.modulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray from the demodulated one.</p>
+<p>This method is only available when the original fmarray is demodulated.
+It is equivalent to the fm.modulate function (recommended to use).
+i.e. x.modulate() &lt;==&gt; fm.modulate(x)</p>
+<p>Returns:
+- array (FMArray): A modulated fmarray</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fmflow.fm.core.array.FMArray.table">
+<code class="descname">table</code><a class="headerlink" href="#fmflow.fm.core.array.FMArray.table" title="Permalink to this definition">¶</a></dt>
+<dd><p>A timestream table that stores fmch, coord, etc.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-fmflow.fm.core.arrayfunc">
+<span id="fmflow-fm-core-arrayfunc-module"></span><h2>fmflow.fm.core.arrayfunc module<a class="headerlink" href="#module-fmflow.fm.core.arrayfunc" title="Permalink to this headline">¶</a></h2>
+<p>Module for functions of basic fmarray operations.</p>
+<p>fmarray is created and operated with the functions defined in this module.
+These functions can be used as fmflow.fm.&lt;functions&gt; like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">fm</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="c1"># create an fmarray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fdarray</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">demodulate</span><span class="p">(</span><span class="n">fmarray</span><span class="p">)</span> <span class="c1"># demodulate an fmarray</span>
+</pre></div>
+</div>
+<p>For more information, see (<a class="reference external" href="https://github.com/snoopython/fmflow/wiki/fmarray">https://github.com/snoopython/fmflow/wiki/fmarray</a>).</p>
+<p>Available functions:
+- array: Create a modulated fmarray from each argument.
+- asarray: Convert the input array to a modulated fmarray.
+- asmaskedarray: Convert the fmarray to a NumPy masked array.
+- concatenate: Join a sequence of fmarrays along time axis.
+- demodulate: Create an demodulated fmarray from the modulated one.
+- getarray: Create a modulated fmarray from a FMFITS.
+- load: Load a fmarray from a npz file.
+- modulate: Create an modulated fmarray from the demodulated one.
+- ones: Create a modulated fmarray of given shape and type, filled with ones.
+- ones_like: Create a fmarray of ones with the same shape and type as an input array.
+- save: Save a fmarray into a single file in uncompressed npz format.
+- zeros: Create a modulated fmarray of given shape and type, filled with zeros.
+- zeros_like: Create a fmarray of zeros with the same shape and type as an input array.</p>
+<p>Available decorators:
+- fmfunc: Make a function compatible with fmarray.
+- chanchunk: Make a function compatible with multicore channel-chunk processing.
+- timechunk: Make a function compatible with multicore time-chunk processing.</p>
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.array">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">array</code><span class="sig-paren">(</span><em>array</em>, <em>fmch=None</em>, <em>coord=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray from each argument.</p>
+<p>Args:
+- array (masked array): A timestream array (mask is optional).
+- fmch (array): Array of modulation frequencies in units of channel.
+- coord (array): Array of observed coordinates in units of degrees.
+- info (dict): Information of the array, observation, etc.</p>
+<p>Returns:
+- fmarray (FMArray): A modulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.asarray">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">asarray</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#asarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.asarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the input array to a modulated fmarray.</p>
+<p>Args:
+- array (array-like): An input array-like object.</p>
+<p>Returns:
+- fmarray (FMArray): An output modulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.asmaskedarray">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">asmaskedarray</code><span class="sig-paren">(</span><em>fmarray</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#asmaskedarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.asmaskedarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the fmarray to a NumPy masked array.</p>
+<p>Args:
+- fmarray (FMArray): An imput fmarray</p>
+<p>Returns:
+- array (masked array): An output NumPy masked array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.getarray">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">getarray</code><span class="sig-paren">(</span><em>fitsname</em>, <em>arrayid</em>, <em>scantype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#getarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.getarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray from a FMFITS.</p>
+<p>This functions is equivalent to the fmflow.io.fits.getarray function
+for the convenience (users can use it w/o importing fmflow.io.fits).</p>
+<p>Args:
+- fitsname (str): File name of a FMFITS.
+- arrayid (str): An array ID with which the output fmarray is created.
+- scantype (str): A scan type with which the output fmarray is created.</p>
+<p>Returns:
+- fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.demodulate">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">demodulate</code><span class="sig-paren">(</span><em>fmarray_in</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.demodulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a demodulated fmarray from the modulated one.</p>
+<p>This function is only available when the input fmarray is modulated.</p>
+<p>Args:
+- fmarray_in (FMArray): An input modulated fmarray.
+- reverse (bool): If True, the input fmarray is reverse-demodulated</p>
+<blockquote>
+<div>(i.e. fmch * -1 is used for demodulation). Default is False.</div></blockquote>
+<p>Returns:
+- fmarray_out (FMArray): An output demodulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.modulate">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">modulate</code><span class="sig-paren">(</span><em>fmarray_in</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.modulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an modulated fmarray from the demodulated one.</p>
+<p>This function is only available when the input fmarray is demodulated.</p>
+<p>Args:
+- fmarray_in (FMArray): An input demodulated fmarray.</p>
+<p>Returns:
+- fmarray_out (FMArray): An output modulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.zeros">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">zeros</code><span class="sig-paren">(</span><em>shape</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>order='C'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#zeros"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray of given shape and type, filled with zeros.</p>
+<p>Args:
+- shape (int or sequence of ints): Shape of the fmarray.
+- dtype (data-type): The desired data-type for the fmarray.
+- order (&#8216;C&#8217; or &#8216;F&#8217;): Whether to store multidimensional data</p>
+<blockquote>
+<div>in C- or Fortran-contiguous (row- or column-wise) order in memory.</div></blockquote>
+<ul class="simple">
+<li>kwargs (optional): Other arguments (fmch, coord, and info).</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output modulated fmarray of zeros.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.ones">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">ones</code><span class="sig-paren">(</span><em>shape</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>order='C'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#ones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.ones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray of given shape and type, filled with ones.</p>
+<p>Args:
+- shape (int or sequence of ints): Shape of the fmarray.
+- dtype (data-type): The desired data-type for the fmarray.
+- order (&#8216;C&#8217; or &#8216;F&#8217;): Whether to store multidimensional data</p>
+<blockquote>
+<div>in C- or Fortran-contiguous (row- or column-wise) order in memory.</div></blockquote>
+<ul class="simple">
+<li>kwargs (optional): Other arguments (fmch, coord, and info).</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output modulated fmarray of ones.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.zeros_like">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">zeros_like</code><span class="sig-paren">(</span><em>array</em>, <em>dtype=None</em>, <em>order='K'</em>, <em>keepmeta=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#zeros_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.zeros_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fmarray of zeros with the same shape and type as an input array.</p>
+<p>Args:
+- array (array-like): The shape and data-type of it define</p>
+<blockquote>
+<div>these same attributes of the output fmarray.</div></blockquote>
+<ul class="simple">
+<li>dtype (data-type): If spacified, this function overrides
+the data-type of the output fmarray.</li>
+<li>order (&#8216;C&#8217;, &#8216;F&#8217;, &#8216;A&#8217;, or &#8216;K&#8217;):  If spacified, this function overrides
+the memory layout of the result. &#8216;C&#8217; means C-order, &#8216;F&#8217; means F-order,
+&#8216;A&#8217; means &#8216;F&#8217; if <cite>a</cite> is Fortran contiguous, &#8216;C&#8217; otherwise.
+&#8216;K&#8217; means match the layout of <cite>a</cite> as closely as possible.</li>
+<li>keepmeta (bool): Whether table and info are kept in the output fmarray
+if the input array is fmarray. Default is True.</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output fmarray of zeros.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.ones_like">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">ones_like</code><span class="sig-paren">(</span><em>array</em>, <em>dtype=None</em>, <em>order='K'</em>, <em>keepmeta=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#ones_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.ones_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fmarray of ones with the same shape and type as an input array.</p>
+<p>Args:
+- array (array-like): The shape and data-type of it define</p>
+<blockquote>
+<div>these same attributes of the output fmarray.</div></blockquote>
+<ul class="simple">
+<li>dtype (data-type): If spacified, this function overrides
+the data-type of the output fmarray.</li>
+<li>order (&#8216;C&#8217;, &#8216;F&#8217;, &#8216;A&#8217;, or &#8216;K&#8217;):  If spacified, this function overrides
+the memory layout of the result. &#8216;C&#8217; means C-order, &#8216;F&#8217; means F-order,
+&#8216;A&#8217; means &#8216;F&#8217; if <cite>a</cite> is Fortran contiguous, &#8216;C&#8217; otherwise.
+&#8216;K&#8217; means match the layout of <cite>a</cite> as closely as possible.</li>
+<li>keepmeta (bool): Whether table and info are kept in the output fmarray
+if the input array is fmarray. Default is True.</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output fmarray of ones.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.concatenate">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">concatenate</code><span class="sig-paren">(</span><em>fmarray_ins</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join a sequence of fmarrays along time axis.</p>
+<p>This function joins a sequence of fmarrays along time axis.
+All input fmarrays must have the same width (i.e. same shape[1]).
+Tables of fmarrays are also joined and infos are updated one after another.</p>
+<p>Args:
+- fmarray_ins (sequence): An input sequence of fmarrays</p>
+<p>Returns:
+- fmarray_out (FMarray): An output concatenated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.save">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">save</code><span class="sig-paren">(</span><em>fmarray</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a fmarray into a single file in uncompressed npz format.</p>
+<p>Args:
+- fmarray (FMArray): An fmarray to be saved.
+- filename (str): A file name (used as &lt;filename&gt;.npz).</p>
+<blockquote>
+<div>If not spacified, random 8-character name will be used.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.load">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">load</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a fmarray from a npz file.</p>
+<p>Args:
+- filename (str): A file name (<a href="#id1"><span class="problematic" id="id2">*</span></a>.npz).</p>
+<p>Returns:
+- fmarray (FMArray): An output fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.fmfunc">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">fmfunc</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#fmfunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.fmfunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a function compatible with fmarray.</p>
+<p>This function is used for decorator like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@fmfunc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">fmarray_in</span> <span class="c1"># do nothing</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Args:
+- func (function): A function to be wrapped.</p>
+<blockquote>
+<div>The first argument of the function must be fmarray_in.</div></blockquote>
+<p>Returns:
+- wrapper (function): A wrapped function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.arrayfunc.timechunk">
+<code class="descclassname">fmflow.fm.core.arrayfunc.</code><code class="descname">timechunk</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#timechunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.arrayfunc.timechunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a function compatible with multicore time-chunk processing.</p>
+<p>This function is used for decorator like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@fmfunc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@timechunk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">fmarray_in</span> <span class="c1"># do nothing</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">chunk_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Args:
+- func (function): A function to be wrapped.</p>
+<blockquote>
+<div>The first argument of the function must be fmarray_in.</div></blockquote>
+<p>Returns:
+- wrapper (function): A wrapped function.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-fmflow.fm.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fmflow.fm.core" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="fmflow.fm.core.array">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">array</code><span class="sig-paren">(</span><em>array</em>, <em>fmch=None</em>, <em>coord=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.array" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray from each argument.</p>
+<p>Args:
+- array (masked array): A timestream array (mask is optional).
+- fmch (array): Array of modulation frequencies in units of channel.
+- coord (array): Array of observed coordinates in units of degrees.
+- info (dict): Information of the array, observation, etc.</p>
+<p>Returns:
+- fmarray (FMArray): A modulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.asarray">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">asarray</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#asarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.asarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the input array to a modulated fmarray.</p>
+<p>Args:
+- array (array-like): An input array-like object.</p>
+<p>Returns:
+- fmarray (FMArray): An output modulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.asmaskedarray">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">asmaskedarray</code><span class="sig-paren">(</span><em>fmarray</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#asmaskedarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.asmaskedarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the fmarray to a NumPy masked array.</p>
+<p>Args:
+- fmarray (FMArray): An imput fmarray</p>
+<p>Returns:
+- array (masked array): An output NumPy masked array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.getarray">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">getarray</code><span class="sig-paren">(</span><em>fitsname</em>, <em>arrayid</em>, <em>scantype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#getarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.getarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray from a FMFITS.</p>
+<p>This functions is equivalent to the fmflow.io.fits.getarray function
+for the convenience (users can use it w/o importing fmflow.io.fits).</p>
+<p>Args:
+- fitsname (str): File name of a FMFITS.
+- arrayid (str): An array ID with which the output fmarray is created.
+- scantype (str): A scan type with which the output fmarray is created.</p>
+<p>Returns:
+- fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.demodulate">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">demodulate</code><span class="sig-paren">(</span><em>fmarray_in</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.demodulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a demodulated fmarray from the modulated one.</p>
+<p>This function is only available when the input fmarray is modulated.</p>
+<p>Args:
+- fmarray_in (FMArray): An input modulated fmarray.
+- reverse (bool): If True, the input fmarray is reverse-demodulated</p>
+<blockquote>
+<div>(i.e. fmch * -1 is used for demodulation). Default is False.</div></blockquote>
+<p>Returns:
+- fmarray_out (FMArray): An output demodulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.modulate">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">modulate</code><span class="sig-paren">(</span><em>fmarray_in</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.modulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an modulated fmarray from the demodulated one.</p>
+<p>This function is only available when the input fmarray is demodulated.</p>
+<p>Args:
+- fmarray_in (FMArray): An input demodulated fmarray.</p>
+<p>Returns:
+- fmarray_out (FMArray): An output modulated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.zeros">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">zeros</code><span class="sig-paren">(</span><em>shape</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>order='C'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#zeros"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray of given shape and type, filled with zeros.</p>
+<p>Args:
+- shape (int or sequence of ints): Shape of the fmarray.
+- dtype (data-type): The desired data-type for the fmarray.
+- order (&#8216;C&#8217; or &#8216;F&#8217;): Whether to store multidimensional data</p>
+<blockquote>
+<div>in C- or Fortran-contiguous (row- or column-wise) order in memory.</div></blockquote>
+<ul class="simple">
+<li>kwargs (optional): Other arguments (fmch, coord, and info).</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output modulated fmarray of zeros.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.ones">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">ones</code><span class="sig-paren">(</span><em>shape</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>order='C'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#ones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.ones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a modulated fmarray of given shape and type, filled with ones.</p>
+<p>Args:
+- shape (int or sequence of ints): Shape of the fmarray.
+- dtype (data-type): The desired data-type for the fmarray.
+- order (&#8216;C&#8217; or &#8216;F&#8217;): Whether to store multidimensional data</p>
+<blockquote>
+<div>in C- or Fortran-contiguous (row- or column-wise) order in memory.</div></blockquote>
+<ul class="simple">
+<li>kwargs (optional): Other arguments (fmch, coord, and info).</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output modulated fmarray of ones.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.zeros_like">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">zeros_like</code><span class="sig-paren">(</span><em>array</em>, <em>dtype=None</em>, <em>order='K'</em>, <em>keepmeta=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#zeros_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.zeros_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fmarray of zeros with the same shape and type as an input array.</p>
+<p>Args:
+- array (array-like): The shape and data-type of it define</p>
+<blockquote>
+<div>these same attributes of the output fmarray.</div></blockquote>
+<ul class="simple">
+<li>dtype (data-type): If spacified, this function overrides
+the data-type of the output fmarray.</li>
+<li>order (&#8216;C&#8217;, &#8216;F&#8217;, &#8216;A&#8217;, or &#8216;K&#8217;):  If spacified, this function overrides
+the memory layout of the result. &#8216;C&#8217; means C-order, &#8216;F&#8217; means F-order,
+&#8216;A&#8217; means &#8216;F&#8217; if <cite>a</cite> is Fortran contiguous, &#8216;C&#8217; otherwise.
+&#8216;K&#8217; means match the layout of <cite>a</cite> as closely as possible.</li>
+<li>keepmeta (bool): Whether table and info are kept in the output fmarray
+if the input array is fmarray. Default is True.</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output fmarray of zeros.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.ones_like">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">ones_like</code><span class="sig-paren">(</span><em>array</em>, <em>dtype=None</em>, <em>order='K'</em>, <em>keepmeta=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#ones_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.ones_like" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a fmarray of ones with the same shape and type as an input array.</p>
+<p>Args:
+- array (array-like): The shape and data-type of it define</p>
+<blockquote>
+<div>these same attributes of the output fmarray.</div></blockquote>
+<ul class="simple">
+<li>dtype (data-type): If spacified, this function overrides
+the data-type of the output fmarray.</li>
+<li>order (&#8216;C&#8217;, &#8216;F&#8217;, &#8216;A&#8217;, or &#8216;K&#8217;):  If spacified, this function overrides
+the memory layout of the result. &#8216;C&#8217; means C-order, &#8216;F&#8217; means F-order,
+&#8216;A&#8217; means &#8216;F&#8217; if <cite>a</cite> is Fortran contiguous, &#8216;C&#8217; otherwise.
+&#8216;K&#8217; means match the layout of <cite>a</cite> as closely as possible.</li>
+<li>keepmeta (bool): Whether table and info are kept in the output fmarray
+if the input array is fmarray. Default is True.</li>
+</ul>
+<p>Returns:
+- fmarray (FMArray): An output fmarray of ones.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.concatenate">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">concatenate</code><span class="sig-paren">(</span><em>fmarray_ins</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#concatenate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join a sequence of fmarrays along time axis.</p>
+<p>This function joins a sequence of fmarrays along time axis.
+All input fmarrays must have the same width (i.e. same shape[1]).
+Tables of fmarrays are also joined and infos are updated one after another.</p>
+<p>Args:
+- fmarray_ins (sequence): An input sequence of fmarrays</p>
+<p>Returns:
+- fmarray_out (FMarray): An output concatenated fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.save">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">save</code><span class="sig-paren">(</span><em>fmarray</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a fmarray into a single file in uncompressed npz format.</p>
+<p>Args:
+- fmarray (FMArray): An fmarray to be saved.
+- filename (str): A file name (used as &lt;filename&gt;.npz).</p>
+<blockquote>
+<div>If not spacified, random 8-character name will be used.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.load">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">load</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a fmarray from a npz file.</p>
+<p>Args:
+- filename (str): A file name (<a href="#id3"><span class="problematic" id="id4">*</span></a>.npz).</p>
+<p>Returns:
+- fmarray (FMArray): An output fmarray.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.fmfunc">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">fmfunc</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#fmfunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.fmfunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a function compatible with fmarray.</p>
+<p>This function is used for decorator like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@fmfunc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">fmarray_in</span> <span class="c1"># do nothing</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Args:
+- func (function): A function to be wrapped.</p>
+<blockquote>
+<div>The first argument of the function must be fmarray_in.</div></blockquote>
+<p>Returns:
+- wrapper (function): A wrapped function.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.core.timechunk">
+<code class="descclassname">fmflow.fm.core.</code><code class="descname">timechunk</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#timechunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.core.timechunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a function compatible with multicore time-chunk processing.</p>
+<p>This function is used for decorator like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@fmfunc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@timechunk</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">fmarray_in</span> <span class="c1"># do nothing</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">chunk_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Args:
+- func (function): A function to be wrapped.</p>
+<blockquote>
+<div>The first argument of the function must be fmarray_in.</div></blockquote>
+<p>Returns:
+- wrapper (function): A wrapped function.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Akio Taniguchi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fmflow.fm.core.array &mdash; FMFlow 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="FMFlow 0.1 documentation" href="../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../index.html"/> 
+
+  
+  <script src="../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> FMFlow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">FMFlow</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>fmflow.fm.core.array</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for fmflow.fm.core.array</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="sd">&quot;&quot;&quot;Module for fmarray.</span>
+
+<span class="sd">fmarray is one of the fundamental data formats in FMFlow,</span>
+<span class="sd">which is created as an instance of FMArray class.</span>
+
+<span class="sd">FMArray is subclass of NumPy masked array, which handles timestream array</span>
+<span class="sd">together with timestream table (fmch, coord, etc) and info dictionary.</span>
+
+<span class="sd">Normally, fmarray is created and operated with the functions in fmflow.fm</span>
+<span class="sd">(e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.</span>
+
+<span class="sd">Available classes:</span>
+<span class="sd">- FMArray: A class for fmarray in FMFlow.</span>
+
+<span class="sd">For developers:</span>
+<span class="sd">- FMArray is imported only in the fmflow.fm.arrayfunc module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+
+<span class="c1"># dependent packages</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+<span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">ut</span>
+
+<span class="c1"># imported items</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;FMArray&#39;</span><span class="p">]</span>
+
+<span class="c1"># constants</span>
+<span class="n">TABLE</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">shape</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="p">[(</span><span class="s1">&#39;fmch&#39;</span><span class="p">,</span> <span class="s1">&#39;i8&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;coord&#39;</span><span class="p">,</span> <span class="s1">&#39;2f8&#39;</span><span class="p">)])</span>
+<span class="n">INFO</span>  <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;fmstatus&#39;</span><span class="p">:</span> <span class="s1">&#39;FM&#39;</span><span class="p">,</span> <span class="s1">&#39;fmindex&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;fmcutcol&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)}</span>
+
+
+<div class="viewcode-block" id="FMArray"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.core.array.FMArray">[docs]</a><span class="k">class</span> <span class="nc">FMArray</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for fmarray in FMFlow.</span>
+<span class="sd">    </span>
+<span class="sd">    It is subclass of NumPy masked array, which handles timestream array</span>
+<span class="sd">    together with timestream table (fmch, coord, etc) and info dictionary.</span>
+
+<span class="sd">    Normally, fmarray is created and operated with the functions in fmflow.fm</span>
+<span class="sd">    (e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.</span>
+
+<span class="sd">    Public attributes:</span>
+<span class="sd">    - table: A timestream table that stores fmch, coord, etc.</span>
+<span class="sd">    - fmch: An array of modulation frequencies in units of channel.</span>
+<span class="sd">    - coord: An array of observed coordinates in units of degrees.</span>
+<span class="sd">    - info: A dictionary that stores information of the fmarray.</span>
+<span class="sd">    - isdemodulate: A boolean that indicates whether the fmarray is demodulated.</span>
+<span class="sd">    - ismodulate: A boolean that indicates whether the fmarray is modulated.</span>
+
+<span class="sd">    Public methods:</span>
+<span class="sd">    - demodulate: Create an demodulated fmarray from the modulated one.</span>
+<span class="sd">    - modulate: Create an modulated fmarray from the demodulated one.</span>
+<span class="sd">    - asmaskedarray: Convert the fmarray to a NumPy masked array.</span>
+
+<span class="sd">    Public classmethods:</span>
+<span class="sd">    - fromeach: Create an modulated fmarray from each argument.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create an modulated fmarray from (masked) array, table, and info.</span>
+
+<span class="sd">        Normally, this method is for the internal use.</span>
+<span class="sd">        Users should create an fmarray with the fm.array function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - array (masked array): A timestream array (mask is optional).</span>
+<span class="sd">        - table (record array): A timestream table that stores fmch, coord, etc.</span>
+<span class="sd">        - info (dict): A dictionary that stores information of the fmarray.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - obj (FMArray): A modulated fmarray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># array</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">mask</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">FMArray</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="c1"># table</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">ndim</span><span class="o">&lt;=</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">_table</span> <span class="o">=</span> <span class="n">TABLE</span><span class="p">(</span><span class="n">_shape</span><span class="p">)</span> <span class="k">if</span> <span class="n">table</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_table</span> <span class="o">=</span> <span class="n">_table</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
+
+        <span class="c1"># info</span>
+        <span class="n">_info</span> <span class="o">=</span> <span class="n">INFO</span><span class="p">()</span>
+        <span class="n">_info</span><span class="o">.</span><span class="n">update</span><span class="p">({}</span> <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+        <span class="c1"># finally</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_table</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">_info</span>
+        <span class="k">return</span> <span class="n">obj</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="FMArray.fromeach"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.core.array.FMArray.fromeach">[docs]</a>    <span class="k">def</span> <span class="nf">fromeach</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">array</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fmch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">coord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a modulated fmarray from each argument.</span>
+
+<span class="sd">        Normally, this method is for the internal use.</span>
+<span class="sd">        It is equivalent to the fm.array function (recommended to use).</span>
+<span class="sd">        i.e. FMArray.fromeach(...) &lt;==&gt; fm.array(...)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - array (masked array): A timestream array (mask is optional).</span>
+<span class="sd">        - fmch (array): Array of modulation frequencies in units of channel.</span>
+<span class="sd">        - coord (array): Array of observed coordinates in units of degrees.</span>
+<span class="sd">        - info (dict): Information of the fmarray, observation, etc.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - obj (FMArray): A modulated fmarray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="c1"># update table of array</span>
+        <span class="k">if</span> <span class="n">fmch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">fmch</span> <span class="o">=</span> <span class="n">fmch</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">coord</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="n">coord</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+<div class="viewcode-block" id="FMArray.demodulate"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.core.array.FMArray.demodulate">[docs]</a>    <span class="k">def</span> <span class="nf">demodulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a demodulated fmarray from the modulated one.</span>
+<span class="sd">        </span>
+<span class="sd">        This method is only available when the original fmarray is modulated.</span>
+<span class="sd">        It is equivalent to the fm.demodulate function (recommended to use).</span>
+<span class="sd">        i.e. x.demodulate(reverse) &lt;==&gt; fm.demodulate(x, reverse)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        - reverse (bool): If True, the original fmarray is reverse-demodulated</span>
+<span class="sd">          (i.e. fmch * -1 is used for demodulation). Default is False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        - array (FMArray): A demodulated fmarray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isdemodulated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;this fmarray is already demodulated&#39;</span><span class="p">)</span>
+
+        <span class="c1"># table, info</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">info</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">fmch</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">fmstatus</span> <span class="o">=</span> <span class="s1">&#39;-FD&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fmstatus</span> <span class="o">=</span> <span class="s1">&#39;+FD&#39;</span>
+
+        <span class="n">fmindex0</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fmch</span><span class="p">)</span>
+        <span class="n">fmindex</span>  <span class="o">=</span> <span class="p">(</span><span class="n">fmindex0</span><span class="p">,</span> <span class="n">fmindex0</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="c1"># array</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">fmch</span><span class="p">)))</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">array</span><span class="p">[:,:</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asmaskedarray</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">fmindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">table</span><span class="o">.</span><span class="n">fmch</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># finally</span>
+        <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;fmstatus&#39;</span><span class="p">:</span> <span class="n">fmstatus</span><span class="p">,</span> <span class="s1">&#39;fmindex&#39;</span><span class="p">:</span> <span class="n">fmindex</span><span class="p">,</span> <span class="s1">&#39;fmcutcol&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)})</span>
+        <span class="k">return</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FMArray.modulate"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.core.array.FMArray.modulate">[docs]</a>    <span class="k">def</span> <span class="nf">modulate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a modulated fmarray from the demodulated one.</span>
+<span class="sd">        </span>
+<span class="sd">        This method is only available when the original fmarray is demodulated.</span>
+<span class="sd">        It is equivalent to the fm.modulate function (recommended to use).</span>
+<span class="sd">        i.e. x.modulate() &lt;==&gt; fm.modulate(x)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">        - array (FMArray): A modulated fmarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ismodulated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;this fmarray is already modulated&#39;</span><span class="p">)</span>
+
+        <span class="c1"># table, info</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">info</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">fmstatus</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fmstatus&#39;</span><span class="p">]</span>
+        <span class="n">fmindex</span>  <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fmindex&#39;</span><span class="p">]</span>
+        <span class="n">fmcutcol</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fmcutcol&#39;</span><span class="p">]</span>
+
+        <span class="c1"># array</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">fmcutcol</span><span class="p">)))</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">array</span><span class="p">[:,</span><span class="n">fmcutcol</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">fmcutcol</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asmaskedarray</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)):</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="o">-</span><span class="p">(</span><span class="n">fmindex</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">table</span><span class="o">.</span><span class="n">fmch</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="p">[:,:</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">fmindex</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+
+        <span class="c1"># finally</span>
+        <span class="k">if</span> <span class="n">fmstatus</span> <span class="o">==</span> <span class="s1">&#39;-FD&#39;</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">fmch</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;fmstatus&#39;</span><span class="p">:</span> <span class="s1">&#39;FM&#39;</span><span class="p">,</span> <span class="s1">&#39;fmindex&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;fmcutcol&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)})</span>
+        <span class="k">return</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FMArray.asmaskedarray"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.core.html#fmflow.fm.core.array.FMArray.asmaskedarray">[docs]</a>    <span class="k">def</span> <span class="nf">asmaskedarray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the fmarray to a NumPy masked array.</span>
+<span class="sd">        </span>
+<span class="sd">        It is equivalent to the fm.asmaskedarray function (recommended to use).</span>
+<span class="sd">        i.e. x.asmaskedarray() &lt;==&gt; fm.asmaskedarray(x)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">MaskedArray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">array</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fmch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An array of modulation frequencies in units of channel.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fmch</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">coord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An array of observed coordinates in units of degrees.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">coord</span>
+
+    <span class="nd">@fmch</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">fmch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An array of modulation frequencies in units of channel.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fmch</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@coord</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">coord</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;An array of observed coordinates in units of degrees.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A timestream table that stores fmch, coord, etc.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;table&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A dictionary that stores information of the fmarray.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ismodulated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A boolean that indicates whether the fmarray is demodulated.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;FM&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;fmstatus&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isdemodulated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A boolean that indicates whether the fmarray is modulated.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;FD&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optinfo</span><span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">][</span><span class="s1">&#39;fmstatus&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_tableindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the index for array to one for table.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tableindex</span><span class="p">(</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">slice</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">index</span>
+
+    <span class="k">def</span> <span class="nf">_fmcutcol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate channels of edge-cut column from an index.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="nb">slice</span><span class="p">:</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">stop</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">index</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">index</span><span class="p">),</span> <span class="n">f</span><span class="p">(</span><span class="n">index</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;x.__getitem__(y) &lt;==&gt; x[y]&quot;&quot;&quot;</span>
+        <span class="c1"># array</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asmaskedarray</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
+
+        <span class="c1"># table</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tableindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tableindex</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">copy</span><span class="p">()[</span><span class="n">tableindex</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># info</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">fmcutcol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;fmcutcol&#39;</span><span class="p">])</span>
+            <span class="n">dfmcutcol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmcutcol</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+            <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;fmcutcol&#39;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fmcutcol</span><span class="o">+</span><span class="n">dfmcutcol</span><span class="p">)})</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">FMArray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getslice__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;x.__getslice__(i, j) &lt;==&gt; x[i:j]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;x.__repr__() &lt;==&gt; repr(x)&quot;&quot;&quot;</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;fmarray(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__str__</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Akio Taniguchi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

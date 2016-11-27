@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>fmflow.io.fits.array.array &mdash; FMFlow 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="FMFlow 0.1 documentation" href="../../../../../index.html"/>
+        <link rel="up" title="Module code" href="../../../../index.html"/> 
+
+  
+  <script src="../../../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> FMFlow
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <!-- Local TOC -->
+                <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">FMFlow</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>fmflow.io.fits.array.array</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for fmflow.io.fits.array.array</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding: utf-8</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+
+<span class="c1"># the standard library</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># dependent packages¬</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.io</span> <span class="k">import</span> <span class="n">fits</span>
+<span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">ut</span>
+
+<span class="c1"># imported items</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;getarray&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="getarray"><a class="viewcode-back" href="../../../../../_apis/fmflow.io.fits.array.html#fmflow.io.fits.getarray">[docs]</a><span class="k">def</span> <span class="nf">getarray</span><span class="p">(</span><span class="n">fitsname</span><span class="p">,</span> <span class="n">arrayid</span><span class="p">,</span> <span class="n">scantype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a modulated fmarray from a FMFITS.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">    - fitsname (str): File name of a FMFITS.</span>
+<span class="sd">    - arrayid (str): An array ID with which the output fmarray is created.</span>
+<span class="sd">    - scantype (str): A scan type with which the output fmarray is created.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">    - fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">fm</span>
+    <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">fitsname</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">oi</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;OBSINFO&#39;</span><span class="p">]</span>
+        <span class="n">fl</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;FMLOLOG&#39;</span><span class="p">]</span>
+        <span class="n">be</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;BACKEND&#39;</span><span class="p">]</span>
+
+        <span class="c1"># flags</span>
+        <span class="n">flag_oi</span> <span class="o">=</span> <span class="n">oi</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ARRAYID</span> <span class="o">==</span> <span class="n">arrayid</span>
+        <span class="n">flag_fl</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SCANTYPE</span> <span class="o">==</span> <span class="n">scantype</span>
+        <span class="n">flag_be</span> <span class="o">=</span> <span class="p">(</span><span class="n">be</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ARRAYID</span> <span class="o">==</span> <span class="n">arrayid</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">be</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">SCANTYPE</span> <span class="o">==</span> <span class="n">scantype</span><span class="p">)</span>
+
+        <span class="c1"># array</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">be</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">ARRAYDATA</span><span class="p">[</span><span class="n">flag_be</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">scantype</span> <span class="o">!=</span> <span class="s1">&#39;ON&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">array</span>
+
+        <span class="c1"># info</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">oi</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">flag_oi</span><span class="p">]</span><span class="o">.</span><span class="n">names</span><span class="p">]</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">oi</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">flag_oi</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fitstype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">oi</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;FITSTYPE&#39;</span><span class="p">]</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;telescop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">oi</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;TELESCOP&#39;</span><span class="p">]</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;frontend&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">oi</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;FRONTEND&#39;</span><span class="p">]</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;backend&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="n">oi</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;BACKEND&#39;</span><span class="p">]</span>
+
+        <span class="c1"># fmch</span>
+        <span class="n">t_fl</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">STARTTIME</span><span class="p">[</span><span class="n">flag_fl</span><span class="p">]</span>
+        <span class="n">t_be</span> <span class="o">=</span> <span class="n">be</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">STARTTIME</span><span class="p">[</span><span class="n">flag_be</span><span class="p">]</span>
+        <span class="n">fmfreq</span> <span class="o">=</span> <span class="n">fl</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">FMFREQ</span><span class="p">[</span><span class="n">flag_fl</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">t_be</span><span class="p">)</span><span class="o">-</span><span class="nb">set</span><span class="p">(</span><span class="n">t_fl</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;time range of FMLOLOG does not cover that of BACKEND&#39;</span><span class="p">)</span>
+
+        <span class="n">fmfreq_matched</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">t_be</span><span class="p">:</span>
+            <span class="n">fmfreq_matched</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmfreq</span><span class="p">[</span><span class="n">t_fl</span><span class="o">==</span><span class="n">t</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">fmch</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fmfreq_matched</span><span class="p">)</span> <span class="o">/</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;chanwidth&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        
+        <span class="n">fmarray</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">fmch</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fmarray</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Akio Taniguchi.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
