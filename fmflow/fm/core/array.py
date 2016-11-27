@@ -1,9 +1,11 @@
 # coding: utf-8
 
-"""Module for FMArray.
+"""Module for fmarray.
 
-FMArray is a fundamental array class in FMFlow.
-It is subclass of NumPy masked array, which handles timestream array
+fmarray is one of the fundamental data formats in FMFlow,
+which is created as an instance of FMArray class.
+
+FMArray is subclass of NumPy masked array, which handles timestream array
 together with timestream table (fmch, coord, etc) and info dictionary.
 
 Normally, FMArray is used and its instance is operated in functions of
@@ -11,7 +13,7 @@ fmflow.fm (e.g. array, (de)modulate, etc) and thus not directly used
 and operated by users.
 
 Available classes:
-- FMArray: A fundamental array class in FMFlow.
+- FMArray: A class for fmarray in FMFlow.
 
 For developers:
 - FMArray is imported only in the fmflow.fm.arrayfunc module.
@@ -35,7 +37,7 @@ INFO  = lambda: {'fmstatus': 'FM', 'fmindex': (0,0), 'fmcutcol': (0,0)}
 
 
 class FMArray(ma.MaskedArray):
-    """A fundamental array class in FMFlow.
+    """A class for fmarray in FMFlow.
     
     It is subclass of NumPy masked array, which handles timestream array
     together with timestream table (fmch, coord, etc) and info dictionary.
