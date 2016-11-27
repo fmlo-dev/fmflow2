@@ -7,7 +7,7 @@ which defines each name of parameter and corresponding (format, shape)
 and will be used with the fmflow.utils.readbinary function.
 Format must be compatible with the Python's struct module.
 For example, '>i' (int with big endian), or '10s' (10 chars).
-For more information, see http://docs.python.jp/2/library/struct.html.
+For more information, see (http://docs.python.jp/2/library/struct.html).
 
 Available functions:
 - readbinary: Sequentially read a data structure on a binary file object.

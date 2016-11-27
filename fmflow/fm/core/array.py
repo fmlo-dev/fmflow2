@@ -8,9 +8,8 @@ which is created as an instance of FMArray class.
 FMArray is subclass of NumPy masked array, which handles timestream array
 together with timestream table (fmch, coord, etc) and info dictionary.
 
-Normally, FMArray is used and its instance is operated in functions of
-fmflow.fm (e.g. array, (de)modulate, etc) and thus not directly used
-and operated by users.
+Normally, fmarray is created and operated with the functions in fmflow.fm
+(e.g. array, (de)modulate, etc) and FMArray is thus not directly used by users.
 
 Available classes:
 - FMArray: A class for fmarray in FMFlow.
@@ -100,7 +99,7 @@ class FMArray(ma.MaskedArray):
 
     @classmethod
     def fromeach(cls, array=None, fmch=None, coord=None, info=None):
-        """Create a modulated array from each element.
+        """Create a modulated array from each argument.
 
         This method is equivalent to the fm.array function.
         i.e. FMArray.fromeach(...) <==> fm.array(...)
