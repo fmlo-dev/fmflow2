@@ -11,8 +11,8 @@ from inspect import getargspec
 # dependent packages
 import numpy as np
 import numpy.ma as ma
-from fmflow import utils
 from fmflow.io import fits
+from fmflow import utils as ut
 
 # submodules
 from .array import FMArray
@@ -76,7 +76,7 @@ def ones_like(array, dtype=float, keepmeta=True):
 
 def concatenate(arrays):
     if type(arrays) not in (tuple, list):
-        raise utils.FMFlowError('arrays must be tuple or list of arrays')
+        raise ut.FMFlowError('arrays must be tuple or list of arrays')
 
     if len(arrays) > 2:
         array_0 = arrays[0]
@@ -141,7 +141,7 @@ def timechunk(func):
         index = np.linspace(0, len(array_in), chunk_num+1, dtype=int)
         subs_in = [array_in[index[i]:index[i+1]] for i in range(len(index)-1)]
 
-        p = utils.Pool()
+        p = ut.Pool()
         pfunc = partial(func, **kwargs)
         subs_out = p.map(pfunc, subs_in)
         array_out = np.concatenate(subs_out)
