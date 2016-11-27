@@ -176,9 +176,9 @@ class FMArray(ma.MaskedArray):
     def isdemodulated(self):
         return 'FD' in self._optinfo['info']['fmstatus']
 
-    def _rowindex(self, index):
+    def _tableindex(self, index):
         if type(index) in (tuple, list):
-            return self._rowindex(index[0])
+            return self._tableindex(index[0])
         elif type(index) == int:
             return slice(index, index+1, 1)
         else:
@@ -207,8 +207,8 @@ class FMArray(ma.MaskedArray):
 
         # table
         try:
-            rowindex = self._rowindex(index)
-            table = self.table.copy()[rowindex]
+            tableindex = self._tableindex(index)
+            table = self.table.copy()[tableindex]
         except:
             table = None
 
