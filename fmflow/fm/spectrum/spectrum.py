@@ -20,11 +20,11 @@ def getfrequency(array, unit='GHz', **kwargs):
 
     info = array.info.copy()
     info.update(kwargs)
-    fmid = info['fmid']
     rest = info['restfreq']
     step = info['chanwidth']
-    
-    start = rest - step * (0.5*(fmid[1]-1)+fmid[0])
+    fmindex = info['fmindex']
+
+    start = rest - step * (0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
     end   = start + step * array.shape[1]
     
     freq = np.arange(start, end, step) * u.Hz

@@ -18,22 +18,22 @@ __all__ = ['hmedfilt', 'lmeds_spline']
 
 @fmfunc
 @timechunk
-def hmedfilt(array_in, kernel=3):
-    array_out = signal.medfilt(array_in, (1, kernel))
-    return array_out
+def hmedfilt(fmarray_in, kernel=3):
+    fmarray_out = signal.medfilt(fmarray_in, (1, kernel))
+    return fmarray_out
 
 
 @fmfunc
 @timechunk
-def lmeds_spline(array_in, nsample=50, niter=1000, **kwargs):
-    if array_in.ndim == 1:
-        array_in = array_in[np.newaxis]
+def lmeds_spline(fmarray_in, nsample=50, niter=1000, **kwargs):
+    if fmarray_in.ndim == 1:
+        fmarray_in = fmarray_in[np.newaxis]
 
-    freq = np.arange(array_in.shape[1])
-    array_out = np.zeros_like(array_in)
+    freq = np.arange(fmarray_in.shape[1])
+    fmarray_out = np.zeros_like(fmarray_in)
 
-    for i in range(array_in.shape[0]):
-        data = array_in[i]
+    for i in range(fmarray_in.shape[0]):
+        data = fmarray_in[i]
         models = []
         medians = []
         j = 0
@@ -50,7 +50,7 @@ def lmeds_spline(array_in, nsample=50, niter=1000, **kwargs):
             models.append(model)
             j += 1
             
-        array_out[i] = models[np.argmin(medians)]
+        fmarray_out[i] = models[np.argmin(medians)]
     
-    array_out = np.squeeze(array_out)
-    return array_out
+    fmarray_out = np.squeeze(fmarray_out)
+    return fmarray_out
