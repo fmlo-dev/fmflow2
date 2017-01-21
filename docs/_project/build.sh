@@ -1,2 +1,2 @@
-sphinx-apidoc -f -o ./_apis ../../fmflow
+sphinx-apidoc -f -o ./apis ../../fmflow
 sphinx-build . ../
