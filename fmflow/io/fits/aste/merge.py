@@ -259,7 +259,10 @@ def _read_backendlog_mac(backendlog):
     from .otflog_common import HEAD, CTL
     from .otflog_mac import OBS, DAT
 
+    prog = ut.inprogress('FMFlow: reading the backendlog', 50)
+
     def EOF(f):
+        prog.next()
         readdata = ut.readbinary(f, HEAD)
         return readdata['crec_type'] == 'ED'
 
@@ -284,18 +287,10 @@ def _read_backendlog_mac(backendlog):
             if not re.search('dmy', key):
                 data[key] = []
 
-        i = 0
-        status = ut.inprogress('FMFlow: reading the backendlog')
-
         while not EOF(f):
             readdata = ut.readbinary(f, DAT)
             for key in data:
                 data[key].append(readdata[key])
-
-            if i%50 == 0:
-                next(status)
-
-            i += 1
 
     # starttime
     c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
@@ -326,4 +321,3 @@ def _read_backendlog_mac(backendlog):
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
-

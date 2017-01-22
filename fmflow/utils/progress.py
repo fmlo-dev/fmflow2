@@ -12,12 +12,14 @@ import sys
 __all__ = ['inprogress', 'progressbar']
 
 
-def inprogress(message='in progress'):
+def inprogress(message='in progress', interval=50):
     i = 0
     while True:
-        status = '\r{} {}'.format(message, '|/-\\'[i%4])
-        sys.stdout.write(status)
-        sys.stdout.flush()
+        if i%interval == 0:
+            status = '\r{} {}'.format(message, '|/-\\'[int(i/interval)%4])
+            sys.stdout.write(status)
+            sys.stdout.flush()
+
         i += 1
         yield
 
