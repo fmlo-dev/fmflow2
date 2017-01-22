@@ -2,8 +2,6 @@
 
 """Module for merging loggings of ASTE.
 
-Available functions:
-- fromaste: Read logging data of ASTE and merge them into a FITS object.
 """
 
 # Python 3.x compatibility
@@ -34,20 +32,21 @@ def fromaste(fmlolog, backendlog, antennalog=None):
     """Read logging data of ASTE and merge them into a FITS object.
 
     Args:
-    - fmlolog (str): File name of FMLO logging.
-    - backendlog (str): File name of backend logging.
-    - antennalog (str): File name of antenna logging (optional).
+        fmlolog (str): File name of FMLO logging.
+        backendlog (str): File name of backend logging.
+        antennalog (str): File name of antenna logging (optional).
 
     Returns:
-    - fitsobj (HDUlist): HDU list containing the merged data.
+        fitsobj (HDUlist): HDU list containing the merged data.
+
     """
     # HDU list
     fitsobj = fits.HDUList()
-    
+
     # PRIMARY HDU
     hdu = fits.PrimaryHDU()
     fitsobj.append(hdu)
-    
+
     # FMLOINFO HDU
     hdu = _read_fmlolog(fmlolog)
     fitsobj.append(hdu)
@@ -64,7 +63,7 @@ def fromaste(fmlolog, backendlog, antennalog=None):
         raise ut.FMFlowError('invalid logging type')
 
     fitsobj.append(hdu)
-    
+
     # ANTENNA HDU
     if antennalog is not None:
         hdu = _read_antennalog(antennalog)
@@ -81,10 +80,11 @@ def _make_obsinfo(fitsobj):
     """Make a OBSINFO HDU from FITS object.
 
     Args:
-    - fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.
+        fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.
 
     Returns:
-    - hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
+        hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
+
     """
     d_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
     d_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
@@ -134,10 +134,11 @@ def _read_fmlolog(fmlolog):
     """Read a FMLO logging of ASTE.
 
     Args:
-    - fmlolog (str): File name of FMLO logging.
+        fmlolog (str): File name of FMLO logging.
 
     Returns:
-    - hdu (BinTableHDU): HDU containing the read FMLO logging.
+        hdu (BinTableHDU): HDU containing the read FMLO logging.
+
     """
     header = fits.Header()
     header['EXTNAME'] = 'FMLOLOG'
@@ -172,10 +173,11 @@ def _read_antennalog(antennalog):
     """Read an antenna logging of ASTE.
 
     Args:
-    - antennalog (str): File name of antenna logging.
+        antennalog (str): File name of antenna logging.
 
     Returns:
-    - hdu (BinTableHDU): HDU containing the read antenna logging.
+        hdu (BinTableHDU): HDU containing the read antenna logging.
+
     """
     header = fits.Header()
     header['EXTNAME'] = 'ANTENNA'
@@ -228,10 +230,11 @@ def _check_backend(backendlog):
     """Check backend type from a backend logging of ASTE.
 
     Args:
-    - backendlog (str): File name of backend logging.
+        backendlog (str): File name of backend logging.
 
     Returns:
-    - backend (str): Backend type.
+        backend (str): Backend type.
+
     """
     from .otflog_common import HEAD, CTL
 
@@ -247,10 +250,11 @@ def _read_backendlog_mac(backendlog):
     """Read a backend logging of ASTE/MAC.
 
     Args:
-    - backendlog (str): File name of backend logging.
+        backendlog (str): File name of backend logging.
 
     Returns:
-    - hdu (BinTableHDU): HDU containing the read backend logging.
+        hdu (BinTableHDU): HDU containing the read backend logging.
+
     """
     from .otflog_common import HEAD, CTL
     from .otflog_mac import OBS, DAT
@@ -262,13 +266,13 @@ def _read_backendlog_mac(backendlog):
     header = fits.Header()
     header['EXTNAME'] = 'BACKEND'
     header['FILENAME'] = backendlog
-    
+
     with open(backendlog, 'rb') as f:
         # control info
         ut.readbinary(f, HEAD)
         readdata = ut.readbinary(f, CTL)
         header['CTLINFO'] = json.dumps(readdata)
-        
+
         # observation info
         ut.readbinary(f, HEAD)
         readdata = ut.readbinary(f, OBS)
@@ -287,10 +291,10 @@ def _read_backendlog_mac(backendlog):
             readdata = ut.readbinary(f, DAT)
             for key in data:
                 data[key].append(readdata[key])
-            
+
             if i%50 == 0:
                 next(status)
-            
+
             i += 1
 
     # starttime

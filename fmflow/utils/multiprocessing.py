@@ -4,8 +4,6 @@
 
 This module provides helper classes for multiprocessing in FMFlow.
 
-Available classes:
-- Pool: Similar to multiprocessing.Pool, but compatible with local function.
 """
 
 # Python 3.x compatibility
@@ -13,34 +11,34 @@ from __future__ import absolute_import as __absolute_import
 from __future__ import division as __division
 from __future__ import print_function as __print_function
 
-# importing items
-__all__ = ['Pool']
-
 # the Python standard library
 import multiprocessing as mp
 
 # the Python Package Index
 import numpy as np
 
+# importing items
+__all__ = ['Pool']
+
 
 class Pool(object):
     """Return a process pool object.
-    
-    Public methods:
-    - map: Return a list of the results of applying the function to the sequence.
-    
-    Public attributes:
-    - mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.
+
+    Attributes:
+        mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.
+
     """
+
     def __init__(self, processes=None):
         """Initialize a process pool object.
-        
+
         At this moment, whether your NumPy/SciPy is compatible with multiprocessing,
         is automatically checked and the result is stored in self.mpcompatible.
-        
+
         Args:
-        - processes (int): The number of processes to be created. Default is
-          <CPU count of your machine> -1 (one thread is saved for backup).
+            processes (int): The number of processes to be created. Default is
+                <CPU count of your machine> -1 (one thread is saved for backup).
+
         """
         self.processes = processes or mp.cpu_count() - 1
 
@@ -63,17 +61,18 @@ class Pool(object):
 
     def map(self, func, sequence):
         """Return a list of the results of applying the function to the sequence.
-        
+
         If self.mpcompatible is True, mapping is multiprocessed with the spacified
         number of processes (default is <CPU count> - 1). If False, mapping is
         singleprocessed (equivalent to the bulitin map function).
 
         Args:
-        - func (function): Applying function.
-        - sequence (list): List of items to which function is applied.
+            func (function): Applying function.
+            sequence (list): List of items to which function is applied.
 
         Returns:
-        - ret (list): The results of applying the function to the sequence.
+            ret (list): The results of applying the function to the sequence.
+
         """
         if self.mpcompatible:
             return self._mpmap(func, sequence)
@@ -105,4 +104,3 @@ class Pool(object):
             p.join()
 
         return ret
-

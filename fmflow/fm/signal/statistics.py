@@ -16,21 +16,18 @@ __all__ = ['mad']
 def mad(array, axis=None):
     """Compute the median absolute deviation (MAD) along the given axis.
 
-    Args
-    ----
+    Args:
+        array (array-like): An input array.
+        axis (int, None): Axis along which the MADs are computed.
+            The default is to compute the MAD along a flattened version of the array.
 
-    - array (array-like): An input array.
-    - axis (int, None): Axis along which the MADs are computed.
-      The default is to compute the MAD along a flattened version of the array.
-    
-    Returns
-    -------
+    Returns:
+        mad (array): median absolute deviation.
 
-    - mad (array): 
     """
     if axis == 1:
         mad = ma.median(ma.abs(array - ma.median(array, 1)[:,np.newaxis]), 1)
     else:
         mad = ma.median(ma.abs(array - ma.median(array, axis)), axis)
-    
+
     return mad

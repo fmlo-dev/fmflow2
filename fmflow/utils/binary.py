@@ -9,9 +9,6 @@ Format must be compatible with the Python's struct module.
 For example, '>i' (int with big endian), or '10s' (10 chars).
 For more information, see (http://docs.python.jp/2/library/struct.html).
 
-Available functions:
-- readbinary: Sequentially read a data structure on a binary file object.
-- getfitsformat: Convert a data structure to the corresponding FITS format.
 """
 
 # Python 3.x compatibility
@@ -35,11 +32,12 @@ def readbinary(f, structure):
     """Sequentially read a data structure on a binary file object.
 
     Args:
-    - f (file): A binary file object of the logging.
-    - structure (OrderedDict): An ordered dictionary defining the data structure.
+        f (file): A binary file object of the logging.
+        structure (OrderedDict): An ordered dictionary defining the data structure.
 
     Returns:
-    - readdata (OrderedDict): An ordered dictionary which stores the read data.
+        readdata (OrderedDict): An ordered dictionary which stores the read data.
+
     """
     readdata = OrderedDict()
     for key in structure:
@@ -52,10 +50,11 @@ def getfitsformat(structure):
     """Convert a data structure to the corresponding FITS format.
 
     Args:
-    - structure (OrderedDict): An ordered dictionary defining the data structure.
+        structure (OrderedDict): An ordered dictionary defining the data structure.
 
     Returns:
-    - formats (OrderedDict): An ordered dictionary which stores the FITS formats.
+        formats (OrderedDict): An ordered dictionary which stores the FITS formats.
+
     """
     formats = OrderedDict()
     for key in structure:

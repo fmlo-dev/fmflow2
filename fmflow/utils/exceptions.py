@@ -2,9 +2,6 @@
 
 """Module for exception and warning in FMFlow.
 
-Available classes:
-- FMFlowError: Error class of FMFlow.
-- FMFlowWarning: Warning class of FMFlow.
 """
 
 # Python 3.x compatibility
@@ -17,7 +14,10 @@ __all__ = ['FMFlowError', 'FMFlowWarning']
 
 
 class FMFlowError(Exception):
-    """Error class of FMFlow."""
+    """Error class of FMFlow.
+
+    """
+
     def __init__(self, message):
         self.message = message
 
@@ -26,7 +26,10 @@ class FMFlowError(Exception):
 
 
 class FMFlowWarning(Warning):
-    """Warning class of FMFlow."""
+    """Warning class of FMFlow.
+
+    """
+
     def __init__(self, message):
         self.message = message
 

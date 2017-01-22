@@ -9,9 +9,10 @@ Format must be compatible with the Python's struct module.
 For example, '>i' (int with big endian), or '10s' (10 chars).
 For more information, see http://docs.python.jp/2/library/struct.html.
 
-Available attributes:
-- OBS: Definition of record header info.
-- DAT: Definition of control info.
+Attributes:
+    OBS: Definition of record header info.
+    DAT: Definition of control info.
+
 """
 
 # Python 3.x compatibility
@@ -108,6 +109,7 @@ OBS['dfqdat_f0']       = (ORDER+'d', ARYMAX)
 OBS['dfqdat_fq']       = (ORDER+'d', (ARYMAX,10))
 OBS['dfqdat_ch']       = (ORDER+'d', (ARYMAX,10))
 OBS['dfqdat_cw']       = (ORDER+'d', (ARYMAX,10))
+
 
 # definition of data info
 DAT = OrderedDict()

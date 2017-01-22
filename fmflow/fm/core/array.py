@@ -11,11 +11,9 @@ together with timestream table (fmch, coord, etc) and info dictionary.
 Normally, fmarray is created and operated with the functions in fmflow.fm
 (e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.
 
-Available classes:
-- FMArray: A class for fmarray in FMFlow.
+Note:
+    FMArray is imported only in the fmflow.fm.arrayfunc module.
 
-For developers:
-- FMArray is imported only in the fmflow.fm.arrayfunc module.
 """
 
 # Python 3.x compatibility
@@ -38,29 +36,23 @@ INFO  = lambda: {'fmstatus': 'FM', 'fmindex': (0,0), 'fmcutcol': (0,0)}
 
 class FMArray(ma.MaskedArray):
     """A class for fmarray in FMFlow.
-    
+
     It is subclass of NumPy masked array, which handles timestream array
     together with timestream table (fmch, coord, etc) and info dictionary.
 
     Normally, fmarray is created and operated with the functions in fmflow.fm
     (e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.
 
-    Public attributes:
-    - table: A timestream table that stores fmch, coord, etc.
-    - fmch: An array of modulation frequencies in units of channel.
-    - coord: An array of observed coordinates in units of degrees.
-    - info: A dictionary that stores information of the fmarray.
-    - isdemodulate: A boolean that indicates whether the fmarray is demodulated.
-    - ismodulate: A boolean that indicates whether the fmarray is modulated.
+    Attributes:
+        table: A timestream table that stores fmch, coord, etc.
+        fmch: An array of modulation frequencies in units of channel.
+        coord: An array of observed coordinates in units of degrees.
+        info: A dictionary that stores information of the fmarray.
+        isdemodulate: A boolean that indicates whether the fmarray is demodulated.
+        ismodulate: A boolean that indicates whether the fmarray is modulated.
 
-    Public methods:
-    - demodulate: Create an demodulated fmarray from the modulated one.
-    - modulate: Create an modulated fmarray from the demodulated one.
-    - asmaskedarray: Convert the fmarray to a NumPy masked array.
-
-    Public classmethods:
-    - fromeach: Create an modulated fmarray from each argument.
     """
+
     def __new__(cls, array, table=None, info=None):
         """Create an modulated fmarray from (masked) array, table, and info.
 
@@ -68,12 +60,13 @@ class FMArray(ma.MaskedArray):
         Users should create an fmarray with the fm.array function.
 
         Args:
-        - array (masked array): A timestream array (mask is optional).
-        - table (record array): A timestream table that stores fmch, coord, etc.
-        - info (dict): A dictionary that stores information of the fmarray.
+            array (masked array): A timestream array (mask is optional).
+            table (record array): A timestream table that stores fmch, coord, etc.
+            info (dict): A dictionary that stores information of the fmarray.
 
         Returns:
-        - obj (FMArray): A modulated fmarray.
+            obj (FMArray): A modulated fmarray.
+
         """
         # array
         array = ma.asarray(array).copy()
@@ -106,13 +99,14 @@ class FMArray(ma.MaskedArray):
         i.e. FMArray.fromeach(...) <==> fm.array(...)
 
         Args:
-        - array (masked array): A timestream array (mask is optional).
-        - fmch (array): Array of modulation frequencies in units of channel.
-        - coord (array): Array of observed coordinates in units of degrees.
-        - info (dict): Information of the fmarray, observation, etc.
+            array (masked array): A timestream array (mask is optional).
+            fmch (array): Array of modulation frequencies in units of channel.
+            coord (array): Array of observed coordinates in units of degrees.
+            info (dict): Information of the fmarray, observation, etc.
 
         Returns:
-        - obj (FMArray): A modulated fmarray.
+            obj (FMArray): A modulated fmarray.
+
         """
         obj = cls.__new__(cls, array, info=info)
 
@@ -127,17 +121,18 @@ class FMArray(ma.MaskedArray):
 
     def demodulate(self, reverse=False):
         """Create a demodulated fmarray from the modulated one.
-        
+
         This method is only available when the original fmarray is modulated.
         It is equivalent to the fm.demodulate function (recommended to use).
         i.e. x.demodulate(reverse) <==> fm.demodulate(x, reverse)
 
         Args:
-        - reverse (bool): If True, the original fmarray is reverse-demodulated
-          (i.e. fmch * -1 is used for demodulation). Default is False.
+            reverse (bool): If True, the original fmarray is reverse-demodulated
+                (i.e. fmch * -1 is used for demodulation). Default is False.
 
         Returns:
-        - array (FMArray): A demodulated fmarray.
+            array (FMArray): A demodulated fmarray.
+
         """
         if self.isdemodulated:
             raise ut.FMFlowError('this fmarray is already demodulated')
@@ -169,13 +164,14 @@ class FMArray(ma.MaskedArray):
 
     def modulate(self):
         """Create a modulated fmarray from the demodulated one.
-        
+
         This method is only available when the original fmarray is demodulated.
         It is equivalent to the fm.modulate function (recommended to use).
         i.e. x.modulate() <==> fm.modulate(x)
-        
+
         Returns:
-        - array (FMArray): A modulated fmarray
+            array (FMArray): A modulated fmarray
+
         """
         if self.ismodulated:
             raise ut.FMFlowError('this fmarray is already modulated')
@@ -207,9 +203,10 @@ class FMArray(ma.MaskedArray):
 
     def asmaskedarray(self):
         """Convert the fmarray to a NumPy masked array.
-        
+
         It is equivalent to the fm.asmaskedarray function (recommended to use).
         i.e. x.asmaskedarray() <==> fm.asmaskedarray(x)
+
         """
         data, mask = np.asarray(self), self.mask
         array = ma.MaskedArray(data, mask).copy()

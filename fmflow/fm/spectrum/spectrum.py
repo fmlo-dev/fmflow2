@@ -27,7 +27,7 @@ def getfrequency(array, unit='GHz', **kwargs):
 
     start = rest - step * (0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
     end   = start + step * array.shape[1]
-    
+
     freq = np.arange(start, end, step) * u.Hz
     freq = freq.to(getattr(u, unit)).value
     return freq

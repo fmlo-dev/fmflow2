@@ -19,14 +19,15 @@ __all__ = ['getarray']
 
 def getarray(fitsname, arrayid, scantype):
     """Create a modulated fmarray from a FMFITS.
-    
+
     Args:
-    - fitsname (str): File name of a FMFITS.
-    - arrayid (str): An array ID with which the output fmarray is created.
-    - scantype (str): A scan type with which the output fmarray is created.
-    
+        fitsname (str): File name of a FMFITS.
+        arrayid (str): An array ID with which the output fmarray is created.
+        scantype (str): A scan type with which the output fmarray is created.
+
     Returns:
-    - fmarray (FMArray): An output fmarray of the spacified array ID and scan type.
+        fmarray (FMArray): An output fmarray of the spacified array ID and scan type.
+
     """
     from fmflow import fm
     with fits.open(os.path.expanduser(fitsname)) as f:
@@ -68,6 +69,6 @@ def getarray(fitsname, arrayid, scantype):
             fmfreq_matched.append(fmfreq[t_fl==t][0])
 
         fmch = (np.asarray(fmfreq_matched) / info['chanwidth']).astype(int)
-        
+
         fmarray = fm.array(array, fmch, info=info)
         return fmarray

@@ -3,9 +3,10 @@
 """Module for the internal use in FMFlow.
 
 Users may not use this module directly.
-Developers must use this module like:
+Developers must use this module like::
 
->>> from fmflow import utils as ut
+    >>> from fmflow import utils as ut
+
 """
 
 # Python 3.x compatibility
