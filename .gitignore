@@ -1,4 +1,4 @@
 *.DS_Store
 *.pyc
 *~
-/docs/_doctrees/
+/docs/_doctree/
