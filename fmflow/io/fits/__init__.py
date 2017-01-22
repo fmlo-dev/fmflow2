@@ -7,9 +7,6 @@ from __future__ import print_function as __print_function
 
 # the Python Package Index
 from astropy.io import fits
-open = fits.open
-getdata = fits.getdata
-getheader = fits.getheader
 
 # FMFlow submodules
 from .array import *
@@ -19,3 +16,8 @@ from .aste import *
 __all__ = ['open', 'getdata', 'getheader']
 __all__ += array.__all__
 __all__ += aste.__all__
+
+
+open = fits.open
+getdata = fits.getdata
+getheader = fits.getheader
