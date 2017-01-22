@@ -7,3 +7,4 @@ fi
 
 #sphinx-apidoc -f -o ./apis ../../fmflow
 sphinx-build -a -d ../_doctree ./ ../
+sphinx-build -a -d ../_doctree ./ ../
