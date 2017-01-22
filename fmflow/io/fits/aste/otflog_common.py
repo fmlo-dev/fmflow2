@@ -14,11 +14,12 @@ Available attributes:
 - CTL:  Definition of control info.
 """
 
+# Python 3.x compatibility
 from __future__ import absolute_import as __absolute_import
 from __future__ import division as __division
 from __future__ import print_function as __print_function
 
-# the standard library
+# the Python standard library
 from collections import OrderedDict
 
 # imported items

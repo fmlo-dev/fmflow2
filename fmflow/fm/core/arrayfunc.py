@@ -32,22 +32,23 @@ Available decorators:
 - timechunk: Make a function compatible with multicore time-chunk processing.
 """
 
+# Python 3.x compatibility
 from __future__ import absolute_import as __absolute_import
 from __future__ import division as __division
 from __future__ import print_function as __print_function
 
-# the standard library
+# the Python standard library
 import uuid
 from functools import partial, wraps
 from inspect import getargspec
 
-# dependent packages
+# the Python Package Index
 import numpy as np
 import numpy.ma as ma
 from fmflow.io import fits
 from fmflow import utils as ut
 
-# submodules
+# FMFlow submodules
 from .array import FMArray
 
 # imported items

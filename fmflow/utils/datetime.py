@@ -9,15 +9,16 @@ Available classes:
 - DatetimeConverter: Convert a datetime string in given format to one in ISO format.
 """
 
+# Python 3.x compatibility
 from __future__ import absolute_import as __absolute_import
 from __future__ import division as __division
 from __future__ import print_function as __print_function
 
+# the Python standard library
+from datetime import datetime, timedelta
+
 # importing items
 __all__ = ['DatetimeConverter']
-
-# the standard library
-from datetime import datetime, timedelta
 
 # constants
 ISO_8601 = '%Y-%m-%dT%H:%M:%S.%f'

@@ -8,6 +8,7 @@ Available classes:
 - Pool: Similar to multiprocessing.Pool, but compatible with local function.
 """
 
+# Python 3.x compatibility
 from __future__ import absolute_import as __absolute_import
 from __future__ import division as __division
 from __future__ import print_function as __print_function
@@ -15,10 +16,10 @@ from __future__ import print_function as __print_function
 # importing items
 __all__ = ['Pool']
 
-# the standard library
+# the Python standard library
 import multiprocessing as mp
 
-# dependent packages
+# the Python Package Index
 import numpy as np
 
 
