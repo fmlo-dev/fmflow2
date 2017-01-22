@@ -147,20 +147,19 @@
 
 <span class="sd">&quot;&quot;&quot;Module for merging loggings of ASTE.</span>
 
-<span class="sd">Available functions:</span>
-<span class="sd">- fromaste: Read logging data of ASTE and merge them into a FITS object.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
 
-<span class="c1"># the standard library</span>
+<span class="c1"># the Python standard library</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 
-<span class="c1"># dependent packages</span>
+<span class="c1"># the Python Package Index</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">astropy.io</span> <span class="k">import</span> <span class="n">fits</span>
 <span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="k">import</span> <span class="n">Angle</span>
@@ -174,24 +173,25 @@
 <span class="n">EFF</span> <span class="o">=</span> <span class="mf">0.92</span> <span class="c1"># exposure time (s) / interval time (s)</span>
 
 
-<div class="viewcode-block" id="fromaste"><a class="viewcode-back" href="../../../../../_apis/fmflow.io.fits.aste.html#fmflow.io.fits.fromaste">[docs]</a><span class="k">def</span> <span class="nf">fromaste</span><span class="p">(</span><span class="n">fmlolog</span><span class="p">,</span> <span class="n">backendlog</span><span class="p">,</span> <span class="n">antennalog</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="fromaste"><a class="viewcode-back" href="../../../../../apis/fmflow.io.fits.html#fmflow.io.fits.fromaste">[docs]</a><span class="k">def</span> <span class="nf">fromaste</span><span class="p">(</span><span class="n">fmlolog</span><span class="p">,</span> <span class="n">backendlog</span><span class="p">,</span> <span class="n">antennalog</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read logging data of ASTE and merge them into a FITS object.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - fmlolog (str): File name of FMLO logging.</span>
-<span class="sd">    - backendlog (str): File name of backend logging.</span>
-<span class="sd">    - antennalog (str): File name of antenna logging (optional).</span>
+<span class="sd">        fmlolog (str): File name of FMLO logging.</span>
+<span class="sd">        backendlog (str): File name of backend logging.</span>
+<span class="sd">        antennalog (str): File name of antenna logging (optional).</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - fitsobj (HDUlist): HDU list containing the merged data.</span>
+<span class="sd">        fitsobj (HDUlist): HDU list containing the merged data.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># HDU list</span>
     <span class="n">fitsobj</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">HDUList</span><span class="p">()</span>
-    
+
     <span class="c1"># PRIMARY HDU</span>
     <span class="n">hdu</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">PrimaryHDU</span><span class="p">()</span>
     <span class="n">fitsobj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hdu</span><span class="p">)</span>
-    
+
     <span class="c1"># FMLOINFO HDU</span>
     <span class="n">hdu</span> <span class="o">=</span> <span class="n">_read_fmlolog</span><span class="p">(</span><span class="n">fmlolog</span><span class="p">)</span>
     <span class="n">fitsobj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hdu</span><span class="p">)</span>
@@ -208,7 +208,7 @@
         <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;invalid logging type&#39;</span><span class="p">)</span>
 
     <span class="n">fitsobj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hdu</span><span class="p">)</span>
-    
+
     <span class="c1"># ANTENNA HDU</span>
     <span class="k">if</span> <span class="n">antennalog</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">hdu</span> <span class="o">=</span> <span class="n">_read_antennalog</span><span class="p">(</span><span class="n">antennalog</span><span class="p">)</span>
@@ -225,10 +225,11 @@
     <span class="sd">&quot;&quot;&quot;Make a OBSINFO HDU from FITS object.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.</span>
+<span class="sd">        fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.</span>
+<span class="sd">        hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">d_ctl</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fitsobj</span><span class="p">[</span><span class="s1">&#39;BACKEND&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;CTLINFO&#39;</span><span class="p">])</span>
     <span class="n">d_obs</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">fitsobj</span><span class="p">[</span><span class="s1">&#39;BACKEND&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;OBSINFO&#39;</span><span class="p">])</span>
@@ -278,10 +279,11 @@
     <span class="sd">&quot;&quot;&quot;Read a FMLO logging of ASTE.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - fmlolog (str): File name of FMLO logging.</span>
+<span class="sd">        fmlolog (str): File name of FMLO logging.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - hdu (BinTableHDU): HDU containing the read FMLO logging.</span>
+<span class="sd">        hdu (BinTableHDU): HDU containing the read FMLO logging.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">()</span>
     <span class="n">header</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;FMLOLOG&#39;</span>
@@ -316,10 +318,11 @@
     <span class="sd">&quot;&quot;&quot;Read an antenna logging of ASTE.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - antennalog (str): File name of antenna logging.</span>
+<span class="sd">        antennalog (str): File name of antenna logging.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - hdu (BinTableHDU): HDU containing the read antenna logging.</span>
+<span class="sd">        hdu (BinTableHDU): HDU containing the read antenna logging.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">()</span>
     <span class="n">header</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ANTENNA&#39;</span>
@@ -372,10 +375,11 @@
     <span class="sd">&quot;&quot;&quot;Check backend type from a backend logging of ASTE.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - backendlog (str): File name of backend logging.</span>
+<span class="sd">        backendlog (str): File name of backend logging.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - backend (str): Backend type.</span>
+<span class="sd">        backend (str): Backend type.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">.otflog_common</span> <span class="k">import</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">CTL</span>
 
@@ -391,10 +395,11 @@
     <span class="sd">&quot;&quot;&quot;Read a backend logging of ASTE/MAC.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - backendlog (str): File name of backend logging.</span>
+<span class="sd">        backendlog (str): File name of backend logging.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - hdu (BinTableHDU): HDU containing the read backend logging.</span>
+<span class="sd">        hdu (BinTableHDU): HDU containing the read backend logging.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">.otflog_common</span> <span class="k">import</span> <span class="n">HEAD</span><span class="p">,</span> <span class="n">CTL</span>
     <span class="kn">from</span> <span class="nn">.otflog_mac</span> <span class="k">import</span> <span class="n">OBS</span><span class="p">,</span> <span class="n">DAT</span>
@@ -406,13 +411,13 @@
     <span class="n">header</span> <span class="o">=</span> <span class="n">fits</span><span class="o">.</span><span class="n">Header</span><span class="p">()</span>
     <span class="n">header</span><span class="p">[</span><span class="s1">&#39;EXTNAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;BACKEND&#39;</span>
     <span class="n">header</span><span class="p">[</span><span class="s1">&#39;FILENAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">backendlog</span>
-    
+
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">backendlog</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="c1"># control info</span>
         <span class="n">ut</span><span class="o">.</span><span class="n">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">)</span>
         <span class="n">readdata</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">CTL</span><span class="p">)</span>
         <span class="n">header</span><span class="p">[</span><span class="s1">&#39;CTLINFO&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">readdata</span><span class="p">)</span>
-        
+
         <span class="c1"># observation info</span>
         <span class="n">ut</span><span class="o">.</span><span class="n">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">HEAD</span><span class="p">)</span>
         <span class="n">readdata</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">OBS</span><span class="p">)</span>
@@ -431,10 +436,10 @@
             <span class="n">readdata</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">DAT</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                 <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">readdata</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-            
+
             <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">50</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="nb">next</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
-            
+
             <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="c1"># starttime</span>
@@ -478,7 +483,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

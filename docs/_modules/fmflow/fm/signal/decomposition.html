@@ -144,28 +144,31 @@
             
   <h1>Source code for fmflow.fm.signal.decomposition</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding: utf-8</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
 
-<span class="c1"># dependent packages</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
+
+<span class="c1"># the Python Package Index</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="k">import</span> <span class="n">gammaln</span>
 
-<span class="c1"># submodules</span>
+<span class="c1"># FMFlow submodules</span>
 <span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1"># imported items</span>
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pca&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="s1">&#39;ppca&#39;</span><span class="p">]</span>
 
 
 <span class="nd">@fmfunc</span>
 <span class="nd">@timechunk</span>
-<div class="viewcode-block" id="pca"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.signal.html#fmflow.fm.pca">[docs]</a><span class="k">def</span> <span class="nf">pca</span><span class="p">(</span><span class="n">array_in</span><span class="p">,</span> <span class="n">n_pc</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+<div class="viewcode-block" id="pca"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.pca">[docs]</a><span class="k">def</span> <span class="nf">pca</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">n_pc</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">n_pc</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">n_pc</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="s1">&#39;n_pc must be float or int&#39;</span>
 
     <span class="c1"># PCA using SVD</span>
-    <span class="n">U</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">array_in</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">U</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">sumvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">d</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">sumvar</span> <span class="o">/=</span> <span class="n">sumvar</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
@@ -173,9 +176,65 @@
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">n_pc</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
         <span class="n">n_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">sumvar</span><span class="p">,</span> <span class="n">n_pc</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">array_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">U</span><span class="p">[:,:</span><span class="n">n_pc</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="n">n_pc</span><span class="p">]),</span> <span class="n">Vt</span><span class="p">[:</span><span class="n">n_pc</span><span class="p">]))</span>
-    <span class="k">return</span> <span class="n">array_out</span></div>
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">U</span><span class="p">[:,:</span><span class="n">n_pc</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="n">n_pc</span><span class="p">]),</span> <span class="n">Vt</span><span class="p">[:</span><span class="n">n_pc</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
 
+
+<span class="nd">@fmfunc</span>
+<span class="nd">@timechunk</span>
+<div class="viewcode-block" id="ppca"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.ppca">[docs]</a><span class="k">def</span> <span class="nf">ppca</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">max_pc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># PCA using SVD</span>
+    <span class="n">U</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">Vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># estimate n_pc</span>
+    <span class="n">N</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">max_pc</span> <span class="o">=</span> <span class="n">N</span> <span class="k">if</span> <span class="n">max_pc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">max_pc</span>
+
+    <span class="n">l_org</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+    <span class="n">l_org</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span> <span class="o">=</span> <span class="n">d</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">laplace</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">N</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">D</span><span class="o">*</span><span class="n">k</span> <span class="o">-</span> <span class="n">k</span><span class="o">*</span><span class="p">(</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+        <span class="n">v_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">l_org</span><span class="p">[</span><span class="n">k</span><span class="p">:])</span> <span class="o">/</span> <span class="p">(</span><span class="n">D</span><span class="o">-</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">l_opt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">l_org</span><span class="p">)</span>
+        <span class="n">l_opt</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">l_org</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">l_opt</span><span class="p">[</span><span class="n">k</span><span class="p">:]</span> <span class="o">=</span> <span class="n">v_opt</span>
+
+        <span class="k">def</span> <span class="nf">_Az</span><span class="p">():</span>
+            <span class="n">l_org_v</span> <span class="o">=</span> <span class="n">l_org</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">l_org_h</span> <span class="o">=</span> <span class="n">l_org</span>
+            <span class="n">l_opt_v</span> <span class="o">=</span> <span class="n">l_opt</span><span class="p">[:</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">l_opt_h</span> <span class="o">=</span> <span class="n">l_opt</span>
+
+            <span class="n">Az_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">((</span><span class="mi">1</span><span class="o">/</span><span class="n">l_opt_h</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">l_opt_v</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">l_org_v</span><span class="o">-</span><span class="n">l_org_h</span><span class="p">)</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span>
+            <span class="n">Az</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_invalid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">Az_map</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">Az</span>
+
+        <span class="k">def</span> <span class="nf">_pU</span><span class="p">():</span>
+            <span class="n">i</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0</span>
+            <span class="n">q</span>  <span class="o">=</span> <span class="p">(</span><span class="n">D</span><span class="o">-</span><span class="n">i</span><span class="o">+</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
+
+            <span class="n">pU</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">pU</span> <span class="o">+=</span> <span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">pU</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">q</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+            <span class="n">pU</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">gammaln</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">pU</span>
+
+        <span class="n">prob_k</span> <span class="o">=</span> <span class="n">_pU</span><span class="p">()</span>
+        <span class="n">prob_k</span> <span class="o">+=</span> <span class="p">(</span><span class="o">-</span><span class="n">N</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">l_org</span><span class="p">[:</span><span class="n">k</span><span class="p">]))</span>
+        <span class="n">prob_k</span> <span class="o">+=</span> <span class="p">(</span><span class="o">-</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="n">D</span><span class="o">-</span><span class="n">k</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">v_opt</span><span class="p">)</span>
+        <span class="n">prob_k</span> <span class="o">+=</span> <span class="p">((</span><span class="n">m</span><span class="o">+</span><span class="n">k</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">2.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">prob_k</span> <span class="o">+=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">_Az</span><span class="p">()</span>
+        <span class="n">prob_k</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="n">k</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prob_k</span>
+
+    <span class="n">probs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">laplace</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_pc</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+    <span class="n">n_pc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">probs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># reconstruction</span>
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">U</span><span class="p">[:,:</span><span class="n">n_pc</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="n">n_pc</span><span class="p">]),</span> <span class="n">Vt</span><span class="p">[:</span><span class="n">n_pc</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
 </pre></div>
 
            </div>
@@ -187,7 +246,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

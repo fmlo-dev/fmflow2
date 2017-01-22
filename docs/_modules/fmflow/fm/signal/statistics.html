@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>fmflow.fm.spectrum.calibration &mdash; FMFlow 0.1 documentation</title>
+  <title>fmflow.fm.signal.statistics &mdash; FMFlow 0.1 documentation</title>
   
 
   
@@ -125,7 +125,7 @@
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
-      <li>fmflow.fm.spectrum.calibration</li>
+      <li>fmflow.fm.signal.statistics</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -142,7 +142,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for fmflow.fm.spectrum.calibration</h1><div class="highlight"><pre>
+  <h1>Source code for fmflow.fm.signal.statistics</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding: utf-8</span>
 
 <span class="c1"># Python 3.x compatibility</span>
@@ -150,21 +150,32 @@
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
 
+<span class="c1"># the Python Package Index</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
+
 <span class="c1"># imported items</span>
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gettsys&#39;</span><span class="p">,</span> <span class="s1">&#39;calibrate&#39;</span><span class="p">]</span>
-
-<span class="c1"># constants</span>
-<span class="n">T_AMB</span> <span class="o">=</span> <span class="mf">293.0</span> <span class="c1"># ambient temperature</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mad&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="gettsys"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.gettsys">[docs]</a><span class="k">def</span> <span class="nf">gettsys</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">sky</span><span class="p">,</span> <span class="n">T_AMB</span><span class="o">=</span><span class="mf">293.0</span><span class="p">):</span>
-    <span class="n">tsys</span> <span class="o">=</span> <span class="n">T_AMB</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="n">sky</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">tsys</span></div>
+<div class="viewcode-block" id="mad"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.mad">[docs]</a><span class="k">def</span> <span class="nf">mad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the median absolute deviation (MAD) along the given axis.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        array (array-like): An input array.</span>
+<span class="sd">        axis (int, None): Axis along which the MADs are computed.</span>
+<span class="sd">            The default is to compute the MAD along a flattened version of the array.</span>
 
-<div class="viewcode-block" id="calibrate"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.calibrate">[docs]</a><span class="k">def</span> <span class="nf">calibrate</span><span class="p">(</span><span class="n">on</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">sky</span><span class="p">,</span> <span class="n">T_AMB</span><span class="o">=</span><span class="mf">293.0</span><span class="p">):</span>
-    <span class="n">array</span> <span class="o">=</span> <span class="n">T_AMB</span> <span class="o">*</span> <span class="p">(</span><span class="n">on</span><span class="o">-</span><span class="n">off</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">sky</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">array</span></div>
+<span class="sd">    Returns:</span>
+<span class="sd">        mad (array): median absolute deviation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">mad</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span> <span class="o">-</span> <span class="n">ma</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[:,</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mad</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">ma</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">array</span> <span class="o">-</span> <span class="n">ma</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">axis</span><span class="p">)),</span> <span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mad</span></div>
 </pre></div>
 
            </div>

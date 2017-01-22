@@ -154,36 +154,35 @@
 <span class="sd">For example, &#39;&gt;i&#39; (int with big endian), or &#39;10s&#39; (10 chars).</span>
 <span class="sd">For more information, see (http://docs.python.jp/2/library/struct.html).</span>
 
-<span class="sd">Available functions:</span>
-<span class="sd">- readbinary: Sequentially read a data structure on a binary file object.</span>
-<span class="sd">- getfitsformat: Convert a data structure to the corresponding FITS format.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
 
-<span class="c1"># the standard library</span>
+<span class="c1"># the Python standard library</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">struct</span> <span class="k">import</span> <span class="n">calcsize</span><span class="p">,</span> <span class="n">unpack</span>
 
-<span class="c1"># dependent packages</span>
+<span class="c1"># the Python Package Index</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># imported items</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;readbinary&#39;</span><span class="p">,</span> <span class="s1">&#39;getfitsformat&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="readbinary"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.binary.readbinary">[docs]</a><span class="k">def</span> <span class="nf">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
+<div class="viewcode-block" id="readbinary"><a class="viewcode-back" href="../../../apis/fmflow.utils.html#fmflow.utils.readbinary">[docs]</a><span class="k">def</span> <span class="nf">readbinary</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">structure</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Sequentially read a data structure on a binary file object.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - f (file): A binary file object of the logging.</span>
-<span class="sd">    - structure (OrderedDict): An ordered dictionary defining the data structure.</span>
+<span class="sd">        f (file): A binary file object of the logging.</span>
+<span class="sd">        structure (OrderedDict): An ordered dictionary defining the data structure.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - readdata (OrderedDict): An ordered dictionary which stores the read data.</span>
+<span class="sd">        readdata (OrderedDict): An ordered dictionary which stores the read data.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">readdata</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
@@ -192,14 +191,15 @@
     <span class="k">return</span> <span class="n">readdata</span></div>
 
 
-<div class="viewcode-block" id="getfitsformat"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.binary.getfitsformat">[docs]</a><span class="k">def</span> <span class="nf">getfitsformat</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
+<div class="viewcode-block" id="getfitsformat"><a class="viewcode-back" href="../../../apis/fmflow.utils.html#fmflow.utils.getfitsformat">[docs]</a><span class="k">def</span> <span class="nf">getfitsformat</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a data structure to the corresponding FITS format.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">    - structure (OrderedDict): An ordered dictionary defining the data structure.</span>
+<span class="sd">        structure (OrderedDict): An ordered dictionary defining the data structure.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">    - formats (OrderedDict): An ordered dictionary which stores the FITS formats.</span>
+<span class="sd">        formats (OrderedDict): An ordered dictionary which stores the FITS formats.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">formats</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
@@ -262,7 +262,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

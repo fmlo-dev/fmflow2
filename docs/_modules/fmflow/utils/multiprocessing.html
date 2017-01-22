@@ -149,42 +149,41 @@
 
 <span class="sd">This module provides helper classes for multiprocessing in FMFlow.</span>
 
-<span class="sd">Available classes:</span>
-<span class="sd">- Pool: Similar to multiprocessing.Pool, but compatible with local function.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
+
+<span class="c1"># the Python standard library</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+
+<span class="c1"># the Python Package Index</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># importing items</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Pool&#39;</span><span class="p">]</span>
 
-<span class="c1"># the standard library</span>
-<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
 
-<span class="c1"># dependent packages</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-
-<div class="viewcode-block" id="Pool"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.multiprocessing.Pool">[docs]</a><span class="k">class</span> <span class="nc">Pool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Pool"><a class="viewcode-back" href="../../../apis/fmflow.utils.html#fmflow.utils.Pool">[docs]</a><span class="k">class</span> <span class="nc">Pool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a process pool object.</span>
-<span class="sd">    </span>
-<span class="sd">    Public methods:</span>
-<span class="sd">    - map: Return a list of the results of applying the function to the sequence.</span>
-<span class="sd">    </span>
-<span class="sd">    Public attributes:</span>
-<span class="sd">    - mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">processes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Initialize a process pool object.</span>
-<span class="sd">        </span>
+
 <span class="sd">        At this moment, whether your NumPy/SciPy is compatible with multiprocessing,</span>
 <span class="sd">        is automatically checked and the result is stored in self.mpcompatible.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
-<span class="sd">        - processes (int): The number of processes to be created. Default is</span>
-<span class="sd">          &lt;CPU count of your machine&gt; -1 (one thread is saved for backup).</span>
+<span class="sd">            processes (int): The number of processes to be created. Default is</span>
+<span class="sd">                &lt;CPU count of your machine&gt; -1 (one thread is saved for backup).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">processes</span> <span class="o">=</span> <span class="n">processes</span> <span class="ow">or</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
 
@@ -205,19 +204,20 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mpcompatible</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="Pool.map"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.multiprocessing.Pool.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">sequence</span><span class="p">):</span>
+<div class="viewcode-block" id="Pool.map"><a class="viewcode-back" href="../../../apis/fmflow.utils.html#fmflow.utils.Pool.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">sequence</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a list of the results of applying the function to the sequence.</span>
-<span class="sd">        </span>
+
 <span class="sd">        If self.mpcompatible is True, mapping is multiprocessed with the spacified</span>
 <span class="sd">        number of processes (default is &lt;CPU count&gt; - 1). If False, mapping is</span>
 <span class="sd">        singleprocessed (equivalent to the bulitin map function).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">        - func (function): Applying function.</span>
-<span class="sd">        - sequence (list): List of items to which function is applied.</span>
+<span class="sd">            func (function): Applying function.</span>
+<span class="sd">            sequence (list): List of items to which function is applied.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        - ret (list): The results of applying the function to the sequence.</span>
+<span class="sd">            ret (list): The results of applying the function to the sequence.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpcompatible</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpmap</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">sequence</span><span class="p">)</span>
@@ -249,7 +249,6 @@
             <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">ret</span></div>
-
 </pre></div>
 
            </div>
@@ -261,7 +260,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

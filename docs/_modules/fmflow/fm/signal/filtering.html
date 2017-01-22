@@ -145,40 +145,45 @@
   <h1>Source code for fmflow.fm.signal.filtering</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding: utf-8</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
 
-<span class="c1"># dependent packages</span>
+<span class="c1"># the Python standard library</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+
+<span class="c1"># the Python Package Index</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">signal</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">interpolate</span>
+<span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="k">import</span> <span class="n">filters</span>
 
-<span class="c1"># submodules</span>
+<span class="c1"># FMFlow submodules</span>
 <span class="kn">from</span> <span class="nn">..core</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1"># imported items</span>
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hmedfilt&#39;</span><span class="p">,</span> <span class="s1">&#39;lmeds_spline&#39;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hmedfilt&#39;</span><span class="p">,</span> <span class="s1">&#39;lmeds_spline&#39;</span><span class="p">,</span> <span class="s1">&#39;fme_gaussian_filter&#39;</span><span class="p">]</span>
 
 
 <span class="nd">@fmfunc</span>
 <span class="nd">@timechunk</span>
-<div class="viewcode-block" id="hmedfilt"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.signal.html#fmflow.fm.hmedfilt">[docs]</a><span class="k">def</span> <span class="nf">hmedfilt</span><span class="p">(</span><span class="n">array_in</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-    <span class="n">array_out</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">medfilt</span><span class="p">(</span><span class="n">array_in</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">kernel</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">array_out</span></div>
+<div class="viewcode-block" id="hmedfilt"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.hmedfilt">[docs]</a><span class="k">def</span> <span class="nf">hmedfilt</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">medfilt</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">kernel</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
 
 
 <span class="nd">@fmfunc</span>
 <span class="nd">@timechunk</span>
-<div class="viewcode-block" id="lmeds_spline"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.signal.html#fmflow.fm.lmeds_spline">[docs]</a><span class="k">def</span> <span class="nf">lmeds_spline</span><span class="p">(</span><span class="n">array_in</span><span class="p">,</span> <span class="n">nsample</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">array_in</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">array_in</span> <span class="o">=</span> <span class="n">array_in</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+<div class="viewcode-block" id="lmeds_spline"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.lmeds_spline">[docs]</a><span class="k">def</span> <span class="nf">lmeds_spline</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">nsample</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">niter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">fmarray_in</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fmarray_in</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
 
-    <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">array_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">array_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">array_in</span><span class="p">)</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">fmarray_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">array_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">array_in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">fmarray_in</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fmarray_in</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="n">models</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">medians</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
@@ -194,11 +199,53 @@
             <span class="n">medians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">((</span><span class="n">data</span><span class="o">-</span><span class="n">model</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
             <span class="n">models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
             <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
-            
-        <span class="n">array_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">medians</span><span class="p">)]</span>
-    
-    <span class="n">array_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">array_out</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">array_out</span></div>
+
+        <span class="n">fmarray_out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">medians</span><span class="p">)]</span>
+
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">fmarray_out</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
+
+
+<div class="viewcode-block" id="fme_gaussian_filter"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.fme_gaussian_filter">[docs]</a><span class="k">def</span> <span class="nf">fme_gaussian_filter</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply Gaussian filter to an array.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fmarray_in (array)</span>
+<span class="sd">        sigma (float)</span>
+<span class="sd">        dz (float)</span>
+<span class="sd">        m (int)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        fmarray_out (array)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fmarray_in</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)),</span> <span class="n">fmarray_in</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">/</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">dz</span><span class="p">)</span>
+
+    <span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">filters</span><span class="o">.</span><span class="n">convolve1d</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">z</span> <span class="o">/</span> <span class="n">dz</span>
+    <span class="n">binrho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">rho</span><span class="p">))</span><span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">rho</span><span class="p">))</span><span class="o">+</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">binidx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="n">binrho</span><span class="p">)</span>
+
+    <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">binrho</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="n">w</span><span class="p">[</span><span class="n">binidx</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">g</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">wc</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="n">w</span><span class="p">)))</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">wc</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">wc</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">+</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">wc</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">wc</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span>
+
+    <span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">dz</span> <span class="o">*</span> <span class="p">(</span><span class="n">m</span><span class="p">(</span><span class="n">binrho</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">q</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="n">q</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">q</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">q</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">+</span><span class="n">q</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">fmarray_out</span></div>
 </pre></div>
 
            </div>
@@ -210,7 +257,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

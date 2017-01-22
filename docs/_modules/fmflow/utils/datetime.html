@@ -150,35 +150,35 @@
 <span class="sd">This module provides converter functions of datetime &lt;==&gt; string</span>
 <span class="sd">dealing with ISO 8601 format (YYYY-mm-ddTHH:MM:SS.ssssss).</span>
 
-<span class="sd">Available classes:</span>
-<span class="sd">- DatetimeConverter: Convert a datetime string in given format to one in ISO format.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
+
+<span class="c1"># the Python standard library</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 
 <span class="c1"># importing items</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DatetimeConverter&#39;</span><span class="p">]</span>
-
-<span class="c1"># the standard library</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 
 <span class="c1"># constants</span>
 <span class="n">ISO_8601</span> <span class="o">=</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">&#39;</span>
 
 
-<div class="viewcode-block" id="DatetimeConverter"><a class="viewcode-back" href="../../../_apis/fmflow.utils.html#fmflow.utils.datetime.DatetimeConverter">[docs]</a><span class="k">class</span> <span class="nc">DatetimeConverter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="DatetimeConverter"><a class="viewcode-back" href="../../../apis/fmflow.utils.html#fmflow.utils.DatetimeConverter">[docs]</a><span class="k">class</span> <span class="nc">DatetimeConverter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a datetime string in given format to one in ISO format.</span>
-<span class="sd">    </span>
-<span class="sd">    Public methods:</span>
-<span class="sd">    - __call__: c.__call__(string) is equivalent to c(string).</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span>
-    
+
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;c.__call__(string) is equivalent to c(string).&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;c.__call__(string) is equivalent to c(string).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fmt</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">ISO_8601</span><span class="p">)</span></div>
 </pre></div>
 
@@ -191,7 +191,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

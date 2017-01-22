@@ -1,14 +1,6 @@
 fmflow.io.fits package
 ======================
 
-Subpackages
------------
-
-.. toctree::
-
-    fmflow.io.fits.array
-    fmflow.io.fits.aste
-
 Module contents
 ---------------
 

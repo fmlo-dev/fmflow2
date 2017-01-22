@@ -83,12 +83,6 @@
                 <!-- Local TOC -->
                 <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">fmflow.utils package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-fmflow.utils.binary">fmflow.utils.binary module</a></li>
-<li><a class="reference internal" href="#module-fmflow.utils.datetime">fmflow.utils.datetime module</a></li>
-<li><a class="reference internal" href="#module-fmflow.utils.exceptions">fmflow.utils.exceptions module</a></li>
-<li><a class="reference internal" href="#module-fmflow.utils.multiprocessing">fmflow.utils.multiprocessing module</a></li>
-<li><a class="reference internal" href="#module-fmflow.utils.progress">fmflow.utils.progress module</a></li>
 <li><a class="reference internal" href="#module-fmflow.utils">Module contents</a></li>
 </ul>
 </li>
@@ -140,7 +134,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/_apis/fmflow.utils.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apis/fmflow.utils.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -155,126 +149,6 @@
             
   <div class="section" id="fmflow-utils-package">
 <h1>fmflow.utils package<a class="headerlink" href="#fmflow-utils-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-fmflow.utils.binary">
-<span id="fmflow-utils-binary-module"></span><h2>fmflow.utils.binary module<a class="headerlink" href="#module-fmflow.utils.binary" title="Permalink to this headline">¶</a></h2>
-<p>Module for reading binary data in FMFlow.</p>
-<p>Structure is an ordered dictionary (collections.OrderedDict),
-which defines each name of parameter and corresponding (format, shape)
-and will be used with the fmflow.utils.readbinary function.
-Format must be compatible with the Python&#8217;s struct module.
-For example, &#8216;&gt;i&#8217; (int with big endian), or &#8216;10s&#8217; (10 chars).
-For more information, see (<a class="reference external" href="http://docs.python.jp/2/library/struct.html">http://docs.python.jp/2/library/struct.html</a>).</p>
-<p>Available functions:
-- readbinary: Sequentially read a data structure on a binary file object.
-- getfitsformat: Convert a data structure to the corresponding FITS format.</p>
-<dl class="function">
-<dt id="fmflow.utils.binary.readbinary">
-<code class="descclassname">fmflow.utils.binary.</code><code class="descname">readbinary</code><span class="sig-paren">(</span><em>f</em>, <em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/binary.html#readbinary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.binary.readbinary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sequentially read a data structure on a binary file object.</p>
-<p>Args:
-- f (file): A binary file object of the logging.
-- structure (OrderedDict): An ordered dictionary defining the data structure.</p>
-<p>Returns:
-- readdata (OrderedDict): An ordered dictionary which stores the read data.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="fmflow.utils.binary.getfitsformat">
-<code class="descclassname">fmflow.utils.binary.</code><code class="descname">getfitsformat</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/binary.html#getfitsformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.binary.getfitsformat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a data structure to the corresponding FITS format.</p>
-<p>Args:
-- structure (OrderedDict): An ordered dictionary defining the data structure.</p>
-<p>Returns:
-- formats (OrderedDict): An ordered dictionary which stores the FITS formats.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-fmflow.utils.datetime">
-<span id="fmflow-utils-datetime-module"></span><h2>fmflow.utils.datetime module<a class="headerlink" href="#module-fmflow.utils.datetime" title="Permalink to this headline">¶</a></h2>
-<p>Module for date and time format in FMFlow.</p>
-<p>This module provides converter functions of datetime &lt;==&gt; string
-dealing with ISO 8601 format (YYYY-mm-ddTHH:MM:SS.ssssss).</p>
-<p>Available classes:
-- DatetimeConverter: Convert a datetime string in given format to one in ISO format.</p>
-<dl class="class">
-<dt id="fmflow.utils.datetime.DatetimeConverter">
-<em class="property">class </em><code class="descclassname">fmflow.utils.datetime.</code><code class="descname">DatetimeConverter</code><span class="sig-paren">(</span><em>fmt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/datetime.html#DatetimeConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.datetime.DatetimeConverter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Convert a datetime string in given format to one in ISO format.</p>
-<p>Public methods:
-- __call__: c.__call__(string) is equivalent to c(string).</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-fmflow.utils.exceptions">
-<span id="fmflow-utils-exceptions-module"></span><h2>fmflow.utils.exceptions module<a class="headerlink" href="#module-fmflow.utils.exceptions" title="Permalink to this headline">¶</a></h2>
-<p>Module for exception and warning in FMFlow.</p>
-<p>Available classes:
-- FMFlowError: Error class of FMFlow.
-- FMFlowWarning: Warning class of FMFlow.</p>
-<dl class="exception">
-<dt id="fmflow.utils.exceptions.FMFlowError">
-<em class="property">exception </em><code class="descclassname">fmflow.utils.exceptions.</code><code class="descname">FMFlowError</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/exceptions.html#FMFlowError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.exceptions.FMFlowError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></code></p>
-<p>Error class of FMFlow.</p>
-</dd></dl>
-
-<dl class="exception">
-<dt id="fmflow.utils.exceptions.FMFlowWarning">
-<em class="property">exception </em><code class="descclassname">fmflow.utils.exceptions.</code><code class="descname">FMFlowWarning</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/exceptions.html#FMFlowWarning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.exceptions.FMFlowWarning" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">exceptions.Warning</span></code></p>
-<p>Warning class of FMFlow.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-fmflow.utils.multiprocessing">
-<span id="fmflow-utils-multiprocessing-module"></span><h2>fmflow.utils.multiprocessing module<a class="headerlink" href="#module-fmflow.utils.multiprocessing" title="Permalink to this headline">¶</a></h2>
-<p>Module for multiprocessing in FMFlow.</p>
-<p>This module provides helper classes for multiprocessing in FMFlow.</p>
-<p>Available classes:
-- Pool: Similar to multiprocessing.Pool, but compatible with local function.</p>
-<dl class="class">
-<dt id="fmflow.utils.multiprocessing.Pool">
-<em class="property">class </em><code class="descclassname">fmflow.utils.multiprocessing.</code><code class="descname">Pool</code><span class="sig-paren">(</span><em>processes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/multiprocessing.html#Pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.multiprocessing.Pool" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Return a process pool object.</p>
-<p>Public methods:
-- map: Return a list of the results of applying the function to the sequence.</p>
-<p>Public attributes:
-- mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.</p>
-<dl class="method">
-<dt id="fmflow.utils.multiprocessing.Pool.map">
-<code class="descname">map</code><span class="sig-paren">(</span><em>func</em>, <em>sequence</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/multiprocessing.html#Pool.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.multiprocessing.Pool.map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of the results of applying the function to the sequence.</p>
-<p>If self.mpcompatible is True, mapping is multiprocessed with the spacified
-number of processes (default is &lt;CPU count&gt; - 1). If False, mapping is
-singleprocessed (equivalent to the bulitin map function).</p>
-<p>Args:
-- func (function): Applying function.
-- sequence (list): List of items to which function is applied.</p>
-<p>Returns:
-- ret (list): The results of applying the function to the sequence.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-fmflow.utils.progress">
-<span id="fmflow-utils-progress-module"></span><h2>fmflow.utils.progress module<a class="headerlink" href="#module-fmflow.utils.progress" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="fmflow.utils.progress.inprogress">
-<code class="descclassname">fmflow.utils.progress.</code><code class="descname">inprogress</code><span class="sig-paren">(</span><em>message='in progress'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/progress.html#inprogress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.progress.inprogress" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="fmflow.utils.progress.progressbar">
-<code class="descclassname">fmflow.utils.progress.</code><code class="descname">progressbar</code><span class="sig-paren">(</span><em>message='progress'</em>, <em>N=100</em>, <em>barwidth=50</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/progress.html#progressbar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.progress.progressbar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
 <div class="section" id="module-fmflow.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fmflow.utils" title="Permalink to this headline">¶</a></h2>
 <p>Module for the internal use in FMFlow.</p>
@@ -287,21 +161,42 @@ Developers must use this module like:</p>
 <dt id="fmflow.utils.readbinary">
 <code class="descclassname">fmflow.utils.</code><code class="descname">readbinary</code><span class="sig-paren">(</span><em>f</em>, <em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/binary.html#readbinary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.readbinary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sequentially read a data structure on a binary file object.</p>
-<p>Args:
-- f (file): A binary file object of the logging.
-- structure (OrderedDict): An ordered dictionary defining the data structure.</p>
-<p>Returns:
-- readdata (OrderedDict): An ordered dictionary which stores the read data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>f</strong> (<em>file</em>) &#8211; A binary file object of the logging.</li>
+<li><strong>structure</strong> (<em>OrderedDict</em>) &#8211; An ordered dictionary defining the data structure.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>readdata</strong> &#8211; An ordered dictionary which stores the read data.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">OrderedDict</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.utils.getfitsformat">
 <code class="descclassname">fmflow.utils.</code><code class="descname">getfitsformat</code><span class="sig-paren">(</span><em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/binary.html#getfitsformat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.getfitsformat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a data structure to the corresponding FITS format.</p>
-<p>Args:
-- structure (OrderedDict): An ordered dictionary defining the data structure.</p>
-<p>Returns:
-- formats (OrderedDict): An ordered dictionary which stores the FITS formats.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>structure</strong> (<em>OrderedDict</em>) &#8211; An ordered dictionary defining the data structure.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>formats</strong> &#8211; An ordered dictionary which stores the FITS formats.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">OrderedDict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -309,8 +204,6 @@ Developers must use this module like:</p>
 <em class="property">class </em><code class="descclassname">fmflow.utils.</code><code class="descname">DatetimeConverter</code><span class="sig-paren">(</span><em>fmt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/datetime.html#DatetimeConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.DatetimeConverter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Convert a datetime string in given format to one in ISO format.</p>
-<p>Public methods:
-- __call__: c.__call__(string) is equivalent to c(string).</p>
 </dd></dl>
 
 <dl class="exception">
@@ -332,10 +225,12 @@ Developers must use this module like:</p>
 <em class="property">class </em><code class="descclassname">fmflow.utils.</code><code class="descname">Pool</code><span class="sig-paren">(</span><em>processes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/multiprocessing.html#Pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.Pool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Return a process pool object.</p>
-<p>Public methods:
-- map: Return a list of the results of applying the function to the sequence.</p>
-<p>Public attributes:
-- mpcompatible (bool): Whether your NumPy/SciPy is compatible with multiprocessing.</p>
+<dl class="attribute">
+<dt id="fmflow.utils.Pool.mpcompatible">
+<code class="descname">mpcompatible</code><a class="headerlink" href="#fmflow.utils.Pool.mpcompatible" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> &#8211; Whether your NumPy/SciPy is compatible with multiprocessing.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="fmflow.utils.Pool.map">
 <code class="descname">map</code><span class="sig-paren">(</span><em>func</em>, <em>sequence</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/utils/multiprocessing.html#Pool.map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.utils.Pool.map" title="Permalink to this definition">¶</a></dt>
@@ -343,11 +238,24 @@ Developers must use this module like:</p>
 <p>If self.mpcompatible is True, mapping is multiprocessed with the spacified
 number of processes (default is &lt;CPU count&gt; - 1). If False, mapping is
 singleprocessed (equivalent to the bulitin map function).</p>
-<p>Args:
-- func (function): Applying function.
-- sequence (list): List of items to which function is applied.</p>
-<p>Returns:
-- ret (list): The results of applying the function to the sequence.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>func</strong> (<em>function</em>) &#8211; Applying function.</li>
+<li><strong>sequence</strong> (<em>list</em>) &#8211; List of items to which function is applied.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ret</strong> &#8211; The results of applying the function to the sequence.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -375,7 +283,7 @@ singleprocessed (equivalent to the bulitin map function).</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

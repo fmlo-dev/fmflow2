@@ -145,14 +145,15 @@
   <h1>Source code for fmflow.io.fits.array.array</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding: utf-8</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
 
-<span class="c1"># the standard library</span>
+<span class="c1"># the Python standard library</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="c1"># dependent packages¬</span>
+<span class="c1"># the Python Package Index¬</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">astropy.io</span> <span class="k">import</span> <span class="n">fits</span>
 <span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">ut</span>
@@ -161,16 +162,17 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;getarray&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="getarray"><a class="viewcode-back" href="../../../../../_apis/fmflow.io.fits.array.html#fmflow.io.fits.getarray">[docs]</a><span class="k">def</span> <span class="nf">getarray</span><span class="p">(</span><span class="n">fitsname</span><span class="p">,</span> <span class="n">arrayid</span><span class="p">,</span> <span class="n">scantype</span><span class="p">):</span>
+<div class="viewcode-block" id="getarray"><a class="viewcode-back" href="../../../../../apis/fmflow.io.fits.html#fmflow.io.fits.getarray">[docs]</a><span class="k">def</span> <span class="nf">getarray</span><span class="p">(</span><span class="n">fitsname</span><span class="p">,</span> <span class="n">arrayid</span><span class="p">,</span> <span class="n">scantype</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a modulated fmarray from a FMFITS.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
-<span class="sd">    - fitsname (str): File name of a FMFITS.</span>
-<span class="sd">    - arrayid (str): An array ID with which the output fmarray is created.</span>
-<span class="sd">    - scantype (str): A scan type with which the output fmarray is created.</span>
-<span class="sd">    </span>
+<span class="sd">        fitsname (str): File name of a FMFITS.</span>
+<span class="sd">        arrayid (str): An array ID with which the output fmarray is created.</span>
+<span class="sd">        scantype (str): A scan type with which the output fmarray is created.</span>
+
 <span class="sd">    Returns:</span>
-<span class="sd">    - fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</span>
+<span class="sd">        fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">fmflow</span> <span class="k">import</span> <span class="n">fm</span>
     <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">fitsname</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -212,7 +214,7 @@
             <span class="n">fmfreq_matched</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fmfreq</span><span class="p">[</span><span class="n">t_fl</span><span class="o">==</span><span class="n">t</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="n">fmch</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">fmfreq_matched</span><span class="p">)</span> <span class="o">/</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;chanwidth&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        
+
         <span class="n">fmarray</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">fmch</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fmarray</span></div>
 </pre></div>
@@ -226,7 +228,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

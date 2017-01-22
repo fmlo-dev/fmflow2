@@ -83,7 +83,6 @@
                 <!-- Local TOC -->
                 <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">fmflow.fm package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#module-fmflow.fm">Module contents</a></li>
 </ul>
 </li>
@@ -135,7 +134,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/_apis/fmflow.fm.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/apis/fmflow.fm.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -150,67 +149,68 @@
             
   <div class="section" id="fmflow-fm-package">
 <h1>fmflow.fm package<a class="headerlink" href="#fmflow-fm-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="fmflow.fm.core.html">fmflow.fm.core package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.core.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.core.html#module-fmflow.fm.core.array">fmflow.fm.core.array module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.core.html#module-fmflow.fm.core.arrayfunc">fmflow.fm.core.arrayfunc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.core.html#module-fmflow.fm.core">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="fmflow.fm.signal.html">fmflow.fm.signal package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.signal.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.signal.html#module-fmflow.fm.signal.decomposition">fmflow.fm.signal.decomposition module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.signal.html#module-fmflow.fm.signal.filtering">fmflow.fm.signal.filtering module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.signal.html#module-fmflow.fm.signal">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="fmflow.fm.spectrum.html">fmflow.fm.spectrum package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.spectrum.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.spectrum.html#module-fmflow.fm.spectrum.calibration">fmflow.fm.spectrum.calibration module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.spectrum.html#module-fmflow.fm.spectrum.spectrum">fmflow.fm.spectrum.spectrum module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fmflow.fm.spectrum.html#module-fmflow.fm.spectrum">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 <div class="section" id="module-fmflow.fm">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fmflow.fm" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="fmflow.fm.array">
 <code class="descclassname">fmflow.fm.</code><code class="descname">array</code><span class="sig-paren">(</span><em>array</em>, <em>fmch=None</em>, <em>coord=None</em>, <em>info=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a modulated fmarray from each argument.</p>
-<p>Args:
-- array (masked array): A timestream array (mask is optional).
-- fmch (array): Array of modulation frequencies in units of channel.
-- coord (array): Array of observed coordinates in units of degrees.
-- info (dict): Information of the array, observation, etc.</p>
-<p>Returns:
-- fmarray (FMArray): A modulated fmarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>masked array</em>) &#8211; A timestream array (mask is optional).</li>
+<li><strong>fmch</strong> (<a class="reference internal" href="#fmflow.fm.array" title="fmflow.fm.array"><em>array</em></a>) &#8211; Array of modulation frequencies in units of channel.</li>
+<li><strong>coord</strong> (<a class="reference internal" href="#fmflow.fm.array" title="fmflow.fm.array"><em>array</em></a>) &#8211; Array of observed coordinates in units of degrees.</li>
+<li><strong>info</strong> (<em>dict</em>) &#8211; Information of the array, observation, etc.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray</strong> &#8211; A modulated fmarray.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.asarray">
 <code class="descclassname">fmflow.fm.</code><code class="descname">asarray</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#asarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.asarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the input array to a modulated fmarray.</p>
-<p>Args:
-- array (array-like): An input array-like object.</p>
-<p>Returns:
-- fmarray (FMArray): An output modulated fmarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> (<em>array-like</em>) &#8211; An input array-like object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>fmarray</strong> &#8211; An output modulated fmarray.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">FMArray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.asmaskedarray">
 <code class="descclassname">fmflow.fm.</code><code class="descname">asmaskedarray</code><span class="sig-paren">(</span><em>fmarray</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#asmaskedarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.asmaskedarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the fmarray to a NumPy masked array.</p>
-<p>Args:
-- fmarray (FMArray): An imput fmarray</p>
-<p>Returns:
-- array (masked array): An output NumPy masked array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmarray</strong> (<em>FMArray</em>) &#8211; An imput fmarray</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>array</strong> &#8211; An output NumPy masked array.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">masked array</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -219,12 +219,25 @@
 <dd><p>Create a modulated fmarray from a FMFITS.</p>
 <p>This functions is equivalent to the fmflow.io.fits.getarray function
 for the convenience (users can use it w/o importing fmflow.io.fits).</p>
-<p>Args:
-- fitsname (str): File name of a FMFITS.
-- arrayid (str): An array ID with which the output fmarray is created.
-- scantype (str): A scan type with which the output fmarray is created.</p>
-<p>Returns:
-- fmarray (FMArray): An output fmarray of the spacified array ID and scan type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fitsname</strong> (<em>str</em>) &#8211; File name of a FMFITS.</li>
+<li><strong>arrayid</strong> (<em>str</em>) &#8211; An array ID with which the output fmarray is created.</li>
+<li><strong>scantype</strong> (<em>str</em>) &#8211; A scan type with which the output fmarray is created.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray</strong> &#8211; An output fmarray of the spacified array ID and scan type.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -232,13 +245,25 @@ for the convenience (users can use it w/o importing fmflow.io.fits).</p>
 <code class="descclassname">fmflow.fm.</code><code class="descname">demodulate</code><span class="sig-paren">(</span><em>fmarray_in</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#demodulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.demodulate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a demodulated fmarray from the modulated one.</p>
 <p>This function is only available when the input fmarray is modulated.</p>
-<p>Args:
-- fmarray_in (FMArray): An input modulated fmarray.
-- reverse (bool): If True, the input fmarray is reverse-demodulated</p>
-<blockquote>
-<div>(i.e. fmch * -1 is used for demodulation). Default is False.</div></blockquote>
-<p>Returns:
-- fmarray_out (FMArray): An output demodulated fmarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fmarray_in</strong> (<em>FMArray</em>) &#8211; An input modulated fmarray.</li>
+<li><strong>reverse</strong> (<em>bool</em>) &#8211; If True, the input fmarray is reverse-demodulated
+(i.e. fmch * -1 is used for demodulation). Default is False.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray_out</strong> &#8211; An output demodulated fmarray.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -246,88 +271,136 @@ for the convenience (users can use it w/o importing fmflow.io.fits).</p>
 <code class="descclassname">fmflow.fm.</code><code class="descname">modulate</code><span class="sig-paren">(</span><em>fmarray_in</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#modulate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.modulate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an modulated fmarray from the demodulated one.</p>
 <p>This function is only available when the input fmarray is demodulated.</p>
-<p>Args:
-- fmarray_in (FMArray): An input demodulated fmarray.</p>
-<p>Returns:
-- fmarray_out (FMArray): An output modulated fmarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmarray_in</strong> (<em>FMArray</em>) &#8211; An input demodulated fmarray.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>fmarray_out</strong> &#8211; An output modulated fmarray.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">FMArray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.zeros">
 <code class="descclassname">fmflow.fm.</code><code class="descname">zeros</code><span class="sig-paren">(</span><em>shape</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>order='C'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#zeros"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.zeros" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a modulated fmarray of given shape and type, filled with zeros.</p>
-<p>Args:
-- shape (int or sequence of ints): Shape of the fmarray.
-- dtype (data-type): The desired data-type for the fmarray.
-- order (&#8216;C&#8217; or &#8216;F&#8217;): Whether to store multidimensional data</p>
-<blockquote>
-<div>in C- or Fortran-contiguous (row- or column-wise) order in memory.</div></blockquote>
-<ul class="simple">
-<li>kwargs (optional): Other arguments (fmch, coord, and info).</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong> (<em>int or sequence of ints</em>) &#8211; Shape of the fmarray.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) &#8211; The desired data-type for the fmarray.</li>
+<li><strong>order</strong> (<em>'C' or 'F'</em>) &#8211; Whether to store multidimensional data
+in C- or Fortran-contiguous (row- or column-wise) order in memory.</li>
+<li><strong>kwargs</strong> (<em>optional</em>) &#8211; Other arguments (fmch, coord, and info).</li>
 </ul>
-<p>Returns:
-- fmarray (FMArray): An output modulated fmarray of zeros.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray</strong> &#8211; An output modulated fmarray of zeros.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.ones">
 <code class="descclassname">fmflow.fm.</code><code class="descname">ones</code><span class="sig-paren">(</span><em>shape</em>, <em>dtype=&lt;type 'float'&gt;</em>, <em>order='C'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#ones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.ones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a modulated fmarray of given shape and type, filled with ones.</p>
-<p>Args:
-- shape (int or sequence of ints): Shape of the fmarray.
-- dtype (data-type): The desired data-type for the fmarray.
-- order (&#8216;C&#8217; or &#8216;F&#8217;): Whether to store multidimensional data</p>
-<blockquote>
-<div>in C- or Fortran-contiguous (row- or column-wise) order in memory.</div></blockquote>
-<ul class="simple">
-<li>kwargs (optional): Other arguments (fmch, coord, and info).</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong> (<em>int or sequence of ints</em>) &#8211; Shape of the fmarray.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) &#8211; The desired data-type for the fmarray.</li>
+<li><strong>order</strong> (<em>'C' or 'F'</em>) &#8211; Whether to store multidimensional data
+in C- or Fortran-contiguous (row- or column-wise) order in memory.</li>
+<li><strong>kwargs</strong> (<em>optional</em>) &#8211; Other arguments (fmch, coord, and info).</li>
 </ul>
-<p>Returns:
-- fmarray (FMArray): An output modulated fmarray of ones.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray</strong> &#8211; An output modulated fmarray of ones.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.zeros_like">
 <code class="descclassname">fmflow.fm.</code><code class="descname">zeros_like</code><span class="sig-paren">(</span><em>array</em>, <em>dtype=None</em>, <em>order='K'</em>, <em>keepmeta=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#zeros_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.zeros_like" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a fmarray of zeros with the same shape and type as an input array.</p>
-<p>Args:
-- array (array-like): The shape and data-type of it define</p>
-<blockquote>
-<div>these same attributes of the output fmarray.</div></blockquote>
-<ul class="simple">
-<li>dtype (data-type): If spacified, this function overrides
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>array-like</em>) &#8211; The shape and data-type of it define
+these same attributes of the output fmarray.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) &#8211; If spacified, this function overrides
 the data-type of the output fmarray.</li>
-<li>order (&#8216;C&#8217;, &#8216;F&#8217;, &#8216;A&#8217;, or &#8216;K&#8217;):  If spacified, this function overrides
+<li><strong>order</strong> (<em>'C', 'F', 'A', or 'K'</em>) &#8211; If spacified, this function overrides
 the memory layout of the result. &#8216;C&#8217; means C-order, &#8216;F&#8217; means F-order,
 &#8216;A&#8217; means &#8216;F&#8217; if <cite>a</cite> is Fortran contiguous, &#8216;C&#8217; otherwise.
 &#8216;K&#8217; means match the layout of <cite>a</cite> as closely as possible.</li>
-<li>keepmeta (bool): Whether table and info are kept in the output fmarray
+<li><strong>keepmeta</strong> (<em>bool</em>) &#8211; Whether table and info are kept in the output fmarray
 if the input array is fmarray. Default is True.</li>
 </ul>
-<p>Returns:
-- fmarray (FMArray): An output fmarray of zeros.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray</strong> &#8211; An output fmarray of zeros.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.ones_like">
 <code class="descclassname">fmflow.fm.</code><code class="descname">ones_like</code><span class="sig-paren">(</span><em>array</em>, <em>dtype=None</em>, <em>order='K'</em>, <em>keepmeta=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#ones_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.ones_like" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a fmarray of ones with the same shape and type as an input array.</p>
-<p>Args:
-- array (array-like): The shape and data-type of it define</p>
-<blockquote>
-<div>these same attributes of the output fmarray.</div></blockquote>
-<ul class="simple">
-<li>dtype (data-type): If spacified, this function overrides
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>array-like</em>) &#8211; The shape and data-type of it define
+these same attributes of the output fmarray.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) &#8211; If spacified, this function overrides
 the data-type of the output fmarray.</li>
-<li>order (&#8216;C&#8217;, &#8216;F&#8217;, &#8216;A&#8217;, or &#8216;K&#8217;):  If spacified, this function overrides
+<li><strong>order</strong> (<em>'C', 'F', 'A', or 'K'</em>) &#8211; If spacified, this function overrides
 the memory layout of the result. &#8216;C&#8217; means C-order, &#8216;F&#8217; means F-order,
 &#8216;A&#8217; means &#8216;F&#8217; if <cite>a</cite> is Fortran contiguous, &#8216;C&#8217; otherwise.
 &#8216;K&#8217; means match the layout of <cite>a</cite> as closely as possible.</li>
-<li>keepmeta (bool): Whether table and info are kept in the output fmarray
+<li><strong>keepmeta</strong> (<em>bool</em>) &#8211; Whether table and info are kept in the output fmarray
 if the input array is fmarray. Default is True.</li>
 </ul>
-<p>Returns:
-- fmarray (FMArray): An output fmarray of ones.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>fmarray</strong> &#8211; An output fmarray of ones.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">FMArray</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -337,31 +410,55 @@ if the input array is fmarray. Default is True.</li>
 <p>This function joins a sequence of fmarrays along time axis.
 All input fmarrays must have the same width (i.e. same shape[1]).
 Tables of fmarrays are also joined and infos are updated one after another.</p>
-<p>Args:
-- fmarray_ins (sequence): An input sequence of fmarrays</p>
-<p>Returns:
-- fmarray_out (FMarray): An output concatenated fmarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fmarray_ins</strong> (<em>sequence</em>) &#8211; An input sequence of fmarrays</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>fmarray_out</strong> &#8211; An output concatenated fmarray.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">FMarray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.save">
 <code class="descclassname">fmflow.fm.</code><code class="descname">save</code><span class="sig-paren">(</span><em>fmarray</em>, <em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save a fmarray into a single file in uncompressed npz format.</p>
-<p>Args:
-- fmarray (FMArray): An fmarray to be saved.
-- filename (str): A file name (used as &lt;filename&gt;.npz).</p>
-<blockquote>
-<div>If not spacified, random 8-character name will be used.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fmarray</strong> (<em>FMArray</em>) &#8211; An fmarray to be saved.</li>
+<li><strong>filename</strong> (<em>str</em>) &#8211; A file name (used as &lt;filename&gt;.npz).
+If not spacified, random 8-character name will be used.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.load">
 <code class="descclassname">fmflow.fm.</code><code class="descname">load</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/core/arrayfunc.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a fmarray from a npz file.</p>
-<p>Args:
-- filename (str): A file name (<a href="#id1"><span class="problematic" id="id2">*</span></a>.npz).</p>
-<p>Returns:
-- fmarray (FMArray): An output fmarray.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) &#8211; A file name (<a href="#id1"><span class="problematic" id="id2">*</span></a>.npz).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>fmarray</strong> &#8211; An output fmarray.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">FMArray</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -376,12 +473,19 @@ Tables of fmarrays are also joined and infos are updated one after another.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Args:
-- func (function): A function to be wrapped.</p>
-<blockquote>
-<div>The first argument of the function must be fmarray_in.</div></blockquote>
-<p>Returns:
-- wrapper (function): A wrapped function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>func</strong> (<em>function</em>) &#8211; A function to be wrapped.
+The first argument of the function must be fmarray_in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>wrapper</strong> &#8211; A wrapped function.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -397,17 +501,29 @@ Tables of fmarrays are also joined and infos are updated one after another.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fmarray_out</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">fmarray_in</span><span class="p">,</span> <span class="n">chunk_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Args:
-- func (function): A function to be wrapped.</p>
-<blockquote>
-<div>The first argument of the function must be fmarray_in.</div></blockquote>
-<p>Returns:
-- wrapper (function): A wrapped function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>func</strong> (<em>function</em>) &#8211; A function to be wrapped.
+The first argument of the function must be fmarray_in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>wrapper</strong> &#8211; A wrapped function.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">function</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.pca">
 <code class="descclassname">fmflow.fm.</code><code class="descname">pca</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/signal/decomposition.html#pca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.pca" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.ppca">
+<code class="descclassname">fmflow.fm.</code><code class="descname">ppca</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/signal/decomposition.html#ppca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.ppca" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -419,6 +535,54 @@ Tables of fmarrays are also joined and infos are updated one after another.</p>
 <dt id="fmflow.fm.lmeds_spline">
 <code class="descclassname">fmflow.fm.</code><code class="descname">lmeds_spline</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/signal/filtering.html#lmeds_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.lmeds_spline" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.fme_gaussian_filter">
+<code class="descclassname">fmflow.fm.</code><code class="descname">fme_gaussian_filter</code><span class="sig-paren">(</span><em>fmarray_in</em>, <em>sigma=10</em>, <em>m=10</em>, <em>dz=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/signal/filtering.html#fme_gaussian_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.fme_gaussian_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply Gaussian filter to an array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fmarray_in</strong> (<a class="reference internal" href="#fmflow.fm.array" title="fmflow.fm.array"><em>array</em></a>) &#8211; </li>
+<li><strong>sigma</strong> (<em>float</em>) &#8211; </li>
+<li><strong>dz</strong> (<em>float</em>) &#8211; </li>
+<li><strong>m</strong> (<em>int</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">fmarray_out (array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fmflow.fm.mad">
+<code class="descclassname">fmflow.fm.</code><code class="descname">mad</code><span class="sig-paren">(</span><em>array</em>, <em>axis=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fmflow/fm/signal/statistics.html#mad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fmflow.fm.mad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the median absolute deviation (MAD) along the given axis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> (<em>array-like</em>) &#8211; An input array.</li>
+<li><strong>axis</strong> (<em>int, None</em>) &#8211; Axis along which the MADs are computed.
+The default is to compute the MAD along a flattened version of the array.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>mad</strong> &#8211; median absolute deviation.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#fmflow.fm.array" title="fmflow.fm.array">array</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="fmflow.fm.gettsys">
@@ -463,7 +627,7 @@ Tables of fmarrays are also joined and infos are updated one after another.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>

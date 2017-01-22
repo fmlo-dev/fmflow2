@@ -145,11 +145,12 @@
   <h1>Source code for fmflow.fm.spectrum.spectrum</h1><div class="highlight"><pre>
 <span></span><span class="c1"># coding: utf-8</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">_absolute_import</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">_division</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">_print_function</span>
+<span class="c1"># Python 3.x compatibility</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="k">as</span> <span class="n">__absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span> <span class="k">as</span> <span class="n">__division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="k">as</span> <span class="n">__print_function</span>
 
-<span class="c1"># dependent packages¬</span>
+<span class="c1"># the Python Package Index¬</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
 <span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
@@ -159,25 +160,25 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;getfrequency&#39;</span><span class="p">,</span> <span class="s1">&#39;getspectrum&#39;</span><span class="p">,</span> <span class="s1">&#39;getfreq&#39;</span><span class="p">,</span> <span class="s1">&#39;getspec&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="getfrequency"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.spectrum.html#fmflow.fm.getfrequency">[docs]</a><span class="k">def</span> <span class="nf">getfrequency</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="getfrequency"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.getfrequency">[docs]</a><span class="k">def</span> <span class="nf">getfrequency</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;GHz&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ismodulated</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;array should be demodulated&#39;</span><span class="p">)</span>
 
     <span class="n">info</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">info</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">fmid</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fmid&#39;</span><span class="p">]</span>
     <span class="n">rest</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;restfreq&#39;</span><span class="p">]</span>
     <span class="n">step</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;chanwidth&#39;</span><span class="p">]</span>
-    
-    <span class="n">start</span> <span class="o">=</span> <span class="n">rest</span> <span class="o">-</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">fmid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">fmid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fmindex</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;fmindex&#39;</span><span class="p">]</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="n">rest</span> <span class="o">-</span> <span class="n">step</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">fmindex</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">fmindex</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">end</span>   <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span> <span class="o">*</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    
+
     <span class="n">freq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">Hz</span>
     <span class="n">freq</span> <span class="o">=</span> <span class="n">freq</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">unit</span><span class="p">))</span><span class="o">.</span><span class="n">value</span>
     <span class="k">return</span> <span class="n">freq</span></div>
 
 
-<div class="viewcode-block" id="getspectrum"><a class="viewcode-back" href="../../../../_apis/fmflow.fm.spectrum.html#fmflow.fm.getspectrum">[docs]</a><span class="k">def</span> <span class="nf">getspectrum</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="getspectrum"><a class="viewcode-back" href="../../../../apis/fmflow.fm.html#fmflow.fm.getspectrum">[docs]</a><span class="k">def</span> <span class="nf">getspectrum</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ismodulated</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">ut</span><span class="o">.</span><span class="n">FMFlowError</span><span class="p">(</span><span class="s1">&#39;array should be demodulated&#39;</span><span class="p">)</span>
 
@@ -200,7 +201,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Akio Taniguchi.
+        &copy; Copyright 2017, Akio Taniguchi.
 
     </p>
   </div>
