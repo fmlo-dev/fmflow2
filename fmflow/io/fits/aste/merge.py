@@ -256,20 +256,21 @@ def _read_backendlog_mac(backendlog):
         hdu (BinTableHDU): HDU containing the read backend logging.
 
     """
+    header = fits.Header()
+    header['EXTNAME'] = 'BACKEND'
+    header['FILENAME'] = backendlog
+
     from .otflog_common import HEAD, CTL
     from .otflog_mac import OBS, DAT
 
-    prog = ut.inprogress('FMFlow: reading the backendlog', 50)
+    prog = ut.inprogress('reading the backendlog', 50)
 
     def EOF(f):
         prog.next()
         readdata = ut.readbinary(f, HEAD)
         return readdata['crec_type'] == 'ED'
 
-    header = fits.Header()
-    header['EXTNAME'] = 'BACKEND'
-    header['FILENAME'] = backendlog
-
+    # read data
     with open(backendlog, 'rb') as f:
         # control info
         ut.readbinary(f, HEAD)
@@ -292,32 +293,53 @@ def _read_backendlog_mac(backendlog):
             for key in data:
                 data[key].append(readdata[key])
 
-    # starttime
-    c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
-    starttime = [c(t[:-2]) for t in data['cint_sttm']]
+    # read formats
+    fmts = ut.getfitsformat(DAT)
 
-    # arraydata
-    ary_dat = np.asarray(data['iary_data'], dtype=int)
-    ary_scf = np.asarray(data['dary_scf'], dtype=float)
-    ary_off = np.asarray(data['dary_offset'], dtype=float)
-    alc_v   = np.asarray(data['dalc_v'], dtype=float)
-    arraydata = ((ary_dat.T*ary_scf+ary_off) * 10.0**(alc_v/10.0)).T
+    # edit data and formats
+    for key in data:
+        data[key] = np.asarray(data[key])
+
+    data['STARTTIME'] = data.pop('cint_sttm')
+    data['ARRAYID']   = data.pop('cary_name')
+    data['SCANTYPE']  = data.pop('cscan_type')
+    data['ARRAYDATA'] = data.pop('iary_data')
+
+    fmts['STARTTIME'] = fmts.pop('cint_sttm')
+    fmts['ARRAYID']   = fmts.pop('cary_name')
+    fmts['SCANTYPE']  = fmts.pop('cscan_type')
+    fmts['ARRAYDATA'] = fmts.pop('iary_data')
+
+    # edit starttime
+    c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
+    data['STARTTIME'] = np.asarray([c(t[:-2]) for t in data['STARTTIME']])
+    fmts['STARTTIME'] = 'A26' # 26 characters in FITS
+
+    # edit arraydata
+    ons  = ut.where(data['SCANTYPE'] == 'ON')
+    rs   = ut.where(data['SCANTYPE'] == 'R')
+    skys = ut.where(data['SCANTYPE'] == 'SKY')
+
+    arraydata = data['ARRAYDATA'].astype(float)
+    arraydata *= data['dary_scf'][:,np.newaxis]
+    arraydata += data['dary_offset'][:,np.newaxis]
+
+    for on in ons:
+        for arrayid in np.unique(data['ARRAYID']):
+            flag = (data['ARRAYID'][on] == arrayid)
+            arraydata[on][flag] *= np.mean(data['dalpha'][on][flag])
+
+    for (r, sky) in zip(rs, skys):
+        arraydata[r] *= data['dbeta'][sky][:,np.newaxis]
+
+    data['ARRAYDATA'] = arraydata
+    fmts['ARRAYDATA'] = re.findall('\d+', fmts['ARRAYDATA'])[0] + 'D'
 
     # bintable HDU
     columns = []
-    formats = ut.getfitsformat(DAT)
     for key in data:
-        if re.search('int_sttm', key):
-            columns.insert(0, fits.Column('STARTTIME', 'A26', array=starttime))
-        elif re.search('ary_name', key):
-            columns.insert(1, fits.Column('ARRAYID', formats[key], array=data[key]))
-        elif re.search('scan_type', key):
-            columns.insert(2, fits.Column('SCANTYPE', formats[key], array=data[key]))
-        elif re.search('ary_data', key):
-            fmt = re.findall('\d+', formats[key])[0] + 'D'
-            columns.insert(3, fits.Column('ARRAYDATA', fmt, array=arraydata))
-        else:
-            columns.append(fits.Column(key, formats[key], array=data[key]))
+        columns.append(fits.Column(key, fmts[key], array=data[key]))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
+
