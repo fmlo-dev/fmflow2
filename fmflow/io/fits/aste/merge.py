@@ -276,7 +276,7 @@ def _read_backendlog_mac(backendlog):
         arraydata[r] *= data['dbeta'][sky][:,np.newaxis]
 
     data['ARRAYDATA'] = arraydata
-    fmts['ARRAYDATA'] = re.findall('\d+', fmts['ARRAYDATA'])[0] + 'D'
+    fmts['ARRAYDATA'] = '{[0]}E'.format(re.findall('\d+', fmts['ARRAYDATA']))
 
     # bintable HDU
     header = fits.Header()
