@@ -16,6 +16,7 @@ from __future__ import print_function as __print_function
 
 # FMFlow submodules
 from .binary import *
+from .conditions import *
 from .datetime import *
 from .exceptions import *
 from .multiprocessing import *
@@ -24,6 +25,7 @@ from .progress import *
 # importing items
 __all__ = []
 __all__ += binary.__all__
+__all__ += conditions.__all__
 __all__ += datetime.__all__
 __all__ += exceptions.__all__
 __all__ += multiprocessing.__all__
