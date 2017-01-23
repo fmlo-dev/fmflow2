@@ -24,6 +24,7 @@ from fmflow import utils as ut
 __all__ = ['fromaste']
 
 # constants
+VER_FMFITS = 'v0.1'
 LAT_ASTE   = Angle('-22d58m17.69447s').deg
 EFF_8257D  = 0.92 # exposure / interval time of Agilent 8257D
 
