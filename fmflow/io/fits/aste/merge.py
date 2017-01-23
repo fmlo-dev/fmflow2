@@ -25,7 +25,7 @@ __all__ = ['fromaste']
 
 # constants
 LAT = Angle('-22d58m17.69447s').deg # latitude of ASTE
-EFF = 0.92 # exposure time (s) / interval time (s)
+EFF = 0.92 # exposure time / interval time of Agilent 8257D
 
 
 def fromaste(fmlolog, backendlog, antennalog=None):
@@ -103,7 +103,7 @@ def _make_obsinfo(fitsobj):
     arrayid   = np.array(['A{}'.format(i+1) for i in range(len(flag))])[flag]
     sideband  = np.array(d_obs['csid_type'])[flag]
     interval  = np.tile(d_obs['diptim'], N)
-    exposure  = np.tile(d_obs['diptim']*0.92, N)
+    exposure  = np.tile(d_obs['diptim']*EFF, N)
     restfreq  = np.array(d_obs['dcent_freq'])[flag]
     intmfreq  = np.array(d_obs['dflif'])[flag]
     bandwidth = np.array(d_obs['dbebw'])[flag]
