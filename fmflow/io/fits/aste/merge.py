@@ -188,8 +188,8 @@ def _check_backend(backendlog):
     with open(backendlog, 'rb') as f:
         ut.readbinary(f, HEAD)
         readdata = ut.readbinary(f, CTL)
+        backend = readdata['cbe_type']
 
-    backend = readdata['cbe_type']
     return backend
 
 
@@ -211,19 +211,19 @@ def _read_backendlog_mac(backendlog):
     def EOF(f):
         prog.next()
         readdata = ut.readbinary(f, HEAD)
-        return readdata['crec_type'] == 'ED'
+        return (readdata['crec_type'] == 'ED')
 
     # read data
     with open(backendlog, 'rb') as f:
         # control info
         ut.readbinary(f, HEAD)
         readdata = ut.readbinary(f, CTL)
-        header['CTLINFO'] = json.dumps(readdata)
+        info_clt = json.dumps(readdata)
 
         # observation info
         ut.readbinary(f, HEAD)
         readdata = ut.readbinary(f, OBS)
-        header['OBSINFO'] = json.dumps(readdata)
+        info_obs = json.dumps(readdata)
 
         # data info
         data = OrderedDict()
@@ -282,6 +282,8 @@ def _read_backendlog_mac(backendlog):
     header = fits.Header()
     header['EXTNAME'] = 'BACKEND'
     header['FILENAME'] = backendlog
+    header['CTLINFO'] = info_clt
+    header['OBSINFO'] = info_obs
 
     columns = []
     for key in data:
@@ -301,29 +303,29 @@ def _make_obsinfo(fitsobj):
         hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
 
     """
-    d_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
-    d_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
-    d_dat = fitsobj['BACKEND'].data
+    info_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
+    info_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
+    info_dat = fitsobj['BACKEND'].data
 
-    N = d_obs['iary_num']
-    flag = np.array(d_obs['iary_usefg'], dtype=bool)
+    N = info_obs['iary_num']
+    flag = np.array(info_obs['iary_usefg'], dtype=bool)
 
-    frontend = np.unique(np.array(d_obs['cfe_type'])[flag])[0]
-    backend  = d_ctl['cbe_type']
+    frontend = np.unique(np.array(info_obs['cfe_type'])[flag])[0]
+    backend  = info_ctl['cbe_type']
 
-    arrayid   = np.unique(d_dat['ARRAYID'])
-    sideband  = np.array(d_obs['csid_type'])[flag]
-    interval  = np.tile(d_obs['diptim'], N)
-    exposure  = np.tile(d_obs['diptim']*EFF_8257D, N)
-    restfreq  = np.array(d_obs['dcent_freq'])[flag]
-    intmfreq  = np.array(d_obs['dflif'])[flag]
-    bandwidth = np.array(d_obs['dbebw'])[flag]
-    chanwidth = np.array(d_obs['dbechwid'])[flag]
+    arrayid   = np.unique(info_dat['ARRAYID'])
+    sideband  = np.array(info_obs['csid_type'])[flag]
+    interval  = np.tile(info_obs['diptim'], N)
+    exposure  = np.tile(info_obs['diptim']*EFF_8257D, N)
+    restfreq  = np.array(info_obs['dcent_freq'])[flag]
+    intmfreq  = np.array(info_obs['dflif'])[flag]
+    bandwidth = np.array(info_obs['dbebw'])[flag]
+    chanwidth = np.array(info_obs['dbechwid'])[flag]
 
     if backend == 'AC45':
-        numofchan = np.tile(d_obs['ichanel'], N)
+        numofchan = np.tile(info_obs['ichanel'], N)
     elif backend == 'FFX':
-        numofchan = np.array(d_obs['ichanel'])
+        numofchan = np.array(info_obs['ichanel'])
 
     # bintable HDU
     header = fits.Header()
