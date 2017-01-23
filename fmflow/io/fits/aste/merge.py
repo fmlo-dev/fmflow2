@@ -24,8 +24,8 @@ from fmflow import utils as ut
 __all__ = ['fromaste']
 
 # constants
-LAT = Angle('-22d58m17.69447s').deg # latitude of ASTE
-EFF = 0.92 # exposure time / interval time of Agilent 8257D
+LAT_ASTE   = Angle('-22d58m17.69447s').deg
+EFF_8257D  = 0.92 # exposure / interval time of Agilent 8257D
 
 
 def fromaste(fmlolog, backendlog, antennalog=None):
@@ -76,60 +76,6 @@ def fromaste(fmlolog, backendlog, antennalog=None):
     return fitsobj
 
 
-def _make_obsinfo(fitsobj):
-    """Make a OBSINFO HDU from FITS object.
-
-    Args:
-        fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.
-
-    Returns:
-        hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
-
-    """
-    d_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
-    d_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
-
-    N = d_obs['iary_num']
-    flag = np.array(d_obs['iary_usefg'], dtype=bool)
-    backend = d_ctl['cbe_type']
-
-    header = fits.Header()
-    header['EXTNAME']  = 'OBSINFO'
-    header['FITSTYPE'] = 'FMFITSv1'
-    header['TELESCOP'] = 'ASTE'
-    header['FRONTEND'] = np.unique(np.array(d_obs['cfe_type'])[flag])[0]
-    header['BACKEND']  = backend
-
-    arrayid   = np.array(['A{}'.format(i+1) for i in range(len(flag))])[flag]
-    sideband  = np.array(d_obs['csid_type'])[flag]
-    interval  = np.tile(d_obs['diptim'], N)
-    exposure  = np.tile(d_obs['diptim']*EFF, N)
-    restfreq  = np.array(d_obs['dcent_freq'])[flag]
-    intmfreq  = np.array(d_obs['dflif'])[flag]
-    bandwidth = np.array(d_obs['dbebw'])[flag]
-    chanwidth = np.array(d_obs['dbechwid'])[flag]
-
-    if backend == 'AC45':
-        numofchan = np.tile(d_obs['ichanel'], N)
-    elif backend == 'FFX':
-        numofchan = np.array(d_obs['ichanel'])
-
-    # bintable HDU
-    columns = []
-    columns.append(fits.Column('ARRAYID', 'A3', '', array=arrayid))
-    columns.append(fits.Column('SIDEBAND', 'A3', '', array=sideband))
-    columns.append(fits.Column('INTERVAL', 'D', 's', array=interval))
-    columns.append(fits.Column('EXPOSURE', 'D', 's', array=exposure))
-    columns.append(fits.Column('RESTFREQ', 'D', 'Hz', array=restfreq))
-    columns.append(fits.Column('INTMFREQ', 'D', 'Hz', array=intmfreq))
-    columns.append(fits.Column('BANDWIDTH', 'D', 'Hz', array=bandwidth))
-    columns.append(fits.Column('CHANWIDTH', 'D', 'Hz', array=chanwidth))
-    columns.append(fits.Column('NUMOFCHAN', 'J', 'ch', array=numofchan))
-
-    hdu = fits.BinTableHDU.from_columns(columns, header)
-    return hdu
-
-
 def _read_fmlolog(fmlolog):
     """Read a FMLO logging of ASTE.
 
@@ -140,10 +86,6 @@ def _read_fmlolog(fmlolog):
         hdu (BinTableHDU): HDU containing the read FMLO logging.
 
     """
-    header = fits.Header()
-    header['EXTNAME'] = 'FMLOLOG'
-    header['FILENAME'] = fmlolog
-
     # datetime converter
     c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
 
@@ -157,6 +99,10 @@ def _read_fmlolog(fmlolog):
     fmflag = (scantype == 'ON')
 
     # bintable HDU
+    header = fits.Header()
+    header['EXTNAME'] = 'FMLOLOG'
+    header['FILENAME'] = fmlolog
+
     columns = []
     columns.append(fits.Column('STARTTIME', 'A26', 'ISO 8601', array=starttime))
     columns.append(fits.Column('SCANTYPE',  'A4', '', array=scantype))
@@ -179,10 +125,6 @@ def _read_antennalog(antennalog):
         hdu (BinTableHDU): HDU containing the read antenna logging.
 
     """
-    header = fits.Header()
-    header['EXTNAME'] = 'ANTENNA'
-    header['FILENAME'] = antennalog
-
     # datetime converter
     c = ut.DatetimeConverter('%y%m%d%H%M%S.%f')
 
@@ -199,7 +141,7 @@ def _read_antennalog(antennalog):
     # RA,Dec real
     degsin = lambda deg: np.sin(np.deg2rad(deg))
     degcos = lambda deg: np.cos(np.deg2rad(deg))
-    q = -np.arcsin(degsin(az_prog)*degcos(LAT)/degcos(dec_prog))
+    q = -np.arcsin(degsin(az_prog)*degcos(LAT_ASTE)/degcos(dec_prog))
 
     ra_error  = -np.cos(q)*az_error + np.sin(q)*el_error
     dec_error = np.sin(q)*az_error + np.cos(q)*el_error
@@ -207,6 +149,10 @@ def _read_antennalog(antennalog):
     dec_real  = dec_prog - ra_error
 
     # bintable HDU
+    header = fits.Header()
+    header['EXTNAME'] = 'ANTENNA'
+    header['FILENAME'] = antennalog
+
     columns = []
     columns.append(fits.Column('STARTTIME', 'A26', 'ISO 8601', array=datetime))
     columns.append(fits.Column('RA',        'D', 'deg', array=ra_real))
@@ -256,10 +202,6 @@ def _read_backendlog_mac(backendlog):
         hdu (BinTableHDU): HDU containing the read backend logging.
 
     """
-    header = fits.Header()
-    header['EXTNAME'] = 'BACKEND'
-    header['FILENAME'] = backendlog
-
     from .otflog_common import HEAD, CTL
     from .otflog_mac import OBS, DAT
 
@@ -336,9 +278,70 @@ def _read_backendlog_mac(backendlog):
     fmts['ARRAYDATA'] = re.findall('\d+', fmts['ARRAYDATA'])[0] + 'D'
 
     # bintable HDU
+    header = fits.Header()
+    header['EXTNAME'] = 'BACKEND'
+    header['FILENAME'] = backendlog
+
     columns = []
     for key in data:
         columns.append(fits.Column(key, fmts[key], array=data[key]))
+
+    hdu = fits.BinTableHDU.from_columns(columns, header)
+    return hdu
+
+
+def _make_obsinfo(fitsobj):
+    """Make a OBSINFO HDU from FITS object.
+
+    Args:
+        fitsobj (HDUList): FITS object containing FMLOINFO, BACKEND HDUs.
+
+    Returns:
+        hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
+
+    """
+    d_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
+    d_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
+    d_dat = fitsobj['BACKEND'].data
+
+    N = d_obs['iary_num']
+    flag = np.array(d_obs['iary_usefg'], dtype=bool)
+
+    frontend = np.unique(np.array(d_obs['cfe_type'])[flag])[0]
+    backend  = d_ctl['cbe_type']
+
+    arrayid   = np.unique(d_dat['ARRAYID'])
+    sideband  = np.array(d_obs['csid_type'])[flag]
+    interval  = np.tile(d_obs['diptim'], N)
+    exposure  = np.tile(d_obs['diptim']*EFF_8257D, N)
+    restfreq  = np.array(d_obs['dcent_freq'])[flag]
+    intmfreq  = np.array(d_obs['dflif'])[flag]
+    bandwidth = np.array(d_obs['dbebw'])[flag]
+    chanwidth = np.array(d_obs['dbechwid'])[flag]
+
+    if backend == 'AC45':
+        numofchan = np.tile(d_obs['ichanel'], N)
+    elif backend == 'FFX':
+        numofchan = np.array(d_obs['ichanel'])
+
+    # bintable HDU
+    header = fits.Header()
+    header['EXTNAME']  = 'OBSINFO'
+    header['TELESCOP'] = 'ASTE'
+    header['FITSTYPE'] = VER_FMFITS
+    header['FRONTEND'] = frontend
+    header['BACKEND']  = backend
+
+    columns = []
+    columns.append(fits.Column('ARRAYID', 'A3', '', array=arrayid))
+    columns.append(fits.Column('SIDEBAND', 'A3', '', array=sideband))
+    columns.append(fits.Column('INTERVAL', 'D', 's', array=interval))
+    columns.append(fits.Column('EXPOSURE', 'D', 's', array=exposure))
+    columns.append(fits.Column('RESTFREQ', 'D', 'Hz', array=restfreq))
+    columns.append(fits.Column('INTMFREQ', 'D', 'Hz', array=intmfreq))
+    columns.append(fits.Column('BANDWIDTH', 'D', 'Hz', array=bandwidth))
+    columns.append(fits.Column('CHANWIDTH', 'D', 'Hz', array=chanwidth))
+    columns.append(fits.Column('NUMOFCHAN', 'J', 'ch', array=numofchan))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
