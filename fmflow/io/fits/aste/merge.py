@@ -155,7 +155,7 @@ def _read_antennalog(antennalog):
     header['FILENAME'] = antennalog
 
     columns = []
-    columns.append(fits.Column('STARTTIME', 'A26', 'ISO 8601', array=datetime))
+    columns.append(fits.Column('STARTTIME', 'A26', 'ISO 8601', array=starttime))
     columns.append(fits.Column('RA',        'D', 'deg', array=ra_real))
     columns.append(fits.Column('DEC',       'D', 'deg', array=dec_real))
     columns.append(fits.Column('AZ',        'D', 'deg', array=az_real))
