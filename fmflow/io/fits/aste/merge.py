@@ -18,13 +18,13 @@ from collections import OrderedDict
 import numpy as np
 from astropy.io import fits
 from astropy.coordinates import Angle
+from fmflow import __version__
 from fmflow import utils as ut
 
 # imported items
 __all__ = ['fromaste']
 
 # constants
-VER_FMFLOW = 'v0.1'
 LAT_ASTE   = Angle('-22d58m17.69447s').deg
 EFF_8257D  = 0.92 # exposure / interval time of Agilent 8257D
 
@@ -331,7 +331,7 @@ def _make_obsinfo(fitsobj):
     header = fits.Header()
     header['EXTNAME']  = 'OBSINFO'
     header['TELESCOP'] = 'ASTE'
-    header['FITSTYPE'] = VER_FMFLOW
+    header['FITSTYPE'] = __version__
     header['FRONTEND'] = frontend
     header['BACKEND']  = backend
 

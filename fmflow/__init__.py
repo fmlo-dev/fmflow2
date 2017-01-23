@@ -4,3 +4,8 @@
 from __future__ import absolute_import as __absolute_import
 from __future__ import division as __division
 from __future__ import print_function as __print_function
+
+# FMFlow information
+__version__ = 'v0.1'
+__author__  = 'Akio Taniguchi'
+
