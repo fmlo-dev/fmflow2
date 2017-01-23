@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'fmflow',
-    version = '0.0.1',
+    version = '0.1',
     author = 'Akio Taniguchi',
     author_email = 'taniguchi@ioa.s.u-tokyo.ac.jp',
     description = 'Core Python Package for FMFlow',
