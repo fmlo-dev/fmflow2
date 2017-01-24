@@ -1,8 +1,10 @@
 #!/bin/bash
 
-echo "INFO: this will build fmflow/testdocs"
-echo "(this will not change any files of fmflow/docs)"
-echo ""
+cat << EOS
+INFO: this will build fmflow/testdocs
+(this will not change any files of fmflow/docs)
+
+EOS
 
 if type sphinx-build >/dev/null 2>&1; then
     #sphinx-apidoc -f -o ./apis ../../fmflow
