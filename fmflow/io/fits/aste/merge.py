@@ -310,6 +310,7 @@ def _make_obsinfo(fitsobj):
     N = info_obs['iary_num']
     flag = np.array(info_obs['iary_usefg'], dtype=bool)
 
+    fitstype = 'FMFITS{}'.format(__version__)
     frontend = np.unique(np.array(info_obs['cfe_type'])[flag])[0]
     backend  = info_ctl['cbe_type']
 
@@ -331,7 +332,7 @@ def _make_obsinfo(fitsobj):
     header = fits.Header()
     header['EXTNAME']  = 'OBSINFO'
     header['TELESCOP'] = 'ASTE'
-    header['FITSTYPE'] = __version__
+    header['FITSTYPE'] = fitstype
     header['FRONTEND'] = frontend
     header['BACKEND']  = backend
 
