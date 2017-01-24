@@ -1,7 +1,7 @@
 #!/bin/bash
 
 prompt () {
-    echo -ne "${1} (y/[n])" 
+    echo -ne "${1} (y/[n]) " 
     read answer
     case ${answer} in
         [yY]* ) return 0;;
@@ -9,10 +9,12 @@ prompt () {
     esac
 }
 
-echo "WARN: this will (re)write all files of fmflow/docs"
-echo "we recommend to use testbuild.sh to build fmflow/testdocs"
-echo "(this will not change any files of fmflow/docs)"
-echo ""
+cat << EOS
+WARN: this will (re)write all files of fmflow/docs
+we recommend to use testbuild.sh to build fmflow/testdocs
+(this will not change any files of fmflow/docs)
+
+EOS
 
 if prompt "continue to build?"; then
     if type sphinx-build >/dev/null 2>&1; then
