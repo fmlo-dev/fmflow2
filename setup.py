@@ -3,10 +3,13 @@
 # the Python Package Index
 from setuptools import setup, find_packages
 
+# local fmflow
+from fmflow import __version__
+
 
 setup(
     name = 'fmflow',
-    version = '0.1',
+    version = __version__,
     author = 'Akio Taniguchi',
     author_email = 'taniguchi@ioa.s.u-tokyo.ac.jp',
     description = 'Core Python Package for FMFlow',
