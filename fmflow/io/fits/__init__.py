@@ -10,12 +10,12 @@ from astropy.io import fits
 
 # FMFlow submodules
 from .array import *
-from .aste import *
+from ._aste import *
 
 # imported items
 __all__ = ['open', 'getdata', 'getheader']
 __all__ += array.__all__
-__all__ += aste.__all__
+__all__ += _aste.__all__
 
 
 open = fits.open
