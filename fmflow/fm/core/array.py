@@ -96,7 +96,7 @@ class FMArray(ma.MaskedArray):
 
         Normally, this method is for the internal use.
         It is equivalent to the fm.array function (recommended to use).
-        i.e. FMArray.fromeach(...) <==> fm.array(...)
+        i.e. FMArray.fromeach(...) <=> fm.array(...)
 
         Args:
             array (masked array): A timestream array (mask is optional).
@@ -124,7 +124,7 @@ class FMArray(ma.MaskedArray):
 
         This method is only available when the original fmarray is modulated.
         It is equivalent to the fm.demodulate function (recommended to use).
-        i.e. x.demodulate(reverse) <==> fm.demodulate(x, reverse)
+        i.e. x.demodulate(reverse) <=> fm.demodulate(x, reverse)
 
         Args:
             reverse (bool): If True, the original fmarray is reverse-demodulated
@@ -167,7 +167,7 @@ class FMArray(ma.MaskedArray):
 
         This method is only available when the original fmarray is demodulated.
         It is equivalent to the fm.modulate function (recommended to use).
-        i.e. x.modulate() <==> fm.modulate(x)
+        i.e. x.modulate() <=> fm.modulate(x)
 
         Returns:
             array (FMArray): A modulated fmarray
@@ -215,7 +215,7 @@ class FMArray(ma.MaskedArray):
         """Convert the fmarray to a NumPy masked array.
 
         It is equivalent to the fm.asmaskedarray function (recommended to use).
-        i.e. x.asmaskedarray() <==> fm.asmaskedarray(x)
+        i.e. x.asmaskedarray() <=> fm.asmaskedarray(x)
 
         """
         data, mask = np.asarray(self), self.mask
@@ -224,42 +224,34 @@ class FMArray(ma.MaskedArray):
 
     @property
     def fmch(self):
-        """An array of modulation frequencies in units of channel."""
         return self._optinfo['table'].fmch
 
     @property
     def coord(self):
-        """An array of observed coordinates in units of degrees."""
         return self._optinfo['table'].coord
 
     @fmch.setter
     def fmch(self, value):
-        """An array of modulation frequencies in units of channel."""
         self._optinfo['table'].fmch = value
 
     @coord.setter
     def coord(self, value):
-        """An array of observed coordinates in units of degrees."""
         self._optinfo['table'].coord = value
 
     @property
     def table(self):
-        """A timestream table that stores fmch, coord, etc."""
         return self._optinfo['table']
 
     @property
     def info(self):
-        """A dictionary that stores information of the fmarray."""
         return self._optinfo['info']
 
     @property
     def ismodulated(self):
-        """A boolean that indicates whether the fmarray is demodulated."""
         return 'FM' in self._optinfo['info']['fmstatus']
 
     @property
     def isdemodulated(self):
-        """A boolean that indicates whether the fmarray is modulated."""
         return 'FD' in self._optinfo['info']['fmstatus']
 
     def _tableindex(self, index):
@@ -289,7 +281,7 @@ class FMArray(ma.MaskedArray):
             return (0, 0)
 
     def __getitem__(self, index):
-        """x.__getitem__(y) <==> x[y]"""
+        """x.__getitem__(y) <=> x[y]"""
         # array
         array = self.asmaskedarray()[index]
 
@@ -312,10 +304,10 @@ class FMArray(ma.MaskedArray):
         return FMArray(array, table, info)
 
     def __getslice__(self, i, j):
-        """x.__getslice__(i, j) <==> x[i:j]"""
+        """x.__getslice__(i, j) <=> x[i:j]"""
         return self.__getitem__(slice(i, j))
 
     def __repr__(self):
-        """x.__repr__() <==> repr(x)"""
+        """x.__repr__() <=> repr(x)"""
         string = 'fmarray({})'.format(self.__str__())
         return string.replace('\n', '\n'+' '*8)
