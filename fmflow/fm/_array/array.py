@@ -224,15 +224,15 @@ class FMArray(ma.MaskedArray):
         """An array of modulation frequencies in units of channel."""
         self._optinfo['table'].fmch = value
 
-    @coord.setter
-    def coord(self, value):
-        """An array of observed coordinates in units of degrees."""
-        self._optinfo['table'].coord = value
-
     @property
     def coord(self):
         """An array of observed coordinates in units of degrees."""
         return self._optinfo['table'].coord
+
+    @coord.setter
+    def coord(self, value):
+        """An array of observed coordinates in units of degrees."""
+        self._optinfo['table'].coord = value
 
     @property
     def table(self):
