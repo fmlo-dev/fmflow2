@@ -34,9 +34,9 @@ from .array import FMArray
 
 # imported items
 __all__ = [
-    'array', 'asarray', 'asmaskedarray', 'getarray', 'demodulate', 'modulate',
-    'zeros', 'ones', 'zeros_like', 'ones_like', 'concatenate', 'save', 'load',
-    'fmfunc', 'timechunk'
+    'array', 'asarray', 'asndarray', 'asmaskedarray', 'getarray', 'demodulate',
+    'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like', 'concatenate', 
+    'save', 'load', 'fmfunc', 'timechunk', 'FMArray'
 ]
 
 
@@ -73,6 +73,20 @@ def asarray(array):
         fmarray = FMArray(array)
 
     return fmarray
+
+
+def asndarray(fmarray):
+    """Convert the fmarray to a NumPy ndarray.
+    
+    Args:
+        fmarray (FMArray): An input fmarray
+    
+    Returns:
+        array (array): An output NumPy ndarray.
+    
+    """
+    array = fmarray.asndarray()
+    return array
 
 
 def asmaskedarray(fmarray):

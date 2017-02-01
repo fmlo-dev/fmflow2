@@ -201,6 +201,16 @@ class FMArray(ma.MaskedArray):
         info.update({'fmstatus': 'FM', 'fmindex': (0,0), 'fmcutcol': (0,0)})
         return FMArray(array, table, info)
 
+    def asndarray(self):
+        """Convert the fmarray to a NumPy ndarray.
+        
+        It is equivalent to the fm.asndarray function (recommended to use).
+        i.e. x.asndarray() <=> fm.asndarray(x)
+        
+        """
+        array = self.data.copy()
+        return array
+
     def asmaskedarray(self):
         """Convert the fmarray to a NumPy masked array.
 
