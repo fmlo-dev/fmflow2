@@ -43,14 +43,6 @@ class FMArray(ma.MaskedArray):
     Normally, fmarray is created and operated with the functions in fmflow.fm
     (e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.
 
-    Attributes:
-        table: A timestream table that stores fmch, coord, etc.
-        fmch: An array of modulation frequencies in units of channel.
-        coord: An array of observed coordinates in units of degrees.
-        info: A dictionary that stores information of the fmarray.
-        isdemodulate: A boolean that indicates whether the fmarray is demodulated.
-        ismodulate: A boolean that indicates whether the fmarray is modulated.
-
     """
 
     def __new__(cls, array, table=None, info=None):
@@ -224,34 +216,42 @@ class FMArray(ma.MaskedArray):
 
     @property
     def fmch(self):
+        """An array of modulation frequencies in units of channel."""
         return self._optinfo['table'].fmch
-
-    @property
-    def coord(self):
-        return self._optinfo['table'].coord
 
     @fmch.setter
     def fmch(self, value):
+        """An array of modulation frequencies in units of channel."""
         self._optinfo['table'].fmch = value
 
     @coord.setter
     def coord(self, value):
+        """An array of observed coordinates in units of degrees."""
         self._optinfo['table'].coord = value
 
     @property
+    def coord(self):
+        """An array of observed coordinates in units of degrees."""
+        return self._optinfo['table'].coord
+
+    @property
     def table(self):
+        """A timestream table that stores fmch, coord, etc."""
         return self._optinfo['table']
 
     @property
     def info(self):
+        """A dictionary that stores information of the fmarray."""
         return self._optinfo['info']
 
     @property
     def ismodulated(self):
+        """A boolean that indicates whether the fmarray is demodulated."""
         return 'FM' in self._optinfo['info']['fmstatus']
 
     @property
     def isdemodulated(self):
+        """A boolean that indicates whether the fmarray is modulated."""
         return 'FD' in self._optinfo['info']['fmstatus']
 
     def _tableindex(self, index):
