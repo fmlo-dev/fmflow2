@@ -35,8 +35,8 @@ from .array import FMArray
 # imported items
 __all__ = [
     'array', 'asarray', 'asndarray', 'asmaskedarray', 'getarray', 'demodulate',
-    'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like', 'concatenate', 
-    'save', 'load', 'fmfunc', 'timechunk', 'FMArray'
+    'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like', 'concatenate',
+    'save', 'mad', 'median', 'load', 'fmfunc', 'timechunk', 'FMArray'
 ]
 
 
@@ -77,13 +77,13 @@ def asarray(array):
 
 def asndarray(fmarray):
     """Convert the fmarray to a NumPy ndarray.
-    
+
     Args:
         fmarray (FMArray): An input fmarray
-    
+
     Returns:
         array (array): An output NumPy ndarray.
-    
+
     """
     array = fmarray.asndarray()
     return array
@@ -164,7 +164,7 @@ def zeros(shape, dtype=float, order='C', **kwargs):
         dtype (data-type): The desired data-type for the fmarray.
         order ('C' or 'F'): Whether to store multidimensional data
             in C- or Fortran-contiguous (row- or column-wise) order in memory.
-        kwargs (optional): Other arguments (fmch, coord, and info).
+        kwargs (optional): Other arguments of fmarray (fmch, coord, and info).
 
     Returns:
         fmarray (FMArray): An output modulated fmarray of zeros.
@@ -182,7 +182,7 @@ def ones(shape, dtype=float, order='C', **kwargs):
         dtype (data-type): The desired data-type for the fmarray.
         order ('C' or 'F'): Whether to store multidimensional data
             in C- or Fortran-contiguous (row- or column-wise) order in memory.
-        kwargs (optional): Other arguments (fmch, coord, and info).
+        kwargs (optional): Other arguments of fmarray (fmch, coord, and info).
 
     Returns:
         fmarray (FMArray): An output modulated fmarray of ones.
@@ -279,6 +279,48 @@ def concatenate(fmarray_ins):
     return fmarray_out
 
 
+def mad(fmarray, axis=None, keepdims=False):
+    """Compute the median absolute deviation (MAD) along the given axis.
+
+    Args:
+        fmarray (FMArray): An input fmarray.
+        axis (int, optional): Axis along which the MADs are computed.
+            The default is to compute the MAD along a flattened version of the array.
+        keepdims (bool, optional): If True, the axes which are reduced are left
+            in the result as dimensions with size one.
+
+    Returns:
+        mad (FMArray): A new array holding the result.
+
+    """
+    ad = ma.abs(fmarray - ma.median(fmarray, axis, keepdims=True))
+    mad = ma.median(ad, axis, keepdims=keepdims)
+    return mad
+
+
+def median(fmarray, axis=None, out=None, overwrite_input=False, keepdims=False):
+    """Compute the median along the spacified axis.
+
+    It is equivalent to the np.ma.median function.
+    i.e. fm.median(x, **kwargs) <=> np.ma.median(x, **kwargs)
+
+    Args:
+        fmarray (FMArray): An input fmarray.
+        axis (int, optional):  Axis or axes along which the medians are computed.
+        out (array, optional): Alternative output array in which to place the result.
+        overwrite_input (bool, optional): If True, then allow use of memory of input
+            fmarray for calculations. The input array will be modified by the call to median.
+        keepdims (bool, optional): If True, the axes which are reduced are left
+            in the result as dimensions with size one.
+
+    Returns:
+        median (FMArray): A new array holding the result.
+
+    """
+    median = ma.median(fmarray, axis, out, overwrite_input, keepdims)
+    return median
+
+
 def save(fmarray, filename=None):
     """Save a fmarray into a single file in uncompressed npz format.
 
@@ -321,17 +363,17 @@ def load(filename):
 def fmfunc(func):
     """Make a function compatible with fmarray.
 
-    This function is used for decorator like::
+    This function is used as a decorator like::
 
         >>> @fmfunc
-        >>> def func(fmarray_in):
-        ...     return fmarray_in # do nothing
+        >>> def func(fmarray):
+        ...     return fmarray # do nothing
         >>>
-        >>> fmarray_out = func(fmarray_in)
+        >>> result = func(fmarray)
 
     Args:
         func (function): A function to be wrapped.
-            The first argument of the function must be fmarray_in.
+            The first argument of the function must be `fmarray`.
 
     Returns:
         wrapper (function): A wrapped function.
@@ -339,13 +381,13 @@ def fmfunc(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        fmarray_in  = kwargs.pop('fmarray_in', args[0])
+        fmarray_in  = kwargs.pop('fmarray', args[0])
         fmarray_out = fmarray_in.copy()
 
         if type(fmarray_in) == FMArray:
-            array_in = fmarray_in.asmaskedarray()
+            array_in = fmarray_in.asndarray()
         else:
-            array_in = ma.asarray(fmarray_in)
+            array_in = np.asarray(fmarray_in)
 
         array_out = func(array_in, *args[1:], **kwargs)
         fmarray_out[:] = array_out
@@ -357,18 +399,18 @@ def fmfunc(func):
 def timechunk(func):
     """Make a function compatible with multicore time-chunk processing.
 
-    This function is used for decorator like::
+    This function is used as a decorator like::
 
         >>> @fmfunc
         >>> @timechunk
-        >>> def func(fmarray_in):
-        ...     return fmarray_in # do nothing
+        >>> def func(fmarray):
+        ...     return fmarray # do nothing
         >>>
-        >>> fmarray_out = func(fmarray_in, chunk_len=100)
+        >>> result = func(fmarray, chunklen=100)
 
     Args:
         func (function): A function to be wrapped.
-            The first argument of the function must be fmarray_in.
+            The first argument of the function must be fmarray.
 
     Returns:
         wrapper (function): A wrapped function.
@@ -380,8 +422,8 @@ def timechunk(func):
         for i in range(len(args)):
             kwargs[argnames[i]] = args[i]
 
-        array_in  = kwargs.pop('fmarray_in')
-        chunk_len = kwargs.pop('chunk_len', len(array_in))
+        array_in  = kwargs.pop('fmarray')
+        chunk_len = kwargs.pop('chunklen', len(array_in))
         chunk_num = round(len(array_in)/chunk_len)
 
         index = np.linspace(0, len(array_in), chunk_num+1, dtype=int)
