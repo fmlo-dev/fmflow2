@@ -93,7 +93,7 @@ def asmaskedarray(fmarray):
     """Convert the fmarray to a NumPy masked array.
 
     Args:
-        fmarray (FMArray): An imput fmarray
+        fmarray (FMArray): An input fmarray
 
     Returns:
         array (masked array): An output NumPy masked array.
@@ -257,7 +257,7 @@ def concatenate(fmarray_ins):
         fmarray_ins (sequence): An input sequence of fmarrays
 
     Returns:
-        fmarray_out (FMarray): An output concatenated fmarray.
+        fmarray_out (FMArray): An output concatenated fmarray.
 
     """
     if type(fmarray_ins) not in (tuple, list):
