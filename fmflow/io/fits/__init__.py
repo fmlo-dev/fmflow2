@@ -9,12 +9,12 @@ from __future__ import print_function as __print_function
 from astropy.io import fits
 
 # FMFlow submodules
-from .array import *
+from ._array import *
 from ._aste import *
 
 # imported items
 __all__ = ['open', 'getdata', 'getheader']
-__all__ += array.__all__
+__all__ += _array.__all__
 __all__ += _aste.__all__
 
 
