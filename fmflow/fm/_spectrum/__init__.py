@@ -6,10 +6,8 @@ from __future__ import division as __division
 from __future__ import print_function as __print_function
 
 # FMFlow submodules
-from .calibration import *
 from .spectrum import *
 
 # imported items
 __all__ = []
-__all__ += calibration.__all__
 __all__ += spectrum.__all__
