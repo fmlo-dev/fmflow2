@@ -27,12 +27,12 @@ PARAMS['KernelPCA'] = {'fit_inverse_transform': True}
 
 @fmfunc
 @timechunk
-def reducedim(fmarray, algorithm='TruncatedSVD', **kwargs):
+def reducedim(fmarray, decomposer='TruncatedSVD', **kwargs):
     """Compute a dimension-reduced fmarray via a decomposition algorithm.
 
     Args:
         fmarray (FMArray): An input fmarray.
-        algorithm (str): A name of decomposition algorithm
+        decomposer (str): A name of decomposition class
             which sklearn.decomposition provides.
         kwargs (dict): Parameters for the spacified algorithm such as `n_components`.
 
@@ -45,8 +45,8 @@ def reducedim(fmarray, algorithm='TruncatedSVD', **kwargs):
         >>> result = fm.reduce(fmarray, 'PCA', n_components=2)
 
     """
-    AlgorithmClass = getattr(decomposition, algorithm)
-    params = deepcopy(PARAMS[algorithm])
+    AlgorithmClass = getattr(decomposition, decomposer)
+    params = deepcopy(PARAMS[decomposer])
     params.update(kwargs)
 
     model = AlgorithmClass(**params)
