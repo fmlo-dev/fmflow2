@@ -210,20 +210,18 @@ def _read_backendlog_mac(backendlog):
 
     def EOF(f):
         prog.next()
-        readdata = ut.readbinary(f, HEAD)
-        return (readdata['crec_type'] == 'ED')
+        headinfo = ut.readbinary(f, HEAD)
+        return (headinfo['crec_type'] == 'ED')
 
     # read data
     with open(backendlog, 'rb') as f:
         # control info
         ut.readbinary(f, HEAD)
-        readdata = ut.readbinary(f, CTL)
-        info_clt = json.dumps(readdata)
+        ctlinfo = ut.readbinary(f, CTL)
 
         # observation info
         ut.readbinary(f, HEAD)
-        readdata = ut.readbinary(f, OBS)
-        info_obs = json.dumps(readdata)
+        obsinfo = ut.readbinary(f, OBS)
 
         # data info
         data = OrderedDict()
@@ -232,12 +230,12 @@ def _read_backendlog_mac(backendlog):
                 data[key] = []
 
         while not EOF(f):
-            readdata = ut.readbinary(f, DAT)
+            datinfo = ut.readbinary(f, DAT)
             for key in data:
-                data[key].append(readdata[key])
 
     # read formats
     fmts = ut.getfitsformat(DAT)
+                data[key].append(datinfo[key])
 
     # edit data and formats
     for key in data:
@@ -282,8 +280,8 @@ def _read_backendlog_mac(backendlog):
     header = fits.Header()
     header['EXTNAME'] = 'BACKEND'
     header['FILENAME'] = backendlog
-    header['CTLINFO'] = info_clt
-    header['OBSINFO'] = info_obs
+    header['CTLINFO'] = json.dumps(ctlinfo)
+    header['OBSINFO'] = json.dumps(obsinfo)
 
     columns = []
     for key in data:
@@ -303,30 +301,30 @@ def _make_obsinfo(fitsobj):
         hdu (BinTableHDU): OBSINFO HDU containing the formatted observational info.
 
     """
-    info_ctl = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
-    info_obs = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
-    info_dat = fitsobj['BACKEND'].data
+    ctlinfo = json.loads(fitsobj['BACKEND'].header['CTLINFO'])
+    obsinfo = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
+    datinfo = fitsobj['BACKEND'].data
 
-    N = info_obs['iary_num']
-    flag = np.array(info_obs['iary_usefg'], dtype=bool)
+    N = obsinfo['iary_num']
+    flag = np.array(obsinfo['iary_usefg'], dtype=bool)
 
     fitstype = 'FMFITS{}'.format(__version__)
-    frontend = np.unique(np.array(info_obs['cfe_type'])[flag])[0]
-    backend  = info_ctl['cbe_type']
+    frontend = np.unique(np.array(obsinfo['cfe_type'])[flag])[0]
+    backend  = ctlinfo['cbe_type']
 
-    arrayid   = np.unique(info_dat['ARRAYID'])
-    sideband  = np.array(info_obs['csid_type'])[flag]
-    interval  = np.tile(info_obs['diptim'], N)
-    exposure  = np.tile(info_obs['diptim']*EFF_8257D, N)
-    restfreq  = np.array(info_obs['dcent_freq'])[flag]
-    intmfreq  = np.array(info_obs['dflif'])[flag]
-    bandwidth = np.array(info_obs['dbebw'])[flag]
-    chanwidth = np.array(info_obs['dbechwid'])[flag]
+    arrayid   = np.unique(datinfo['ARRAYID'])
+    sideband  = np.array(obsinfo['csid_type'])[flag]
+    interval  = np.tile(obsinfo['diptim'], N)
+    exposure  = np.tile(obsinfo['diptim']*EFF_8257D, N)
+    restfreq  = np.array(obsinfo['dcent_freq'])[flag]
+    intmfreq  = np.array(obsinfo['dflif'])[flag]
+    bandwidth = np.array(obsinfo['dbebw'])[flag]
+    chanwidth = np.array(obsinfo['dbechwid'])[flag]
 
     if backend == 'AC45':
-        numofchan = np.tile(info_obs['ichanel'], N)
+        numofchan = np.tile(obsinfo['ichanel'], N)
     elif backend == 'FFX':
-        numofchan = np.array(info_obs['ichanel'])
+        numofchan = np.array(obsinfo['ichanel'])
 
     # bintable HDU
     header = fits.Header()
