@@ -214,17 +214,18 @@ def _read_backendlog_mac(backendlog):
         return (headinfo['crec_type'] == 'ED')
 
     # read data
+    data = OrderedDict()
+
     with open(backendlog, 'rb') as f:
-        # control info
+        ## control info
         ut.readbinary(f, HEAD)
         ctlinfo = ut.readbinary(f, CTL)
 
-        # observation info
+        ## observation info
         ut.readbinary(f, HEAD)
         obsinfo = ut.readbinary(f, OBS)
 
-        # data info
-        data = OrderedDict()
+        ## data info
         for key in DAT:
             if not re.search('dmy', key):
                 data[key] = []
@@ -232,12 +233,9 @@ def _read_backendlog_mac(backendlog):
         while not EOF(f):
             datinfo = ut.readbinary(f, DAT)
             for key in data:
-
-    # read formats
-    fmts = ut.getfitsformat(DAT)
                 data[key].append(datinfo[key])
 
-    # edit data and formats
+    # edit data
     for key in data:
         data[key] = np.asarray(data[key])
 
@@ -246,34 +244,42 @@ def _read_backendlog_mac(backendlog):
     data['SCANTYPE']  = data.pop('cscan_type')
     data['ARRAYDATA'] = data.pop('iary_data')
 
-    fmts['STARTTIME'] = fmts.pop('cint_sttm')
-    fmts['ARRAYID']   = fmts.pop('cary_name')
-    fmts['SCANTYPE']  = fmts.pop('cscan_type')
-    fmts['ARRAYDATA'] = fmts.pop('iary_data')
-
-    # edit starttime
+    # starttime
     c = ut.DatetimeConverter('%Y%m%d%H%M%S.%f')
-    data['STARTTIME'] = np.asarray([c(t[:-2]) for t in data['STARTTIME']])
-    fmts['STARTTIME'] = 'A26' # 26 characters in FITS
+    data['STARTTIME'] = np.array([c(t[:-2]) for t in data['STARTTIME']])
 
-    # edit arraydata
+    # arraydata
     ons  = ut.where(data['SCANTYPE'] == 'ON')
     rs   = ut.where(data['SCANTYPE'] == 'R')
     skys = ut.where(data['SCANTYPE'] == 'SKY')
 
+    ## apply scaling factor and offset
     arraydata = data['ARRAYDATA'].astype(float)
     arraydata *= data['dary_scf'][:,np.newaxis]
     arraydata += data['dary_offset'][:,np.newaxis]
 
+    ## apply coeff. for ON
     for on in ons:
         for arrayid in np.unique(data['ARRAYID']):
             flag = (data['ARRAYID'][on] == arrayid)
             arraydata[on][flag] *= np.mean(data['dalpha'][on][flag])
 
+    ## apply coeff. for R
     for (r, sky) in zip(rs, skys):
         arraydata[r] *= data['dbeta'][sky][:,np.newaxis]
 
     data['ARRAYDATA'] = arraydata
+
+    # read formats
+    fmts = ut.getfitsformat(DAT)
+
+    # edit formats
+    fmts['STARTTIME'] = fmts.pop('cint_sttm')
+    fmts['ARRAYID']   = fmts.pop('cary_name')
+    fmts['SCANTYPE']  = fmts.pop('cscan_type')
+    fmts['ARRAYDATA'] = fmts.pop('iary_data')
+
+    fmts['STARTTIME'] = 'A26' # YYYY-mm-ddTHH:MM:SS.ssssss
     fmts['ARRAYDATA'] = '{[0]}E'.format(re.findall('\d+', fmts['ARRAYDATA']))
 
     # bintable HDU
