@@ -268,6 +268,13 @@ def _read_backendlog_mac(backendlog):
     for (r, sky) in zip(rs, skys):
         arraydata[r] *= data['dbeta'][sky][:,np.newaxis]
 
+    ## reverse array (if USB)
+    usefg = np.array(obsinfo['iary_usefg'], dtype=bool)
+    isusb = np.array(obsinfo['csid_type'])[usefg] == 'USB'
+    for arrayid in np.unique(data['ARRAYID'])[isusb]:
+        flag = (data['ARRAYID'] == arrayid)
+        arraydata[flag] = arraydata[flag,::-1]
+
     data['ARRAYDATA'] = arraydata
 
     # read formats
