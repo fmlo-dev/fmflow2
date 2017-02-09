@@ -29,46 +29,66 @@ def getarray(fitsname, arrayid, scantype):
         fmarray (FMArray): An output fmarray of the spacified array ID and scan type.
 
     """
-    from fmflow import fm
     with fits.open(os.path.expanduser(fitsname)) as f:
-        oi = f['OBSINFO']
-        fl = f['FMLOLOG']
-        be = f['BACKEND']
+        obsinfo = f['OBSINFO']
+        fmlolog = f['FMLOLOG']
+        backend = f['BACKEND']
+        if 'ANTENNA' in f:
+            antenna = f['ANTENNA']
 
         # flags
-        flag_oi = oi.data.ARRAYID == arrayid
-        flag_fl = fl.data.SCANTYPE == scantype
-        flag_be = (be.data.ARRAYID == arrayid) & (be.data.SCANTYPE == scantype)
+        flag_info = (obsinfo.data.ARRAYID == arrayid)
+        flag_fmlo = (fmlolog.data.SCANTYPE == scantype)
+        flag_be   = (backend.data.ARRAYID == arrayid) &\
+                    (backend.data.SCANTYPE == scantype)
 
-        # array
-        array = np.squeeze(be.data.ARRAYDATA[flag_be])
+        t_fmlo = fmlolog.data.STARTTIME[flag_fmlo]
+        t_be   = backend.data.STARTTIME[flag_be]
 
-        if scantype != 'ON':
-            return array
+        # flags of time
+        if 'ANTENNA' in f:
+            t_ant = antenna.data.STARTTIME
+            t_com = sorted(set(t_fmlo) & set(t_be) & set(t_ant))
+
+            tflag_fmlo = np.in1d(t_fmlo, t_com)
+            tflag_be   = np.in1d(t_be, t_com)
+            tflag_ant  = np.in1d(t_ant, t_com)
+        else:
+            t_com = sorted(set(t_fmlo) & set(t_be))
+            tflag_fmlo = np.in1d(t_fmlo, t_com)
+            tflag_be   = np.in1d(t_be, t_com)
 
         # info
-        keys = [name.lower() for name in oi.data[flag_oi].names]
-        values = oi.data[flag_oi][0]
+        keys = [name.lower() for name in obsinfo.data[flag_info].names]
+        values = obsinfo.data[flag_info][0]
 
         info = dict(zip(keys, values))
-        info['fitstype'] = oi.header['FITSTYPE']
-        info['telescop'] = oi.header['TELESCOP']
-        info['frontend'] = oi.header['FRONTEND']
-        info['backend']  = oi.header['BACKEND']
+        info['fitstype'] = obsinfo.header['FITSTYPE']
+        info['telescop'] = obsinfo.header['TELESCOP']
+        info['frontend'] = obsinfo.header['FRONTEND']
+        info['backend']  = obsinfo.header['BACKEND']
+
+        # array
+        if scantype != 'ON':
+            array = np.squeeze(backend.data.ARRAYDATA[flag_be])
+            return array
+        else:
+            array = np.squeeze(backend.data.ARRAYDATA[flag_be][tflag_be])
 
         # fmch
-        t_fl = fl.data.STARTTIME[flag_fl]
-        t_be = be.data.STARTTIME[flag_be]
-        fmfreq = fl.data.FMFREQ[flag_fl]
+        fmfreq = fmlolog.data.FMFREQ[flag_fmlo][tflag_fmlo]
+        fmch = (fmfreq / info['chanwidth']).astype(int)
 
-        if len(set(t_be)-set(t_fl)) > 0:
-            raise ut.FMFlowError('time range of FMLOLOG does not cover that of BACKEND')
+        # coord (optional)
+        if 'ANTENNA' in f:
+            ra  = antenna.data.RA[tflag_ant]
+            dec = antenna.data.DEC[tflag_ant]
+            coord = np.vstack([ra, dec]).T
+        else:
+            coord = None
 
-        fmfreq_matched = []
-        for t in t_be:
-            fmfreq_matched.append(fmfreq[t_fl==t][0])
-
-        fmch = (np.asarray(fmfreq_matched) / info['chanwidth']).astype(int)
-
-        fmarray = fm.array(array, fmch, info=info)
+        # fmarray
+        from fmflow import fm
+        fmarray = fm.array(array, fmch, coord, info)
         return fmarray
+
