@@ -4,7 +4,7 @@ FMFlow is an integrated package for the FMLO, a new *off-point-less* observivg m
 
 ## Installation
 
-Currently FMFlow only provides its core Python library `fmflow`.
+Currently FMFlow only provides its core Python package `fmflow`.
 
 ### Using pip
 
@@ -16,6 +16,6 @@ The easiest way of installation is to use pip:
 
 FMFlow (`fmflow`) requires the following packages:
 
-+ NumPy (>=1.10)
-+ SciPy (>=0.15)
-+ AstroPy (>=1.0)
++ NumPy (>=1.11)
++ SciPy (>=0.18)
++ AstroPy (>=1.2)

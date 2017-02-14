@@ -4,12 +4,11 @@
 from setuptools import setup, find_packages
 
 # local fmflow
-from fmflow import __version__
-
+from . import fmflow as fm
 
 setup(
     name = 'fmflow',
-    version = __version__,
+    version = fm.__version__,
     author = 'Akio Taniguchi',
     author_email = 'taniguchi@ioa.s.u-tokyo.ac.jp',
     description = 'Core Python Package for FMFlow',
@@ -18,8 +17,8 @@ setup(
     license = 'MIT',
     packages = find_packages(),
     install_requires = [
-        'numpy>=1.10',
-        'scipy>=0.15',
-        'astropy>=1.0'
+        'numpy>=1.11',
+        'scipy>=0.18',
+        'astropy>=1.2'
     ]
 )
