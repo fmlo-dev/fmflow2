@@ -19,3 +19,5 @@ FMFlow (`fmflow`) requires the following packages:
 + NumPy (>=1.11)
 + SciPy (>=0.18)
 + AstroPy (>=1.2)
++ PyYAML (>=3.10)
+
