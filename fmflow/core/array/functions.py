@@ -3,9 +3,9 @@
 """Module for functions of basic fmarray operations.
 
 fmarray is created and operated with the functions defined in this module.
-These functions can be used as fmflow.fm.<functions> like::
+These functions can be used as fm.<functions> like::
 
-    >>> from fmflow import fm
+    >>> import fmflow as fm
     >>> fmarray = fm.array(array, table, info) # create an fmarray
     >>> fdarray = fm.demodulate(fmarray) # demodulate an fmarray
 
@@ -14,29 +14,25 @@ For more information, see (https://github.com/snoopython/fmflow/wiki/fmarray).
 """
 
 # Python 3.x compatibility
-from __future__ import absolute_import as __absolute_import
-from __future__ import division as __division
-from __future__ import print_function as __print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
 # the Python standard library
 import uuid
-from functools import partial, wraps
-from inspect import getargspec
 
 # the Python Package Index
+import astropy.units as u
 import numpy as np
 import numpy.ma as ma
-from fmflow.io import fits
-from fmflow import utils as ut
-
-# FMFlow submodules
-from .array import FMArray
+import fmflow as fm
 
 # imported items
 __all__ = [
-    'array', 'asarray', 'asndarray', 'asmaskedarray', 'getarray', 'demodulate',
-    'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like', 'concatenate',
-    'save', 'mad', 'median', 'load', 'fmfunc', 'timechunk', 'FMArray'
+    'array', 'asarray', 'toarray', 'tomaskedarray', 'getarray',
+    'demodulate', 'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like',
+    'concatenate', 'save', 'mad', 'median', 'load',
+    'getfrequency', 'getspectrum', 'getfreq', 'getspec',
 ]
 
 
@@ -53,7 +49,7 @@ def array(array, fmch=None, coord=None, info=None):
         fmarray (FMArray): A modulated fmarray.
 
     """
-    fmarray = FMArray.fromeach(array, fmch, coord, info)
+    fmarray = fm.FMArray.fromeach(array, fmch, coord, info)
     return fmarray
 
 
@@ -67,15 +63,15 @@ def asarray(array):
         fmarray (FMArray): An output modulated fmarray.
 
     """
-    if type(array) == FMArray:
+    if type(array) == fm.FMArray:
         fmarray = array
     else:
-        fmarray = FMArray(array)
+        fmarray = fm.FMArray(array)
 
     return fmarray
 
 
-def asndarray(fmarray):
+def toarray(fmarray):
     """Convert the fmarray to a NumPy ndarray.
 
     Args:
@@ -85,11 +81,11 @@ def asndarray(fmarray):
         array (array): An output NumPy ndarray.
 
     """
-    array = fmarray.asndarray()
+    array = fmarray.toarray()
     return array
 
 
-def asmaskedarray(fmarray):
+def tomaskedarray(fmarray):
     """Convert the fmarray to a NumPy masked array.
 
     Args:
@@ -99,7 +95,7 @@ def asmaskedarray(fmarray):
         array (masked array): An output NumPy masked array.
 
     """
-    array = fmarray.asmaskedarray()
+    array = fmarray.tomaskedarray()
     return array
 
 
@@ -118,7 +114,8 @@ def getarray(fitsname, arrayid, scantype):
         fmarray (FMArray): An output fmarray of the spacified array ID and scan type.
 
     """
-    fmarray = fits.getarray(fitsname, arrayid, scantype)
+    import fmflow as fm
+    fmarray = fm.io.fits.getarray(fitsname, arrayid, scantype)
     return fmarray
 
 
@@ -170,7 +167,7 @@ def zeros(shape, dtype=float, order='C', **kwargs):
         fmarray (FMArray): An output modulated fmarray of zeros.
 
     """
-    fmarray = FMArray.fromeach(np.zeros(shape, dtype, order), **kwargs)
+    fmarray = fm.FMArray.fromeach(np.zeros(shape, dtype, order), **kwargs)
     return fmarray
 
 
@@ -188,7 +185,7 @@ def ones(shape, dtype=float, order='C', **kwargs):
         fmarray (FMArray): An output modulated fmarray of ones.
 
     """
-    fmarray = FMArray.fromeach(np.ones(shape, dtype, order), **kwargs)
+    fmarray = fm.FMArray.fromeach(np.ones(shape, dtype, order), **kwargs)
     return fmarray
 
 
@@ -214,7 +211,7 @@ def zeros_like(array, dtype=None, order='K', keepmeta=True):
     fmarray = np.zeros_like(array, dtype, order, subok=True)
 
     if not keepmeta:
-        fmarray = FMArray(fmarray)
+        fmarray = fm.FMArray(fmarray)
 
     return fmarray
 
@@ -241,7 +238,7 @@ def ones_like(array, dtype=None, order='K', keepmeta=True):
     fmarray = np.ones_like(array, dtype, order, subok=True)
 
     if not keepmeta:
-        fmarray = FMArray(fmarray)
+        fmarray = fm.FMArray(fmarray)
 
     return fmarray
 
@@ -261,7 +258,8 @@ def concatenate(fmarray_ins):
 
     """
     if type(fmarray_ins) not in (tuple, list):
-        raise ut.FMFlowError('fmarray_ins must be sequence of fmarrays.')
+        import fmflow as fm
+        raise fm.utils.FMFlowError('fmarray_ins must be sequence of fmarrays.')
 
     if len(fmarray_ins) > 2:
         fmarray_0 = fmarray_ins[0]
@@ -270,12 +268,12 @@ def concatenate(fmarray_ins):
         fmarray_0 = fmarray_ins[0]
         fmarray_1 = fmarray_ins[1]
 
-    array = ma.concatenate(map(asmaskedarray, [fmarray_0, fmarray_1]), 0)
+    array = ma.concatenate(map(tomaskedarray, [fmarray_0, fmarray_1]), 0)
     table = np.concatenate([fmarray_0.table, fmarray_1.table])
     info = fmarray_0.info
     info.update(fmarray_1.info)
 
-    fmarray_out = FMArray(array, table, info)
+    fmarray_out = fm.FMArray(array, table, info)
     return fmarray_out
 
 
@@ -356,83 +354,37 @@ def load(filename):
     table = d['table']
     info  = d['info'].item()
 
-    fmarray = FMArray(array, table, info)
+    fmarray = fm.FMArray(array, table, info)
     return fmarray
 
 
-def fmfunc(func):
-    """Make a function compatible with fmarray.
+def getfrequency(array, unit='GHz', **kwargs):
+    if array.ismodulated:
+        raise fm.utils.FMFlowError('array should be demodulated')
 
-    This function is used as a decorator like::
+    info = array.info.copy()
+    info.update(kwargs)
+    rest = info['restfreq']
+    step = info['chanwidth']
+    fmindex = info['fmindex']
 
-        >>> @fmfunc
-        >>> def func(fmarray):
-        ...     return fmarray # do nothing
-        >>>
-        >>> result = func(fmarray)
+    start = rest - step * (0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
+    end   = start + step * array.shape[1]
 
-    Args:
-        func (function): A function to be wrapped.
-            The first argument of the function must be `fmarray`.
-
-    Returns:
-        wrapper (function): A wrapped function.
-
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        fmarray_in  = kwargs.pop('fmarray', args[0])
-        fmarray_out = fmarray_in.copy()
-
-        if type(fmarray_in) == FMArray:
-            array_in = fmarray_in.asndarray()
-        else:
-            array_in = np.asarray(fmarray_in)
-
-        array_out = func(array_in, *args[1:], **kwargs)
-        fmarray_out[:] = array_out
-        return fmarray_out
-
-    return wrapper
+    freq = np.arange(start, end, step) * u.Hz
+    freq = freq.to(getattr(u, unit)).value
+    return freq
 
 
-def timechunk(func):
-    """Make a function compatible with multicore time-chunk processing.
+def getspectrum(array, unit='K', weights=None):
+    if array.ismodulated:
+        raise fm.utils.FMFlowError('array should be demodulated')
 
-    This function is used as a decorator like::
+    spec = ma.average(array, 0, weights) * u.K
+    spec = spec.to(getattr(u, unit)).value
+    return spec
 
-        >>> @fmfunc
-        >>> @timechunk
-        >>> def func(fmarray):
-        ...     return fmarray # do nothing
-        >>>
-        >>> result = func(fmarray, chunklen=100)
 
-    Args:
-        func (function): A function to be wrapped.
-            The first argument of the function must be fmarray.
-
-    Returns:
-        wrapper (function): A wrapped function.
-
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        argnames = getargspec(func).args
-        for i in range(len(args)):
-            kwargs[argnames[i]] = args[i]
-
-        array_in  = kwargs.pop('fmarray')
-        chunk_len = kwargs.pop('chunklen', len(array_in))
-        chunk_num = round(len(array_in)/chunk_len)
-
-        index = np.linspace(0, len(array_in), chunk_num+1, dtype=int)
-        subs_in = [array_in[index[i]:index[i+1]] for i in range(len(index)-1)]
-
-        p = ut.Pool()
-        pfunc = partial(func, **kwargs)
-        subs_out = p.map(pfunc, subs_in)
-        array_out = np.concatenate(subs_out)
-        return array_out
-
-    return wrapper
+# aliases
+getfreq = getfrequency
+getspec = getspectrum

@@ -3,28 +3,25 @@
 """Module for fmarray.
 
 fmarray is one of the fundamental data formats in FMFlow,
-which is created as an instance of FMArray class.
+which is created as an instance of fmarray class.
 
 FMArray is subclass of NumPy masked array, which handles timestream array
 together with timestream table (fmch, coord, etc) and info dictionary.
 
-Normally, fmarray is created and operated with the functions in fmflow.fm
+Normally, fmarray is created and operated with the functions in fmflow
 (e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.
-
-Note:
-    FMArray is imported only in the fmflow.fm.arrayfunc module.
 
 """
 
 # Python 3.x compatibility
-from __future__ import absolute_import as __absolute_import
-from __future__ import division as __division
-from __future__ import print_function as __print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
 # the Python Package Index
 import numpy as np
 import numpy.ma as ma
-from fmflow import utils as ut
+import fmflow as fm
 
 # imported items
 __all__ = ['FMArray']
@@ -40,7 +37,7 @@ class FMArray(ma.MaskedArray):
     It is subclass of NumPy masked array, which handles timestream array
     together with timestream table (fmch, coord, etc) and info dictionary.
 
-    Normally, fmarray is created and operated with the functions in fmflow.fm
+    Normally, fmarray is created and operated with the functions in fmflow
     (e.g. array, (de)modulate, etc) and FMArray is thus not touched by users.
 
     """
@@ -88,7 +85,7 @@ class FMArray(ma.MaskedArray):
 
         Normally, this method is for the internal use.
         It is equivalent to the fm.array function (recommended to use).
-        i.e. FMArray.fromeach(...) <=> fm.array(...)
+        i.e. fmarray.fromeach(...) <=> fm.array(...)
 
         Args:
             array (masked array): A timestream array (mask is optional).
@@ -127,7 +124,7 @@ class FMArray(ma.MaskedArray):
 
         """
         if self.isdemodulated:
-            raise ut.FMFlowError('this fmarray is already demodulated')
+            raise fm.utils.FMFlowError('this fmarray is already demodulated')
 
         # table, info
         table = self.table.copy()
@@ -145,7 +142,7 @@ class FMArray(ma.MaskedArray):
         # array
         array = ma.zeros((self.shape[0], self.shape[1]+np.ptp(table.fmch)))
         array.mask = True
-        array[:,:self.shape[1]] = self.asmaskedarray()
+        array[:,:self.shape[1]] = self.tomaskedarray()
 
         for i in range(len(array)):
             array[i] = np.roll(array[i], fmindex[0]+table.fmch[i])
@@ -166,7 +163,7 @@ class FMArray(ma.MaskedArray):
 
         """
         if self.ismodulated:
-            raise ut.FMFlowError('this fmarray is already modulated')
+            raise fm.utils.FMFlowError('this fmarray is already modulated')
 
         # table, info
         table = self.table.copy()
@@ -179,7 +176,7 @@ class FMArray(ma.MaskedArray):
         # array
         array = ma.zeros((self.shape[0], self.shape[1]+np.sum(fmcutcol)))
         array.mask = True
-        array[:,fmcutcol[0]:array.shape[1]-fmcutcol[1]] = self.asmaskedarray()
+        array[:,fmcutcol[0]:array.shape[1]-fmcutcol[1]] = self.tomaskedarray()
 
         for i in range(len(array)):
             array[i] = np.roll(array[i], -(fmindex[0]+table.fmch[i]))
@@ -193,21 +190,21 @@ class FMArray(ma.MaskedArray):
         info.update({'fmstatus': 'FM', 'fmindex': (0,0), 'fmcutcol': (0,0)})
         return FMArray(array, table, info)
 
-    def asndarray(self):
+    def toarray(self):
         """Convert the fmarray to a NumPy ndarray.
         
-        It is equivalent to the fm.asndarray function (recommended to use).
-        i.e. x.asndarray() <=> fm.asndarray(x)
+        It is equivalent to the fm.toarray function (recommended to use).
+        i.e. x.toarray() <=> fm.toarray(x)
         
         """
         array = self.data.copy()
         return array
 
-    def asmaskedarray(self):
+    def tomaskedarray(self):
         """Convert the fmarray to a NumPy masked array.
 
-        It is equivalent to the fm.asmaskedarray function (recommended to use).
-        i.e. x.asmaskedarray() <=> fm.asmaskedarray(x)
+        It is equivalent to the fm.tomaskedarray function (recommended to use).
+        i.e. x.tomaskedarray() <=> fm.tomaskedarray(x)
 
         """
         data, mask = np.asarray(self), self.mask
@@ -283,7 +280,7 @@ class FMArray(ma.MaskedArray):
     def __getitem__(self, index):
         """x.__getitem__(y) <=> x[y]"""
         # array
-        array = self.asmaskedarray()[index]
+        array = self.tomaskedarray()[index]
 
         # table
         try:
