@@ -10,6 +10,7 @@ from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # the Python standard library
+import os
 import re
 import json
 
@@ -24,6 +25,7 @@ from astropy.coordinates import Angle
 __all__ = ['fromaste']
 
 # constants
+BASEDIR = os.path.dirname(os.path.realpath(__file__))
 LAT_ASTE   = Angle('-22d58m17.69447s').deg
 EFF_8257D  = 0.92 # exposure / interval time of Agilent 8257D
 
@@ -61,7 +63,7 @@ def fromaste(fmlolog, backendlog, antennalog=None, byteorder='<'):
         # hdu = _read_backendlog_whsf(backendlog, byteorder)
         raise fm.utils.FMFlowError('WHSF logging is not supported yet')
     else:
-        raise fm.utils..FMFlowError('invalid logging type')
+        raise fm.utils.FMFlowError('invalid logging type')
 
     fitsobj.append(hdu)
 
@@ -182,7 +184,7 @@ def _check_backend(backendlog, byteorder):
         backend (str): Backend type.
 
     """
-    with open('struct_common.yaml') as f:
+    with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
          d = yaml.load(f)
          head = fm.utils.CStructReader(d['head'])
          ctl  = fm.utils.CStructReader(d['ctl'])
@@ -195,7 +197,7 @@ def _check_backend(backendlog, byteorder):
     return backend
 
 
-def _read_backendlog_mac(backendlog):
+def _read_backendlog_mac(backendlog, byteorder):
     """Read a backend logging of ASTE/MAC.
 
     Args:
@@ -206,12 +208,12 @@ def _read_backendlog_mac(backendlog):
         hdu (BinTableHDU): HDU containing the read backend logging.
 
     """
-    with open('struct_common.yaml') as f:
+    with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
          d = yaml.load(f)
          head = fm.utils.CStructReader(d['head'])
          ctl  = fm.utils.CStructReader(d['ctl'])
 
-    with open('struct_mac.yaml') as f:
+    with open(os.path.join(BASEDIR, 'struct_mac.yaml')) as f:
          d = yaml.load(f)
          obs = fm.utils.CStructReader(d['obs'])
          dat = fm.utils.CStructReader(d['dat'])
@@ -270,8 +272,8 @@ def _read_backendlog_mac(backendlog):
         arraydata[r] *= data['dbeta'][sky][:,np.newaxis]
 
     ## reverse array (if USB)
-    usefg = np.array(obsinfo['iary_usefg'], dtype=bool)
-    isusb = np.array(obsinfo['csid_type'])[usefg] == 'USB'
+    usefg = np.array(obs.data['iary_usefg'], dtype=bool)
+    isusb = np.array(obs.data['csid_type'])[usefg] == 'USB'
     for arrayid in np.unique(data['ARRAYID'])[isusb]:
         flag = (data['ARRAYID'] == arrayid)
         arraydata[flag] = arraydata[flag,::-1]
