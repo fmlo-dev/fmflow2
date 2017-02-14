@@ -1,35 +1,33 @@
 # coding: utf-8
 
 # Python 3.x compatibility
-from __future__ import absolute_import as __absolute_import
-from __future__ import division as __division
-from __future__ import print_function as __print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
 # the Python standard library
 from functools import partial
 
 # the Python Package Index
 import numpy as np
+import fmflow as fm
 from scipy import signal
 from scipy import interpolate
 from scipy.ndimage import filters
-
-# FMFlow submodules
-from .._array import *
 
 # imported items
 __all__ = ['hmedfilt', 'lmeds_spline', 'fme_gaussian_filter']
 
 
-@fmfunc
-@timechunk
+@fm.fmfunc
+@fm.timechunk
 def hmedfilt(fmarray_in, kernel=3):
     fmarray_out = signal.medfilt(fmarray_in, (1, kernel))
     return fmarray_out
 
 
-@fmfunc
-@timechunk
+@fm.fmfunc
+@fm.timechunk
 def lmeds_spline(fmarray_in, nsample=50, niter=1000, **kwargs):
     if fmarray_in.ndim == 1:
         fmarray_in = fmarray_in[np.newaxis]

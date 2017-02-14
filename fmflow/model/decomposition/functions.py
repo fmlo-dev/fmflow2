@@ -1,9 +1,9 @@
 # coding: utf-8
 
 # Python 3.x compatibility
-from __future__ import absolute_import as __absolute_import
-from __future__ import division as __division
-from __future__ import print_function as __print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
 # the Python Standard Library
 from collections import defaultdict
@@ -11,11 +11,8 @@ from copy import deepcopy
 
 # the Python Package Index
 import numpy as np
+import fmflow as fm
 from sklearn import decomposition
-from fmflow import utils as ut
-
-# FMFlow submodules
-from .._array import *
 
 # imported items
 __all__ = ['reducedim']
@@ -25,8 +22,8 @@ PARAMS = defaultdict(dict)
 PARAMS['KernelPCA'] = {'fit_inverse_transform': True}
 
 
-@fmfunc
-@timechunk
+@fm.fmfunc
+@fm.timechunk
 def reducedim(fmarray, decomposer='TruncatedSVD', **kwargs):
     """Compute a dimension-reduced fmarray via a decomposition algorithm.
 
@@ -42,7 +39,7 @@ def reducedim(fmarray, decomposer='TruncatedSVD', **kwargs):
     Example:
         To compute a fmarray reconstructed from top two principal components:
 
-        >>> result = fm.reduce(fmarray, 'PCA', n_components=2)
+        >>> result = fm.model.reduceim(fmarray, 'PCA', n_components=2)
 
     """
     AlgorithmClass = getattr(decomposition, decomposer)
@@ -57,7 +54,6 @@ def reducedim(fmarray, decomposer='TruncatedSVD', **kwargs):
     elif hasattr(model, 'components_'):
         result = np.dot(fit, model.components_)
     else:
-        raise ut.FMFlowError('cannot decompose with the spacified algorithm')
+        raise fm.utils.FMFlowError('cannot decompose with the spacified algorithm')
 
     return result
-

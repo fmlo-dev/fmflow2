@@ -1,23 +1,21 @@
 # coding: utf-8
 
 # Python 3.x compatibility
-from __future__ import absolute_import as __absolute_import
-from __future__ import division as __division
-from __future__ import print_function as __print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
 # the Python Package Index
 import numpy as np
+import fmflow as fm
 from scipy.special import gammaln
-
-# FMFlow submodules
-from .._array import *
 
 # imported items
 __all__ = ['pca', 'ppca']
 
 
-@fmfunc
-@timechunk
+@fm.fmfunc
+@fm.timechunk
 def pca(fmarray_in, n_pc=0.9):
     if not (type(n_pc) == float or type(n_pc) == int):
         raise ValueError, 'n_pc must be float or int'
@@ -35,8 +33,8 @@ def pca(fmarray_in, n_pc=0.9):
     return fmarray_out
 
 
-@fmfunc
-@timechunk
+@fm.fmfunc
+@fm.timechunk
 def ppca(fmarray_in, max_pc=None):
     # PCA using SVD
     U, d, Vt = np.linalg.svd(fmarray_in, full_matrices=False)
