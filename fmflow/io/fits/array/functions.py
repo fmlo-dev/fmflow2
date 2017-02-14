@@ -1,17 +1,17 @@
 # coding: utf-8
 
 # Python 3.x compatibility
-from __future__ import absolute_import as __absolute_import
-from __future__ import division as __division
-from __future__ import print_function as __print_function
+from __future__ import absolute_import as _absolute_import
+from __future__ import division as _division
+from __future__ import print_function as _print_function
 
 # the Python standard library
 import os
 
 # the Python Package Index¬
 import numpy as np
+import fmflow as fm
 from astropy.io import fits
-from fmflow import utils as ut
 
 # imported items
 __all__ = ['getarray']
@@ -88,7 +88,6 @@ def getarray(fitsname, arrayid, scantype):
             coord = None
 
         # fmarray
-        from fmflow import fm
         fmarray = fm.array(array, fmch, coord, info)
         return fmarray
 
