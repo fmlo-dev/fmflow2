@@ -17,92 +17,115 @@ from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # the Python standard library
+import json
 import re
 from collections import OrderedDict
-from struct import calcsize, unpack
+from struct import Struct
 
 # the Python Package Index
 import numpy as np
 
 # imported items
-__all__ = ['readbinary', 'getfitsformat']
+__all__ = ['CStructReader']
 
 
-def readbinary(f, structure):
-    """Sequentially read a data structure on a binary file object.
+class CStructReader(object):
+    def __init__(self, fields, byteorder='@'):
+        self.fields = fields
+        self.byteorder = byteorder
+        self.formats, self.shapes = self._parsefields()
+        self.struct = Struct(self.joinedformat)
+        self._data = self._initdata()
 
-    Args:
-        f (file): A binary file object of the logging.
-        structure (OrderedDict): An ordered dictionary defining the data structure.
+    def read(self, f):
+        bindata = f.read(self.struct.size)
+        unpdata = list(self.struct.unpack(bindata))
+        for key in self.shapes:
+            shape = self.shapes[key]
+            count = np.prod(shape)
+            datum = [unpdata.pop(0) for i in range(count)]
+            self._data[key].append(np.asarray(datum))
 
-    Returns:
-        readdata (OrderedDict): An ordered dictionary which stores the read data.
+    @property
+    def data(self):
+        data = OrderedDict()
+        for key in self.shapes:
+            shape = [len(self._data[key])] + self.shapes[key]
+            datum = np.reshape(self._data[key], shape)
+            if np.prod(shape) == 1:
+                data[key] = np.squeeze(datum).item()
+            else:
+                data[key] = np.squeeze(datum)
 
-    """
-    readdata = OrderedDict()
-    for key in structure:
-        readdata[key] = _readstructure(f, *structure[key])
+        return data
 
-    return readdata
+    @property
+    def jsondata(self):
+        data = self.data
+        for key in data:
+            if isinstance(data[key], np.ndarray):
+                data[key] = data[key].tolist()
 
+        jsondata = json.dumps(data)
+        return jsondata
 
-def getfitsformat(structure):
-    """Convert a data structure to the corresponding FITS format.
+    @property
+    def fitsformats(self):
+        fitsformats = OrderedDict()
+        for key in self.formats:
+            fmt = self.formats[key]
+            shape = self.shapes[key]
+            count = np.prod(shape)
 
-    Args:
-        structure (OrderedDict): An ordered dictionary defining the data structure.
+            if re.search('s', fmt):
+                code = 'A' + re.findall('\d+', fmt)[0]
+            elif re.search('i', fmt):
+                code = 'J'
+            elif re.search('d', fmt):
+                code = 'D'
+            else:
+                raise ValueError, fmt
 
-    Returns:
-        formats (OrderedDict): An ordered dictionary which stores the FITS formats.
+            if count == 1:
+                fitsfmt = code
+            else:
+                fitsfmt = str(count) + code
 
-    """
-    formats = OrderedDict()
-    for key in structure:
-        formats[key] = _convertformat(*structure[key])
+            fitsformats[key] = fitsfmt
 
-    return formats
+        return fitsformats
 
+    @property
+    def joinedformat(self):
+        joinedformat = self.byteorder
+        for key in self.formats:
+            fmt = self.formats[key]
+            count = np.prod(self.shapes[key])
+            joinedformat += fmt * count
 
-def _readstructure(f, structfmt, shape=1):
-    try:
-        bytesize = calcsize(structfmt)
-    except:
-        raise ValueError, structfmt
+        return joinedformat
 
-    try:
-        length = np.prod(shape)
-    except:
-        raise ValueError, shape
+    def _parsefields(self):
+        formats = OrderedDict()
+        fitsformats = OrderedDict()
+        shapes  = OrderedDict()
+        for field in self.fields:
+            if len(field) == 2:
+                key, fmt = field
+                shape = [1]
+            elif len(field) == 3:
+                key, fmt, shape = field
+                if type(shape) == int:
+                    shape = [shape]
 
-    readdata = []
-    for i in range(length):
-        bindata = f.read(bytesize)
-        if re.search('s', structfmt):
-            readdata.append(unpack(structfmt, bindata)[0].split('\x00')[0])
-        else:
-            readdata.append(unpack(structfmt, bindata)[0])
+            formats[key] = fmt
+            shapes[key]  = shape
 
-    readdata = np.reshape(readdata, shape).tolist()
-    readdata = readdata[0] if length == 1 else readdata
+        return formats, shapes
 
-    return readdata
+    def _initdata(self):
+        _data = OrderedDict()
+        for key in self.formats:
+            _data[key] = []
 
-
-def _convertformat(structfmt, shape=1):
-    if re.search('s', structfmt):
-        code = 'A' + re.findall('\d+', structfmt)[0]
-    elif re.search('i', structfmt):
-        code = 'J'
-    elif re.search('d', structfmt):
-        code = 'D'
-    else:
-        raise ValueError, structfmt
-
-    try:
-        length = np.prod(shape)
-    except:
-        raise ValueError, shape
-
-    fitsfmt = code if length == 1 else str(length) + code
-
-    return fitsfmt
+        return _data
