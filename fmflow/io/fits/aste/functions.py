@@ -351,7 +351,9 @@ def _make_obsinfo(fitsobj):
     if backend == 'AC45':
         numofchan = np.tile(obsinfo['ichanel'], N)
     elif backend == 'FFX':
-        numofchan = np.array(obsinfo['ichanel'])
+        numofchan = np.array(obsinfo['ichanel'])[flag]
+    else:
+        raise fm.utils.FMFlowError('invalid logging type')
 
     # bintable HDU
     header = fits.Header()
