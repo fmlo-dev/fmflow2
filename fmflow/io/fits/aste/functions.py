@@ -38,11 +38,16 @@ def fromaste(fmlolog, backendlog, antennalog=None, byteorder='<'):
         fmlolog (str): File name of FMLO logging.
         backendlog (str): File name of backend logging.
         antennalog (str): File name of antenna logging (optional).
-        byteorder (str):
+        byteorder (str): format string that represents byte order
+            of the backendlog. Default is '<' (little-endian).
+            If the data in the returned FITS seems to be wrong,
+            try to spacify '>' (big-endian).
 
     Returns:
         fitsobj (HDUlist): HDU list containing the merged data.
 
+    See Also:
+        https://docs.python.org/2/library/struct.html
     """
     # HDU list
     fitsobj = fits.HDUList()
@@ -179,7 +184,10 @@ def _check_backend(backendlog, byteorder):
 
     Args:
         backendlog (str): File name of backend logging.
-        byteorder (str):
+        byteorder (str): format string that represents byte order
+            of the backendlog. Default is '<' (little-endian).
+            If the data in the returned FITS seems to be wrong,
+            try to spacify '>' (big-endian).
 
     Returns:
         backend (str): Backend type.
@@ -203,7 +211,10 @@ def _read_backendlog_mac(backendlog, byteorder):
 
     Args:
         backendlog (str): File name of backend logging.
-        byteorder (str):
+        byteorder (str): format string that represents byte order
+            of the backendlog. Default is '<' (little-endian).
+            If the data in the returned FITS seems to be wrong,
+            try to spacify '>' (big-endian).
 
     Returns:
         hdu (BinTableHDU): HDU containing the read backend logging.
