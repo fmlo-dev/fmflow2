@@ -30,9 +30,10 @@ __all__ = ['CStructReader']
 
 
 class CStructReader(object):
-    def __init__(self, fields, byteorder='@'):
+    def __init__(self, fields, ignored=None, byteorder=None):
         self.fields = fields
-        self.byteorder = byteorder
+        self.ignored = ignored or '$.'
+        self.byteorder = byteorder or '@'
         self.formats, self.shapes = self._parsefields()
         self.struct = Struct(self.joinedformat)
         self._data = self._initdata()
@@ -50,6 +51,9 @@ class CStructReader(object):
     def data(self):
         data = OrderedDict()
         for key in self.shapes:
+            if re.search(self.ignored, key):
+                continue
+
             shape = [len(self._data[key])] + self.shapes[key]
             datum = np.reshape(self._data[key], shape)
             if np.prod(shape) == 1:
