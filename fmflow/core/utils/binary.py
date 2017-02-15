@@ -78,7 +78,8 @@ class CStructReader(object):
             count = np.prod(shape)
 
             if re.search('s', fmt):
-                code = 'A' + re.findall('\d+', fmt)[0]
+                code = 'A'
+                code += re.findall('\d+', fmt)[0]
             elif re.search('i', fmt):
                 code = 'J'
             elif re.search('d', fmt):
@@ -108,7 +109,7 @@ class CStructReader(object):
     def _parsefields(self):
         formats = OrderedDict()
         fitsformats = OrderedDict()
-        shapes  = OrderedDict()
+        shapes = OrderedDict()
         for field in self.fields:
             if len(field) == 2:
                 key, fmt = field
