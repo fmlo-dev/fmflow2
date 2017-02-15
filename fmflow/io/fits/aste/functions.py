@@ -261,7 +261,7 @@ def _read_backendlog_mac(backendlog, byteorder):
 
     ## starttime
     c = fm.utils.DatetimeConverter('%Y%m%d%H%M%S.%f')
-    data['STARTTIME'] = np.array([c(t[:-2]) for t in data['STARTTIME']])
+    data['STARTTIME'] = np.array([c(t) for t in data['STARTTIME']])
 
     ## scantype (bug?)
     data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'

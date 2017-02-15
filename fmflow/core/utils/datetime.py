@@ -14,6 +14,7 @@ from __future__ import print_function as _print_function
 
 # the Python standard library
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 # importing items
 __all__ = ['DatetimeConverter']
@@ -34,4 +35,5 @@ class DatetimeConverter(object):
         """c.__call__(string) is equivalent to c(string).
 
         """
-        return datetime.strptime(string, self.fmt).strftime(ISO_8601)
+        _string = '{:.6f}'.format(Decimal(string))[:-5]
+        return datetime.strptime(_string, self.fmt).strftime(ISO_8601)
