@@ -15,8 +15,8 @@ import re
 import json
 
 # the Python Package Index
-import numpy as np
 import yaml
+import numpy as np
 import fmflow as fm
 from astropy.io import fits
 from astropy.coordinates import Angle
@@ -26,7 +26,7 @@ __all__ = ['fromaste']
 
 # constants
 BASEDIR = os.path.dirname(os.path.realpath(__file__))
-IGNORED_KEY = '[a-z]dmy([^_]|$)' # cdmy, cdmy2, ..., except for idmy_flag
+IGNORED_KEY = '^[a-z]dmy([^_]|$)' # cdmy, cdmy2, ..., except for idmy_flag
 LAT_ASTE = Angle('-22d58m17.69447s').deg # latitude of the ASTE
 EFF_8257D = 0.92 # exposure / interval time of Agilent 8257D
 
