@@ -2,13 +2,6 @@
 
 """Module for reading binary data in FMFlow.
 
-Structure is an ordered dictionary (collections.OrderedDict),
-which defines each name of parameter and corresponding (format, shape)
-and will be used with the fmflow.utils.readbinary function.
-Format must be compatible with the Python's struct module.
-For example, '>i' (int with big endian), or '10s' (10 chars).
-For more information, see (http://docs.python.jp/2/library/struct.html).
-
 """
 
 # Python 3.x compatibility
@@ -30,17 +23,17 @@ __all__ = ['CStructReader']
 
 
 class CStructReader(object):
-    def __init__(self, fields, ignored=None, byteorder=None):
-        self.fields = fields
+    def __init__(self, struct, ignored=None, byteorder=None):
+        self.struct = struct
         self.ignored = ignored or '$.'
-        self.byteorder = byteorder or '@'
-        self.formats, self.shapes = self._parsefields()
-        self.struct = Struct(self.joinedformat)
+        self.byteorder = byteorder or '<'
+        self.formats, self.shapes = self._parsestruct()
+        self.unpacker = Struct(self.joinedformat)
         self._data = self._initdata()
 
     def read(self, f):
-        bindata = f.read(self.struct.size)
-        unpdata = list(self.struct.unpack(bindata))
+        bindata = f.read(self.unpacker.size)
+        unpdata = list(self.unpacker.unpack(bindata))
         for key in self.shapes:
             shape = self.shapes[key]
             count = np.prod(shape)
@@ -79,7 +72,7 @@ class CStructReader(object):
         for key in self.formats:
             fmt = self.formats[key]
             shape = self.shapes[key]
-            count = np.prod(shape)
+            count = np.prod(shape, dtype=int)
 
             if re.search('s', fmt):
                 code = 'A'
@@ -109,16 +102,17 @@ class CStructReader(object):
         joinedformat = self.byteorder
         for key in self.formats:
             fmt = self.formats[key]
-            count = np.prod(self.shapes[key])
+            shape = self.shapes[key]
+            count = np.prod(shape, dtype=int)
             joinedformat += fmt * count
 
         return joinedformat
 
-    def _parsefields(self):
+    def _parsestruct(self):
         formats = OrderedDict()
         fitsformats = OrderedDict()
         shapes = OrderedDict()
-        for field in self.fields:
+        for field in self.struct:
             if len(field) == 2:
                 key, fmt = field
                 shape = [1]
