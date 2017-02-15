@@ -6,13 +6,8 @@ from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # FMFlow submodules
-from .array import *
-from .aste import *
-from .nro45m import *
+from .functions import *
 
 # imported items
 __all__ = []
-__all__ += array.__all__
-__all__ += aste.__all__
-__all__ += nro45m.__all__
-
+__all__ += functions.__all__
