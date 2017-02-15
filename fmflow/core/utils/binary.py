@@ -84,10 +84,14 @@ class CStructReader(object):
             if re.search('s', fmt):
                 code = 'A'
                 code += re.findall('\d+', fmt)[0]
+            elif re.search('B', fmt):
+                code = 'B'
             elif re.search('i', fmt):
                 code = 'J'
             elif re.search('d', fmt):
                 code = 'D'
+            elif re.search('f', fmt):
+                code = 'E'
             else:
                 raise ValueError, fmt
 
