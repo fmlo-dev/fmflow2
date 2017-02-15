@@ -26,8 +26,9 @@ __all__ = ['fromaste']
 
 # constants
 BASEDIR = os.path.dirname(os.path.realpath(__file__))
-LAT_ASTE   = Angle('-22d58m17.69447s').deg
-EFF_8257D  = 0.92 # exposure / interval time of Agilent 8257D
+IGNORED_KEY = '[a-z]dmy([^_]|$)' # cdmy, cdmy2, ..., except for idmy_flag
+LAT_ASTE = Angle('-22d58m17.69447s').deg # latitude of the ASTE
+EFF_8257D = 0.92 # exposure / interval time of Agilent 8257D
 
 
 def fromaste(fmlolog, backendlog, antennalog=None, byteorder='<'):
@@ -186,8 +187,8 @@ def _check_backend(backendlog, byteorder):
     """
     with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
          d = yaml.load(f)
-         head = fm.utils.CStructReader(d['head'])
-         ctl  = fm.utils.CStructReader(d['ctl'])
+         head = fm.utils.CStructReader(d['head'], IGNORED_KEY, byteorder)
+         ctl  = fm.utils.CStructReader(d['ctl'], IGNORED_KEY, byteorder)
 
     with open(backendlog, 'rb') as f:
         head.read(f)
@@ -210,13 +211,13 @@ def _read_backendlog_mac(backendlog, byteorder):
     """
     with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
          d = yaml.load(f)
-         head = fm.utils.CStructReader(d['head'])
-         ctl  = fm.utils.CStructReader(d['ctl'])
+         head = fm.utils.CStructReader(d['head'], IGNORED_KEY, byteorder)
+         ctl  = fm.utils.CStructReader(d['ctl'], IGNORED_KEY, byteorder)
 
     with open(os.path.join(BASEDIR, 'struct_mac.yaml')) as f:
          d = yaml.load(f)
-         obs = fm.utils.CStructReader(d['obs'])
-         dat = fm.utils.CStructReader(d['dat'])
+         obs = fm.utils.CStructReader(d['obs'], IGNORED_KEY, byteorder)
+         dat = fm.utils.CStructReader(d['dat'], IGNORED_KEY, byteorder)
 
     prog = fm.utils.inprogress('reading backendlog', 100)
 
