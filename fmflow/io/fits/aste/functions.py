@@ -252,6 +252,9 @@ def _read_backendlog_mac(backendlog, byteorder):
     c = fm.utils.DatetimeConverter('%Y%m%d%H%M%S.%f')
     data['STARTTIME'] = np.array([c(t[:-2]) for t in data['STARTTIME']])
 
+    ## scantype (bug?)
+    data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'
+
     ## arraydata
     ons  = fm.utils.where(data['SCANTYPE'] == 'ON')
     rs   = fm.utils.where(data['SCANTYPE'] == 'R')
