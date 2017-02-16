@@ -32,7 +32,6 @@ __all__ = [
     'array', 'asarray', 'toarray', 'tomaskedarray', 'getarray',
     'demodulate', 'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like',
     'concatenate', 'save', 'mad', 'median', 'load',
-    'getfrequency', 'getspectrum', 'getfreq', 'getspec',
 ]
 
 
@@ -356,39 +355,3 @@ def load(filename):
 
     fmarray = fm.FMArray(array, table, info)
     return fmarray
-
-
-def getfrequency(fmarray, unit='GHz', **kwargs):
-    if fmarray.ismodulated:
-        fmarray = fm.demodulate(fmarray)
-
-    info = fmarray.info.copy()
-    info.update(kwargs)
-    fmindex = info['fmindex']
-    rest = info['restfreq']
-    step = info['chanwidth']
-
-    start = rest - step*(0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
-    end   = start + step*fmarray.shape[1]
-
-    freq = np.arange(start, end, step) * u.Hz
-    freq = freq.to(getattr(u, unit)).value
-    return freq
-
-
-def getspectrum(fmarray, unit='K', weights=None):
-    if fmarray.ismodulated:
-        fmarray = fm.demodulate(fmarray)
-    
-    if weights is not None:
-        if weights.ismodulated:
-            weights = fm.demodulate(weights)
-
-    spec = ma.average(fmarray, 0, weights) * u.K
-    spec = spec.to(getattr(u, unit)).value
-    return spec
-
-
-# aliases
-getfreq = getfrequency
-getspec = getspectrum
