@@ -358,18 +358,18 @@ def load(filename):
     return fmarray
 
 
-def getfrequency(array, unit='GHz', **kwargs):
-    if array.ismodulated:
-        raise fm.utils.FMFlowError('array should be demodulated')
+def getfrequency(fmarray, unit='GHz', **kwargs):
+    if fmarray.ismodulated:
+        fmarray = fm.demodulate(fmarray)
 
-    info = array.info.copy()
+    info = fmarray.info.copy()
     info.update(kwargs)
+    fmindex = info['fmindex']
     rest = info['restfreq']
     step = info['chanwidth']
-    fmindex = info['fmindex']
 
-    start = rest - step * (0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
-    end   = start + step * array.shape[1]
+    start = rest - step*(0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
+    end   = start + step*fmarray.shape[1]
 
     freq = np.arange(start, end, step) * u.Hz
     freq = freq.to(getattr(u, unit)).value
