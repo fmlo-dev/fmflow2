@@ -376,11 +376,15 @@ def getfrequency(fmarray, unit='GHz', **kwargs):
     return freq
 
 
-def getspectrum(array, unit='K', weights=None):
-    if array.ismodulated:
-        raise fm.utils.FMFlowError('array should be demodulated')
+def getspectrum(fmarray, unit='K', weights=None):
+    if fmarray.ismodulated:
+        fmarray = fm.demodulate(fmarray)
+    
+    if weights is not None:
+        if weights.ismodulated:
+            weights = fm.demodulate(weights)
 
-    spec = ma.average(array, 0, weights) * u.K
+    spec = ma.average(fmarray, 0, weights) * u.K
     spec = spec.to(getattr(u, unit)).value
     return spec
 
