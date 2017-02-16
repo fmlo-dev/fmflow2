@@ -96,8 +96,8 @@ def _read_fmlolog(fmlolog):
 
     """
     # datetime converter
-    c = fm.utils.DatetimeConverter('%Y%m%d%H%M%S.%f')
-    starttime = np.loadtxt(fmlolog, str, usecols=(0,), skiprows=1, converters={0: c})
+    p = fm.utils.DatetimeParser()
+    starttime = np.loadtxt(fmlolog, str, usecols=(0,), skiprows=1, converters={0: p})
     scantype  = np.loadtxt(fmlolog, str, usecols=(1,), skiprows=1)
     fmfreq    = np.loadtxt(fmlolog, float, usecols=(2,), skiprows=1)
     lofreq    = np.loadtxt(fmlolog, float, usecols=(3,), skiprows=1)
@@ -134,8 +134,8 @@ def _read_antennalog(antennalog):
 
     """
     # datetime converter
-    c = fm.utils.DatetimeConverter('%y%m%d%H%M%S.%f')
-    starttime = np.loadtxt(antennalog, str, usecols=(0,), skiprows=1, converters={0: c})
+    p = fm.utils.DatetimeParser()
+    starttime = np.loadtxt(antennalog, str, usecols=(0,), skiprows=1, converters={0: p})
     ra_prog   = np.loadtxt(antennalog, float, usecols=(1,), skiprows=1)
     dec_prog  = np.loadtxt(antennalog, float, usecols=(2,), skiprows=1)
     az_prog   = np.loadtxt(antennalog, float, usecols=(3,), skiprows=1)
@@ -260,8 +260,8 @@ def _read_backendlog_mac(backendlog, byteorder):
     data['ARRAYDATA'] = data.pop('iary_data')
 
     ## starttime
-    c = fm.utils.DatetimeConverter('%Y%m%d%H%M%S.%f')
-    data['STARTTIME'] = np.array([c(t) for t in data['STARTTIME']])
+    p = fm.utils.DatetimeParser()
+    data['STARTTIME'] = np.array([p(t) for t in data['STARTTIME']])
 
     ## scantype (bug?)
     data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'
