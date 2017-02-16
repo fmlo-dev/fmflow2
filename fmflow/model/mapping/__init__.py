@@ -6,14 +6,8 @@ from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # FMFlow submodules
-from .decomposition import *
-from .mapping import *
-from .spectrum import *
-from .testing import *
+from .functions import *
 
 # imported items
 __all__ = []
-__all__ += decomposition.__all__
-__all__ += mapping.__all__
-__all__ += spectrum.__all__
-__all__ += testing.__all__
+__all__ += functions.__all__
