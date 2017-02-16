@@ -16,8 +16,8 @@ The easiest way of installation is to use pip:
 
 FMFlow (`fmflow`) requires the following packages:
 
++ Astropy (>=1.2)
 + NumPy (>=1.11)
-+ SciPy (>=0.18)
-+ AstroPy (>=1.2)
 + PyYAML (>=3.10)
-
++ scikit-learn (>=0.18)
++ SciPy (>=0.18)
