@@ -18,6 +18,8 @@ import json
 import yaml
 import numpy as np
 import fmflow as fm
+from astropy import units as u
+from astropy import constants as consts
 from astropy.io import fits
 from astropy.coordinates import Angle
 
@@ -25,10 +27,12 @@ from astropy.coordinates import Angle
 __all__ = ['fromnro45m']
 
 # constants
-BASEDIR = os.path.dirname(os.path.realpath(__file__))
+C           = consts.c.value # spped of light in vacuum
+D_NRO45m    = (45.0 * u.m).value # diameter of the NRO45m
+LAT_NRO45m  = Angle('+35d56m40.9s').deg # latitude of the NRO45m
+EFF_8257D   = 0.92 # exposure / interval time of Agilent 8257D
+DIR_MODULE  = os.path.dirname(os.path.realpath(__file__)) # module directory
 IGNORED_KEY = '^reserve' # reserved[1|4|8]
-LAT_ASTE = Angle('+35d56m40.9s').deg # latitude of the NRO45m
-EFF_8257D = 0.92 # exposure / interval time of Agilent 8257D
 
 
 def fromnro45m(fmlolog, backendlog, antennalog=None, byteorder='<'):
@@ -145,7 +149,7 @@ def _read_antennalog(antennalog):
     # RA,Dec real
     degsin = lambda deg: np.sin(np.deg2rad(deg))
     degcos = lambda deg: np.cos(np.deg2rad(deg))
-    q = -np.arcsin(degsin(az_prog)*degcos(LAT_ASTE)/degcos(dec_prog))
+    q = -np.arcsin(degsin(az_prog)*degcos(LAT_NRO45m)/degcos(dec_prog))
 
     ra_error  = -np.cos(q)*az_error + np.sin(q)*el_error
     dec_error = np.sin(q)*az_error + np.cos(q)*el_error
@@ -190,7 +194,7 @@ def _check_backend(backendlog, byteorder):
         backend (str): Backend type.
 
     """
-    with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
+    with open(os.path.join(DIR_MODULE, 'struct_common.yaml')) as f:
         d = yaml.load(f)
         head = fm.utils.CStructReader(d['head'], IGNORED_KEY, byteorder)
         ctl  = fm.utils.CStructReader(d['ctl'], IGNORED_KEY, byteorder)
@@ -217,12 +221,12 @@ def _read_backendlog_sam45(backendlog, byteorder):
         hdu (BinTableHDU): HDU containing the read backend logging.
 
     """
-    with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
+    with open(os.path.join(DIR_MODULE, 'struct_common.yaml')) as f:
         d = yaml.load(f)
         head = fm.utils.CStructReader(d['head'], IGNORED_KEY, byteorder)
         ctl  = fm.utils.CStructReader(d['ctl'], IGNORED_KEY, byteorder)
 
-    with open(os.path.join(BASEDIR, 'struct_sam45.yaml')) as f:
+    with open(os.path.join(DIR_MODULE, 'struct_sam45.yaml')) as f:
         d = yaml.load(f)
         obs = fm.utils.CStructReader(d['obs'], IGNORED_KEY, byteorder)
         dat = fm.utils.CStructReader(d['dat'], IGNORED_KEY, byteorder)

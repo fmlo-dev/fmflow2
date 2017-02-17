@@ -18,6 +18,8 @@ import json
 import yaml
 import numpy as np
 import fmflow as fm
+from astropy import units as u
+from astropy import constants as consts
 from astropy.io import fits
 from astropy.coordinates import Angle
 
@@ -25,10 +27,12 @@ from astropy.coordinates import Angle
 __all__ = ['fromaste']
 
 # constants
-BASEDIR = os.path.dirname(os.path.realpath(__file__))
+C           = consts.c.value # spped of light in vacuum
+D_ASTE      = (10.0 * u.m).value # diameter of the ASTE
+LAT_ASTE    = Angle('-22d58m17.69447s').deg # latitude of the ASTE
+EFF_8257D   = 0.92 # exposure / interval time of Agilent 8257D
+DIR_MODULE  = os.path.dirname(os.path.realpath(__file__)) # module directory
 IGNORED_KEY = '^[a-z]dmy([^_]|$)' # cdmy, cdmy2, ..., except for idmy_flag
-LAT_ASTE = Angle('-22d58m17.69447s').deg # latitude of the ASTE
-EFF_8257D = 0.92 # exposure / interval time of Agilent 8257D
 
 
 def fromaste(fmlolog, backendlog, antennalog=None, byteorder='<'):
@@ -193,7 +197,7 @@ def _check_backend(backendlog, byteorder):
         backend (str): Backend type.
 
     """
-    with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
+    with open(os.path.join(DIR_MODULE, 'struct_common.yaml')) as f:
         d = yaml.load(f)
         head = fm.utils.CStructReader(d['head'], IGNORED_KEY, byteorder)
         ctl  = fm.utils.CStructReader(d['ctl'], IGNORED_KEY, byteorder)
@@ -220,12 +224,12 @@ def _read_backendlog_mac(backendlog, byteorder):
         hdu (BinTableHDU): HDU containing the read backend logging.
 
     """
-    with open(os.path.join(BASEDIR, 'struct_common.yaml')) as f:
+    with open(os.path.join(DIR_MODULE, 'struct_common.yaml')) as f:
         d = yaml.load(f)
         head = fm.utils.CStructReader(d['head'], IGNORED_KEY, byteorder)
         ctl  = fm.utils.CStructReader(d['ctl'], IGNORED_KEY, byteorder)
 
-    with open(os.path.join(BASEDIR, 'struct_mac.yaml')) as f:
+    with open(os.path.join(DIR_MODULE, 'struct_mac.yaml')) as f:
         d = yaml.load(f)
         obs = fm.utils.CStructReader(d['obs'], IGNORED_KEY, byteorder)
         dat = fm.utils.CStructReader(d['dat'], IGNORED_KEY, byteorder)
