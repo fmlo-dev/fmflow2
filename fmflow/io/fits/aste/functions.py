@@ -349,7 +349,7 @@ def _make_obsinfo(fitsobj):
     header['OBJECT']   = obsinfo['cobj_name']
     header['RA']       = obsinfo['dsrc_pos'][0][0]
     header['DEC']      = obsinfo['dsrc_pos'][1][0]
-    header['EQUINOX']  = float(re.findall('\d+', d['cepoch'])[0])
+    header['EQUINOX']  = float(re.findall('\d+', obsinfo['cepoch'])[0])
 
     # bintable HDU data
     N = obsinfo['iary_num']
@@ -367,9 +367,9 @@ def _make_obsinfo(fitsobj):
     frontend  = np.array(obsinfo['cfe_type'])[flag]
     backend   = np.tile(ctlinfo['cbe_type'], N)
 
-    if backend == 'AC45':
+    if backend[0] == 'AC45':
         numofchan = np.tile(obsinfo['ichanel'], N)
-    elif backend == 'FFX':
+    elif backend[0] == 'FFX':
         numofchan = np.array(obsinfo['ichanel'])[flag]
     else:
         raise fm.utils.FMFlowError('invalid logging type')
