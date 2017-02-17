@@ -65,8 +65,12 @@ def getarray(fitsname, arrayid, scantype):
         info = dict(zip(keys, values))
         info['fitstype'] = obsinfo.header['FITSTYPE']
         info['telescop'] = obsinfo.header['TELESCOP']
-        info['frontend'] = obsinfo.header['FRONTEND']
-        info['backend']  = obsinfo.header['BACKEND']
+        info['date-obs'] = obsinfo.header['DATE-OBS']
+        info['observer'] = obsinfo.header['OBSERVER']
+        info['object']   = obsinfo.header['OBJECT']
+        info['ra']       = obsinfo.header['RA']
+        info['dec']      = obsinfo.header['DEC']
+        info['equinox']  = obsinfo.header['EQUINOX']
 
         # array
         if scantype != 'ON':
