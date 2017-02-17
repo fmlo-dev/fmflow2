@@ -15,19 +15,18 @@ from inspect import getargspec
 
 # the Python Package Index
 import numpy as np
-import numpy.ma as ma
 import fmflow as fm
 
 # imported items
-__all__ = ['fmfunc', 'timechunk']
+__all__ = ['fmarrayfunc', 'numchunk', 'timechunk']
 
 
-def fmfunc(func):
+def fmarrayfunc(func):
     """Make a function compatible with fmarray.
 
     This function is used as a decorator like::
 
-        >>> @fm.fmfunc
+        >>> @fm.fmarrayfunc
         >>> def func(fmarray):
         ...     return fmarray # do nothing
         >>>
@@ -58,45 +57,89 @@ def fmfunc(func):
     return wrapper
 
 
-def timechunk(func):
-    """Make a function compatible with multicore time-chunk processing.
+def numrchunk(func):
+    """Make a function compatible with multicore numchunk processing.
 
     This function is used as a decorator like::
 
-        >>> @fm.fmfunc
-        >>> @fm.timechunk
+        >>> @fm.fmarrayfunc
+        >>> @fm.numchunk
         >>> def func(fmarray):
         ...     return fmarray # do nothing
         >>>
-        >>> result = func(fmarray, chunklen=100)
+        >>> result = func(fmarray, numchunk=10)
 
     Args:
-        func (function): A function to be wrapped.
-            The first argument of the function must be fmarray.
+        func (function): A function to be wrapped. The first argument
+            of the function must be fmarray to be numchunked.
 
     Returns:
         wrapper (function): A wrapped function.
 
     """
-    import fmflow as fm
-    
     @wraps(func)
     def wrapper(*args, **kwargs):
-        argnames = getargspec(func).args
-        for i in range(len(args)):
-            kwargs[argnames[i]] = args[i]
-
-        array_in  = kwargs.pop('fmarray')
-        chunk_len = kwargs.pop('chunklen', len(array_in))
-        chunk_num = round(len(array_in)/chunk_len)
-
-        index = np.linspace(0, len(array_in), chunk_num+1, dtype=int)
-        subs_in = [array_in[index[i]:index[i+1]] for i in range(len(index)-1)]
-
+        array_in = args[0]
+        
         p = fm.utils.Pool()
+        N = kwargs.pop('numchunk', p.processes)
+        
+        argnames = getargspec(func).args
+        if len(args) > 1:
+            for i in range(1, len(args)):
+                kwargs[argnames[i]] = args[i]
+
+        indxs = np.linspace(0, len(array_in), N+1, dtype=int)
+        subarrays_in = [array_in[indxs[i]:indxs[i+1]] for i in range(N)]
+        
         pfunc = partial(func, **kwargs)
-        subs_out = p.map(pfunc, subs_in)
-        array_out = np.concatenate(subs_out)
+        subarrays_out = p.map(pfunc, subarrays_in)
+        array_out = np.concatenate(subarrays_out)
         return array_out
 
     return wrapper
+
+
+def timechunk(func):
+    """Make a function compatible with multicore timechunk processing.
+
+    This function is used as a decorator like::
+
+        >>> @fm.fmarrayfunc
+        >>> @fm.timechunk
+        >>> def func(fmarray):
+        ...     return fmarray # do nothing
+        >>>
+        >>> result = func(fmarray, timechunk=100)
+
+    Args:
+        func (function): A function to be wrapped. The first argument
+            of the function must be fmarray to be timechunked.
+
+    Returns:
+        wrapper (function): A wrapped function.
+
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        array_in = args[0]
+        
+        p = fm.utils.Pool()
+        T = kwargs.pop('timechunk', len(array_in))
+        N = round(len(array_in) / T)
+        
+        argnames = getargspec(func).args
+        if len(args) > 1:
+            for i in range(1, len(args)):
+                kwargs[argnames[i]] = args[i]
+
+        indxs = np.linspace(0, len(array_in), N+1, dtype=int)
+        subarrays_in = [array_in[indxs[i]:indxs[i+1]] for i in range(N)]
+        
+        pfunc = partial(func, **kwargs)
+        subarrays_out = p.map(pfunc, subarrays_in)
+        array_out = np.concatenate(subarrays_out)
+        return array_out
+
+    return wrapper
+
