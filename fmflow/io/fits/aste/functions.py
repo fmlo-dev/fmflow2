@@ -337,20 +337,35 @@ def _make_obsinfo(fitsobj):
     obsinfo = json.loads(fitsobj['BACKEND'].header['OBSINFO'])
     datinfo = fitsobj['BACKEND'].data
 
+    # bintable HDU header
+    p = fm.utils.DatetimeParser()
+
+    header = fits.Header()
+    header['EXTNAME']  = 'OBSINFO'
+    header['FITSTYPE'] = 'FMFITS{}'.format(fm.__version__)
+    header['TELESCOP'] = 'ASTE'
+    header['DATE-OBS'] = p(obsinfo['clog_id'])[:-3]
+    header['OBSERVER'] = obsinfo['cobs_user']
+    header['OBJECT']   = obsinfo['cobj_name']
+    header['RA']       = obsinfo['dsrc_pos'][0][0]
+    header['DEC']      = obsinfo['dsrc_pos'][1][0]
+    header['EQUINOX']  = float(re.findall('\d+', d['cepoch'])[0])
+
+    # bintable HDU data
     N = obsinfo['iary_num']
     flag = np.array(obsinfo['iary_usefg'], dtype=bool)
 
-    fitstype  = 'FMFITS{}'.format(fm.__version__)
-    frontend  = np.unique(np.array(obsinfo['cfe_type'])[flag])[0]
-    backend   = ctlinfo['cbe_type']
     arrayid   = np.unique(datinfo['ARRAYID'])
     sideband  = np.array(obsinfo['csid_type'])[flag]
-    interval  = np.tile(obsinfo['diptim'], N)
-    exposure  = np.tile(obsinfo['diptim']*EFF_8257D, N)
     restfreq  = np.array(obsinfo['dcent_freq'])[flag]
     intmfreq  = np.array(obsinfo['dflif'])[flag]
+    beamsize  = np.rad2deg(1.2*C/D_ASTE) / restfreq
     bandwidth = np.array(obsinfo['dbebw'])[flag]
     chanwidth = np.array(obsinfo['dbechwid'])[flag]
+    interval  = np.tile(obsinfo['diptim'], N)
+    integtime = np.tile(obsinfo['diptim']*EFF_8257D, N)
+    frontend  = np.array(obsinfo['cfe_type'])[flag]
+    backend   = np.tile(ctlinfo['cbe_type'], N)
 
     if backend == 'AC45':
         numofchan = np.tile(obsinfo['ichanel'], N)
@@ -359,24 +374,19 @@ def _make_obsinfo(fitsobj):
     else:
         raise fm.utils.FMFlowError('invalid logging type')
 
-    # bintable HDU
-    header = fits.Header()
-    header['EXTNAME']  = 'OBSINFO'
-    header['TELESCOP'] = 'ASTE'
-    header['FITSTYPE'] = fitstype
-    header['FRONTEND'] = frontend
-    header['BACKEND']  = backend
-
     columns = []
-    columns.append(fits.Column('ARRAYID', 'A3', '', array=arrayid))
-    columns.append(fits.Column('SIDEBAND', 'A3', '', array=sideband))
-    columns.append(fits.Column('INTERVAL', 'D', 's', array=interval))
-    columns.append(fits.Column('EXPOSURE', 'D', 's', array=exposure))
+    columns.append(fits.Column('ARRAYID', 'A4', '', array=arrayid))
+    columns.append(fits.Column('SIDEBAND', 'A4', '', array=sideband))
     columns.append(fits.Column('RESTFREQ', 'D', 'Hz', array=restfreq))
     columns.append(fits.Column('INTMFREQ', 'D', 'Hz', array=intmfreq))
+    columns.append(fits.Column('BEAMSIZE', 'D', 'deg', array=beamsize))
     columns.append(fits.Column('BANDWIDTH', 'D', 'Hz', array=bandwidth))
     columns.append(fits.Column('CHANWIDTH', 'D', 'Hz', array=chanwidth))
     columns.append(fits.Column('NUMOFCHAN', 'J', 'ch', array=numofchan))
+    columns.append(fits.Column('INTERVAL', 'D', 's', array=interval))
+    columns.append(fits.Column('INTEGTIME', 'D', 's', array=integtime))
+    columns.append(fits.Column('FRONTEND', 'A10', '', array=frontend))
+    columns.append(fits.Column('BACKEND', 'A8', '', array=backend))
 
     hdu = fits.BinTableHDU.from_columns(columns, header)
     return hdu
