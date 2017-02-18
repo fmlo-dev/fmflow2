@@ -57,7 +57,7 @@ def arrayfunc(func):
     return wrapper
 
 
-def numrchunk(func):
+def numchunk(func):
     """Make a function compatible with multicore numchunk processing.
 
     This function is used as a decorator like::
