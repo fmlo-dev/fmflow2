@@ -14,7 +14,7 @@ from scipy.special import gammaln
 __all__ = ['pca', 'ppca']
 
 
-@fm.fmfunc
+@fm.arrayfunc
 @fm.timechunk
 def pca(fmarray_in, n_pc=0.9):
     if not (type(n_pc) == float or type(n_pc) == int):
@@ -33,7 +33,7 @@ def pca(fmarray_in, n_pc=0.9):
     return fmarray_out
 
 
-@fm.fmfunc
+@fm.arrayfunc
 @fm.timechunk
 def ppca(fmarray_in, max_pc=None):
     # PCA using SVD

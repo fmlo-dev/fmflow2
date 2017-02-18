@@ -22,7 +22,7 @@ PARAMS = defaultdict(dict)
 PARAMS['KernelPCA'] = {'fit_inverse_transform': True}
 
 
-@fm.fmfunc
+@fm.arrayfunc
 @fm.timechunk
 def reducedim(fmarray, decomposer='TruncatedSVD', **kwargs):
     """Compute a dimension-reduced fmarray via a decomposition algorithm.

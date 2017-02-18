@@ -19,14 +19,14 @@ from scipy.ndimage import filters
 __all__ = ['hmedfilt', 'lmeds_spline', 'fme_gaussian_filter']
 
 
-@fm.fmfunc
+@fm.arrayfunc
 @fm.timechunk
 def hmedfilt(fmarray_in, kernel=3):
     fmarray_out = signal.medfilt(fmarray_in, (1, kernel))
     return fmarray_out
 
 
-@fm.fmfunc
+@fm.arrayfunc
 @fm.timechunk
 def lmeds_spline(fmarray_in, nsample=50, niter=1000, **kwargs):
     if fmarray_in.ndim == 1:
