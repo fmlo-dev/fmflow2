@@ -18,15 +18,15 @@ import numpy as np
 import fmflow as fm
 
 # imported items
-__all__ = ['fmarrayfunc', 'numchunk', 'timechunk']
+__all__ = ['arrayfunc', 'numchunk', 'timechunk']
 
 
-def fmarrayfunc(func):
+def arrayfunc(func):
     """Make a function compatible with fmarray.
 
     This function is used as a decorator like::
 
-        >>> @fm.fmarrayfunc
+        >>> @fm.arrayfunc
         >>> def func(fmarray):
         ...     return fmarray # do nothing
         >>>
@@ -62,7 +62,7 @@ def numrchunk(func):
 
     This function is used as a decorator like::
 
-        >>> @fm.fmarrayfunc
+        >>> @fm.arrayfunc
         >>> @fm.numchunk
         >>> def func(fmarray):
         ...     return fmarray # do nothing
@@ -80,10 +80,10 @@ def numrchunk(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         array_in = args[0]
-        
+
         p = fm.utils.Pool()
         N = kwargs.pop('numchunk', p.processes)
-        
+
         argnames = getargspec(func).args
         if len(args) > 1:
             for i in range(1, len(args)):
@@ -91,7 +91,7 @@ def numrchunk(func):
 
         indxs = np.linspace(0, len(array_in), N+1, dtype=int)
         subarrays_in = [array_in[indxs[i]:indxs[i+1]] for i in range(N)]
-        
+
         pfunc = partial(func, **kwargs)
         subarrays_out = p.map(pfunc, subarrays_in)
         array_out = np.concatenate(subarrays_out)
@@ -105,7 +105,7 @@ def timechunk(func):
 
     This function is used as a decorator like::
 
-        >>> @fm.fmarrayfunc
+        >>> @fm.arrayfunc
         >>> @fm.timechunk
         >>> def func(fmarray):
         ...     return fmarray # do nothing
@@ -123,11 +123,11 @@ def timechunk(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         array_in = args[0]
-        
+
         p = fm.utils.Pool()
         T = kwargs.pop('timechunk', len(array_in))
         N = round(len(array_in) / T)
-        
+
         argnames = getargspec(func).args
         if len(args) > 1:
             for i in range(1, len(args)):
@@ -135,7 +135,7 @@ def timechunk(func):
 
         indxs = np.linspace(0, len(array_in), N+1, dtype=int)
         subarrays_in = [array_in[indxs[i]:indxs[i+1]] for i in range(N)]
-        
+
         pfunc = partial(func, **kwargs)
         subarrays_out = p.map(pfunc, subarrays_in)
         array_out = np.concatenate(subarrays_out)
