@@ -7,6 +7,7 @@ from __future__ import print_function as _print_function
 
 # the Python Package Index
 import numpy as np
+import numpy.ma as ma
 import fmflow as fm
 from astropy import units as u
 
