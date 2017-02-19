@@ -126,7 +126,7 @@ def timechunk(func):
 
         p = fm.utils.Pool()
         T = kwargs.pop('timechunk', len(array_in))
-        N = round(len(array_in) / T)
+        N = int(round(len(array_in) / T))
 
         argnames = getargspec(func).args
         if len(args) > 1:
