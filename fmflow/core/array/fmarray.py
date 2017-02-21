@@ -203,7 +203,7 @@ class FMArray(ma.MaskedArray):
         i.e. x.toarray() <=> fm.toarray(x)
         
         """
-        array = self.data.copy()
+        array = self.data
         return array
 
     def tomaskedarray(self):
@@ -214,7 +214,7 @@ class FMArray(ma.MaskedArray):
 
         """
         data, mask = np.asarray(self), self.mask
-        array = ma.MaskedArray(data, mask).copy()
+        array = ma.MaskedArray(data, mask)
         return array
 
     @property
@@ -291,7 +291,7 @@ class FMArray(ma.MaskedArray):
         # table
         try:
             tableindex = self._tableindex(index)
-            table = self.table.copy()[tableindex]
+            table = self.table[tableindex]
         except:
             table = None
 
