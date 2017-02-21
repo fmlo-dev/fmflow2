@@ -250,12 +250,12 @@ class FMArray(ma.MaskedArray):
     @property
     def ismodulated(self):
         """A boolean that indicates whether the fmarray is demodulated."""
-        return 'FM' in self._optinfo['info']['fmstatus']
+        return ('FM' in self._optinfo['info']['fmstatus'])
 
     @property
     def isdemodulated(self):
         """A boolean that indicates whether the fmarray is modulated."""
-        return 'FD' in self._optinfo['info']['fmstatus']
+        return ('FD' in self._optinfo['info']['fmstatus'])
 
     def _tableindex(self, index):
         """Convert the index for array to one for table."""
