@@ -144,8 +144,12 @@ class FMArray(ma.MaskedArray):
         array.mask = True
         array[:,:self.shape[1]] = self.tomaskedarray()
 
-        for i in range(len(array)):
-            array[i] = np.roll(array[i], fmindex[0]+table.fmch[i])
+        rows, columns = np.ogrid[:array.shape[0], :array.shape[1]]
+        rollch = table.fmch.copy() + fmindex[0]
+        rollch[rollch<0] += array.shape[1]
+        columns = columns - rollch[:,np.newaxis]
+
+        array = array[rows, columns]
 
         # finally
         info.update({'fmstatus': fmstatus, 'fmindex': fmindex, 'fmcutcol': (0,0)})
@@ -178,10 +182,12 @@ class FMArray(ma.MaskedArray):
         array.mask = True
         array[:,fmcutcol[0]:array.shape[1]-fmcutcol[1]] = self.tomaskedarray()
 
-        for i in range(len(array)):
-            array[i] = np.roll(array[i], -(fmindex[0]+table.fmch[i]))
+        rows, columns = np.ogrid[:array.shape[0], :array.shape[1]]
+        rollch = -(table.fmch.copy() + fmindex[0])
+        rollch[rollch<0] += array.shape[1]
+        columns = columns - rollch[:,np.newaxis]
 
-        array = array[:,:np.diff(fmindex)[0]]
+        array = array[rows, columns][:,:np.diff(fmindex)[0]]
 
         # finally
         if fmstatus == '-FD':
