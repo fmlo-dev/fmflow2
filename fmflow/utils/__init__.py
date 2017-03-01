@@ -2,11 +2,6 @@
 
 """Module for the internal use in FMFlow.
 
-Users may not use this module directly.
-Developers must use this module like::
-
-    >>> from fmflow import utils as ut
-
 """
 
 # Python 3.x compatibility
@@ -30,3 +25,11 @@ __all__ += datetime.__all__
 __all__ += exceptions.__all__
 __all__ += multiprocessing.__all__
 __all__ += progress.__all__
+
+# delete submodules
+del binary
+del conditions
+del datetime
+del exceptions
+del multiprocessing
+del progress
