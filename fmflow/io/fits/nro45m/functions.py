@@ -253,7 +253,11 @@ def _read_backendlog_sam45(backendlog, byteorder):
         while not EOF(f):
             dat.read(f)
 
+        print('done.')
+
     # edit data
+    print('post processing', end=' ')
+
     data = dat.data
     data['STARTTIME'] = data.pop('cint_sttm')
     data['ARRAYID']   = data.pop('cary_name')
@@ -267,12 +271,49 @@ def _read_backendlog_sam45(backendlog, byteorder):
     ## scantype (bug?)
     data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'
 
-    ## reverse array (if LSB)
+    ## arraydata
+    arraydata = data['ARRAYDATA']
+
+    ## slices of each scantype of arraydata
+    ons  = fm.utils.slicewhere(data['SCANTYPE'] == 'ON')
+    rs   = fm.utils.slicewhere(data['SCANTYPE'] == 'R')
+    skys = fm.utils.slicewhere(data['SCANTYPE'] == 'SKY')
+    zero = fm.utils.slicewhere(data['SCANTYPE'] == 'ZERO')[0]
+
+    ## apply ZERO to ON data
+    for on in ons:
+        for aid in np.unique(data['ARRAYID']):
+            aid_on   = (data['ARRAYID'][on] == aid)
+            aid_zero = (data['ARRAYID'][zero] == aid)
+            arraydata[on][aid_on] -= arraydata[zero][aid_zero]
+
+    ## apply ZERO and ifatt to R data
     usefg = np.array(obs.data['iary_usefg'], dtype=bool)
+    ifatt = np.array(obs.data['iary_ifatt'], dtype=float)[usefg]
+
+    for r in rs:
+        for i, aid in enumerate(np.unique(data['ARRAYID'])):
+            aid_r = (data['ARRAYID'][r] == aid)
+            aid_zero = (data['ARRAYID'][zero] == aid)
+            arraydata[r][aid_r] -= arraydata[zero][aid_zero]
+            arraydata[r][aid_r] *= 10.0**(ifatt[i]/10.0)
+
+    ## apply ZERO to SKY data
+    for sky in skys:
+        for aid in np.unique(data['ARRAYID']):
+            aid_sky  = (data['ARRAYID'][sky] == aid)
+            aid_zero = (data['ARRAYID'][zero] == aid)
+            arraydata[sky][aid_sky] -= arraydata[zero][aid_zero]
+
+    ## reverse array (if LSB)
     islsb = np.array(obs.data['csid_type'])[usefg] == 'LSB'
+
     for arrayid in np.unique(data['ARRAYID'])[islsb]:
         flag = (data['ARRAYID'] == arrayid)
         data['ARRAYDATA'][flag] = data['ARRAYDATA'][flag,::-1]
+
+    ## finally
+    data['ARRAYDATA'] = arraydata
 
     # read and edit formats
     fmts = dat.fitsformats

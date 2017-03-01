@@ -256,7 +256,11 @@ def _read_backendlog_mac(backendlog, byteorder):
         while not EOF(f):
             dat.read(f)
 
+        print('done.')
+
     # edit data
+    print('post processing', end=' ')
+
     data = dat.data
     data['STARTTIME'] = data.pop('cint_sttm')
     data['ARRAYID']   = data.pop('cary_name')
@@ -271,24 +275,41 @@ def _read_backendlog_mac(backendlog, byteorder):
     data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'
 
     ## arraydata
-    ons  = fm.utils.where(data['SCANTYPE'] == 'ON')
-    rs   = fm.utils.where(data['SCANTYPE'] == 'R')
-    skys = fm.utils.where(data['SCANTYPE'] == 'SKY')
+    arraydata = data['ARRAYDATA'].astype(float)
 
     ## apply scaling factor and offset
-    arraydata = data['ARRAYDATA'].astype(float)
     arraydata *= data['dary_scf'][:,np.newaxis]
     arraydata += data['dary_offset'][:,np.newaxis]
 
-    ## apply coeff. for ON
-    for on in ons:
-        for arrayid in np.unique(data['ARRAYID']):
-            flag = (data['ARRAYID'][on] == arrayid)
-            arraydata[on][flag] *= np.mean(data['dalpha'][on][flag])
+    ## slices of each scantype of arraydata
+    ons  = fm.utils.slicewhere(data['SCANTYPE'] == 'ON')
+    rs   = fm.utils.slicewhere(data['SCANTYPE'] == 'R')
+    skys = fm.utils.slicewhere(data['SCANTYPE'] == 'SKY')
+    zero = fm.utils.slicewhere(data['SCANTYPE'] == 'ZERO')[0]
 
-    ## apply coeff. for R
+    ## apply ZERO and coeff. to ON data
+    for on in ons:
+        for aid in np.unique(data['ARRAYID']):
+            aid_on   = (data['ARRAYID'][on] == aid)
+            aid_zero = (data['ARRAYID'][zero] == aid)
+            arraydata[on][aid_on] -= arraydata[zero][aid_zero]
+            arraydata[on][aid_on] *= np.mean(data['dalpha'][on][aid_on])
+
+    ## apply ZERO and coeff. to R data
     for (r, sky) in zip(rs, skys):
-        arraydata[r] *= data['dbeta'][sky][:,np.newaxis]
+        for i, aid in enumerate(np.unique(data['ARRAYID'])):
+            aid_r = (data['ARRAYID'][r] == aid)
+            aid_sky  = (data['ARRAYID'][sky] == aid)
+            aid_zero = (data['ARRAYID'][zero] == aid)
+            arraydata[r][aid_r] -= arraydata[zero][aid_zero]
+            arraydata[r][aid_r] *= data['dbeta'][sky][aid_sky]
+
+    ## apply ZERO to SKY data
+    for sky in skys:
+        for aid in np.unique(data['ARRAYID']):
+            aid_sky  = (data['ARRAYID'][sky] == aid)
+            aid_zero = (data['ARRAYID'][zero] == aid)
+            arraydata[sky][aid_sky] -= arraydata[zero][aid_zero]
 
     ## reverse array (if USB)
     usefg = np.array(obs.data['iary_usefg'], dtype=bool)
@@ -297,6 +318,7 @@ def _read_backendlog_mac(backendlog, byteorder):
         flag = (data['ARRAYID'] == arrayid)
         arraydata[flag] = arraydata[flag,::-1]
 
+    ## finally
     data['ARRAYDATA'] = arraydata
 
     # read and edit formats
