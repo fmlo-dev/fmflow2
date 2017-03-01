@@ -33,8 +33,8 @@ def arrayfunc(func):
         >>> result = func(fmarray)
 
     Args:
-        func (function): A function to be wrapped.
-            The first argument of the function must be `fmarray`.
+        func (function): A function to be wrapped. The first argument
+            of the function must be an fmarray to be processed.
 
     Returns:
         wrapper (function): A wrapped function.
@@ -42,15 +42,20 @@ def arrayfunc(func):
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        fmarray_in  = kwargs.pop('fmarray', args[0])
-        fmarray_out = fmarray_in.copy()
+        fmarray_in = args[0]
+        fmarray_out = args[0].copy()
+
+        argnames = getargspec(func).args
+        if len(args) > 1:
+            for i in range(1, len(args)):
+                kwargs[argnames[i]] = args[i]
 
         if type(fmarray_in) == fm.FMArray:
-            array_in = fmarray_in.toarray()
+            array_in = fm.toarray(fmarray_in)
         else:
             array_in = np.asarray(fmarray_in)
 
-        array_out = func(array_in, *args[1:], **kwargs)
+        array_out = func(array_in, **kwargs)
         fmarray_out[:] = array_out
         return fmarray_out
 
@@ -71,7 +76,7 @@ def numchunk(func):
 
     Args:
         func (function): A function to be wrapped. The first argument
-            of the function must be fmarray to be numchunked.
+            of the function must be an array to be num-chunked.
 
     Returns:
         wrapper (function): A wrapped function.
@@ -81,7 +86,7 @@ def numchunk(func):
     def wrapper(*args, **kwargs):
         array_in = args[0]
 
-        p = fm.utils.Pool()
+        p = fm.utils.MPPool()
         N = kwargs.pop('numchunk', p.processes)
 
         argnames = getargspec(func).args
@@ -114,7 +119,7 @@ def timechunk(func):
 
     Args:
         func (function): A function to be wrapped. The first argument
-            of the function must be fmarray to be timechunked.
+            of the function must be an array to be time-chunked.
 
     Returns:
         wrapper (function): A wrapped function.
@@ -124,7 +129,7 @@ def timechunk(func):
     def wrapper(*args, **kwargs):
         array_in = args[0]
 
-        p = fm.utils.Pool()
+        p = fm.utils.MPPool()
         T = kwargs.pop('timechunk', len(array_in))
         N = int(round(len(array_in) / T))
 
