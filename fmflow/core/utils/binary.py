@@ -12,7 +12,7 @@ from __future__ import print_function as _print_function
 # the Python standard library
 import json
 import re
-from collections import OrderedDict
+from collections import deque, OrderedDict
 from struct import Struct
 
 # the Python Package Index
@@ -33,11 +33,11 @@ class CStructReader(object):
 
     def read(self, f):
         bindata = f.read(self.unpacker.size)
-        unpdata = list(self.unpacker.unpack(bindata))
+        unpdata = deque(self.unpacker.unpack(bindata))
         for key in self.shapes:
             shape = self.shapes[key]
             count = np.prod(shape)
-            datum = [unpdata.pop(0) for i in range(count)]
+            datum = [unpdata.popleft() for i in range(count)]
             self._data[key].append(np.asarray(datum))
 
     @property
