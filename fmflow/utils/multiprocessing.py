@@ -1,11 +1,5 @@
 # coding: utf-8
 
-"""Module for multiprocessing in FMFlow.
-
-This module provides helper classes for multiprocessing in FMFlow.
-
-"""
-
 # Python 3.x compatibility
 from __future__ import absolute_import as _absolute_import
 from __future__ import division as _division
@@ -18,10 +12,10 @@ import multiprocessing as mp
 import numpy as np
 
 # importing items
-__all__ = ['Pool']
+__all__ = ['MPPool']
 
 
-class Pool(object):
+class MPPool(object):
     """Return a process pool object.
 
     Attributes:

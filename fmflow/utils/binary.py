@@ -1,9 +1,5 @@
 # coding: utf-8
 
-"""Module for reading binary data in FMFlow.
-
-"""
-
 # Python 3.x compatibility
 from __future__ import absolute_import as _absolute_import
 from __future__ import division as _division

@@ -10,10 +10,10 @@ import numpy as np
 from scipy import ndimage
 
 # imported items
-__all__ = ['where']
+__all__ = ['slicewhere']
 
 
-def where(condition):
+def slicewhere(condition):
     """Return slices of regions that fulfill condition.
 
     Args:
@@ -24,9 +24,9 @@ def where(condition):
 
     Example:
         >>> cond = [False, True, True, False, False, True, False]
-        >>> ut.where(cond)
+        >>> fm.utils.slicewhere(cond)
         [slice(1L, 3L, None), slice(5L, 6L, None)]
-    
+
     """
     regions = ndimage.find_objects(ndimage.label(condition)[0])
     slices = [region[0] for region in regions]

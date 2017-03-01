@@ -13,3 +13,4 @@ __author__  = 'Akio Taniguchi'
 from .core import *
 from . import io
 from . import model
+from . import utils
