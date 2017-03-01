@@ -16,3 +16,7 @@ __all__ += array.__all__
 __all__ += aste.__all__
 __all__ += nro45m.__all__
 
+# delete submodules
+del array
+del aste
+del nro45m

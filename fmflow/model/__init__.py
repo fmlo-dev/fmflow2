@@ -17,3 +17,9 @@ __all__ += decomposition.__all__
 __all__ += mapping.__all__
 __all__ += spectrum.__all__
 __all__ += testing.__all__
+
+# delete submodules
+del decomposition
+del mapping
+del spectrum
+del testing
