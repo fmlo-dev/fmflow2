@@ -16,7 +16,7 @@ def inprogress(message='in progress', interval=50):
     i = 0
     while True:
         if i%interval == 0:
-            status = '\r{} {}'.format(message, '|/-\\'[int(i/interval)%4])
+            status = '\r{} {} '.format(message, '|/-\\'[int(i/interval)%4])
             sys.stdout.write(status)
             sys.stdout.flush()
 
