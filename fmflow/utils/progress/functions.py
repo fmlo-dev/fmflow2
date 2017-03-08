@@ -8,6 +8,9 @@ from __future__ import print_function as _print_function
 # the Python standard library
 import sys
 
+# the Python Package Index
+import numpy as np
+
 # imported items
 __all__ = ['inprogress', 'progressbar']
 
@@ -23,13 +26,10 @@ def inprogress(message='in progress', interval=50):
         i += 1
         yield
 
+def progressbar(fraction, width=50):
+    N = int(np.ceil(width*fraction))
+    fill, space = '*' * N, ' ' * (width-N)
+    status = '\r[{}{}] {:.0%} '.format(fill, space, fraction)
+    sys.stdout.write(status)
+    sys.stdout.flush()
 
-def progressbar(message='progress', N=100, barwidth=50):
-    for i in range(N):
-        prog = float(i+1)/N
-        fill = '*' * int(barwidth*prog)
-        space = ' ' * (barwidth-int(barwidth*prog))
-        status = '\r{} [{}{}] {:.0%}'.format(message, fill, space, prog)
-        sys.stdout.write(status)
-        sys.stdout.flush()
-        yield
