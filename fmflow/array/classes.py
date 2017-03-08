@@ -148,7 +148,6 @@ class FMArray(ma.MaskedArray):
         rollch = table.fmch.copy() + fmindex[0]
         rollch[rollch<0] += array.shape[1]
         columns = columns - rollch[:,np.newaxis]
-
         array = array[rows, columns]
 
         # finally
@@ -186,7 +185,6 @@ class FMArray(ma.MaskedArray):
         rollch = -(table.fmch.copy() + fmindex[0])
         rollch[rollch<0] += array.shape[1]
         columns = columns - rollch[:,np.newaxis]
-
         array = array[rows, columns][:,:np.diff(fmindex)[0]]
 
         # finally
