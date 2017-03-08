@@ -1,18 +1,14 @@
 # coding: utf-8
 
-"""Module for merging loggings of NRO45m.
-
-"""
-
 # Python 3.x compatibility
 from __future__ import absolute_import as _absolute_import
 from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # the Python standard library
+import json
 import os
 import re
-import json
 
 # the Python Package Index
 import yaml
@@ -231,33 +227,34 @@ def _read_backendlog_sam45(backendlog, byteorder):
         obs = fm.utils.CStructReader(d['obs'], IGNORED_KEY, byteorder)
         dat = fm.utils.CStructReader(d['dat'], IGNORED_KEY, byteorder)
 
-    prog = fm.utils.inprogress('reading backendlog', 100)
-
-    def EOF(f):
-        prog.next()
+    def eof(f):
         head.read(f)
         flag = head._data['crec_type'][-1][0]
         return (flag == 'ED')
 
     # read data
+    fsize = os.path.getsize(backendlog)
+
     with open(backendlog, 'rb') as f:
         ## control info
-        EOF(f)
+        eof(f)
         ctl.read(f)
 
         ## observation info
-        EOF(f)
+        eof(f)
         obs.read(f)
 
         ## data info
-        while not EOF(f):
-            dat.read(f)
+        i = 0
+        while not eof(f):
+            if not i%100:
+                frac = f.tell() / fsize
+                fm.utils.progressbar(frac)
 
-        print('done.')
+            dat.read(f)
+            i += 1
 
     # edit data
-    print('post processing', end=' ')
-
     data = dat.data
     data['STARTTIME'] = data.pop('cint_sttm')
     data['ARRAYID']   = data.pop('cary_name')
@@ -272,48 +269,36 @@ def _read_backendlog_sam45(backendlog, byteorder):
     data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'
 
     ## arraydata
-    arraydata = data['ARRAYDATA']
+    usefg    = np.array(obs.data['iary_usefg'], dtype=bool)
+    ifatt    = np.array(obs.data['iary_ifatt'], dtype=float)[usefg]
+    islsb    = np.array(obs.data['csid_type'] == 'LSB')[usefg]
+    arrayids = np.unique(data['ARRAYID'])
 
-    ## slices of each scantype of arraydata
-    ons  = fm.utils.slicewhere(data['SCANTYPE'] == 'ON')
-    rs   = fm.utils.slicewhere(data['SCANTYPE'] == 'R')
-    skys = fm.utils.slicewhere(data['SCANTYPE'] == 'SKY')
-    zero = fm.utils.slicewhere(data['SCANTYPE'] == 'ZERO')[0]
-
-    ## apply ZERO to ON data
-    for on in ons:
-        for aid in np.unique(data['ARRAYID']):
-            aid_on   = (data['ARRAYID'][on] == aid)
-            aid_zero = (data['ARRAYID'][zero] == aid)
-            arraydata[on][aid_on] -= arraydata[zero][aid_zero]
-
-    ## apply ZERO and ifatt to R data
-    usefg = np.array(obs.data['iary_usefg'], dtype=bool)
-    ifatt = np.array(obs.data['iary_ifatt'], dtype=float)[usefg]
-
-    for r in rs:
-        for i, aid in enumerate(np.unique(data['ARRAYID'])):
-            aid_r = (data['ARRAYID'][r] == aid)
-            aid_zero = (data['ARRAYID'][zero] == aid)
-            arraydata[r][aid_r] -= arraydata[zero][aid_zero]
-            arraydata[r][aid_r] *= 10.0**(ifatt[i]/10.0)
-
-    ## apply ZERO to SKY data
-    for sky in skys:
-        for aid in np.unique(data['ARRAYID']):
-            aid_sky  = (data['ARRAYID'][sky] == aid)
-            aid_zero = (data['ARRAYID'][zero] == aid)
-            arraydata[sky][aid_sky] -= arraydata[zero][aid_zero]
-
-    ## reverse array (if LSB)
-    islsb = np.array(obs.data['csid_type'])[usefg] == 'LSB'
-
-    for arrayid in np.unique(data['ARRAYID'])[islsb]:
+    for i, arrayid in enumerate(arrayids):
         flag = (data['ARRAYID'] == arrayid)
-        data['ARRAYDATA'][flag] = data['ARRAYDATA'][flag,::-1]
 
-    ## finally
-    data['ARRAYDATA'] = arraydata
+        ## slices of each scantype
+        ons  = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'ON'))
+        rs   = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'R'))
+        skys = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'SKY'))
+        zero = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'ZERO'))[0]
+
+        ## apply ZERO to ON data
+        for on in ons:
+            data['ARRAYDATA'][on] -= data['ARRAYDATA'][zero]
+
+        ## apply ZERO and ifatt to R data
+        for r in rs:
+            data['ARRAYDATA'][r] -= data['ARRAYDATA'][zero]
+            data['ARRAYDATA'][r] *= 10.0**(ifatt[i]/10.0)
+
+        ## apply ZERO to SKY data
+        for sky in skys:
+            data['ARRAYDATA'][sky] -= data['ARRAYDATA'][zero]
+
+        ## reverse array (if LSB)
+        if arrayid in arrayids[islsb]:
+            data['ARRAYDATA'][flag] = data['ARRAYDATA'][flag,::-1]
 
     # read and edit formats
     fmts = dat.fitsformats

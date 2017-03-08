@@ -1,18 +1,14 @@
 # coding: utf-8
 
-"""Module for merging loggings of ASTE.
-
-"""
-
 # Python 3.x compatibility
 from __future__ import absolute_import as _absolute_import
 from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # the Python standard library
+import json
 import os
 import re
-import json
 
 # the Python Package Index
 import yaml
@@ -236,36 +232,39 @@ def _read_backendlog_mac(backendlog, byteorder):
 
     prog = fm.utils.inprogress('reading backendlog', 100)
 
-    def EOF(f):
-        prog.next()
+    def eof(f):
         head.read(f)
         flag = head._data['crec_type'][-1][0]
         return (flag == 'ED')
 
     # read data
+    fsize = os.path.getsize(backendlog)
+
     with open(backendlog, 'rb') as f:
         ## control info
-        EOF(f)
+        eof(f)
         ctl.read(f)
 
         ## observation info
-        EOF(f)
+        eof(f)
         obs.read(f)
 
         ## data info
-        while not EOF(f):
-            dat.read(f)
+        i = 0
+        while not eof(f):
+            if not i%100:
+                frac = f.tell() / fsize
+                fm.utils.progressbar(frac)
 
-        print('done.')
+            dat.read(f)
+            i += 1
 
     # edit data
-    print('post processing', end=' ')
-
     data = dat.data
     data['STARTTIME'] = data.pop('cint_sttm')
     data['ARRAYID']   = data.pop('cary_name')
     data['SCANTYPE']  = data.pop('cscan_type')
-    data['ARRAYDATA'] = data.pop('iary_data')
+    data['ARRAYDATA'] = data.pop('iary_data').astype(float)
 
     ## starttime
     p = fm.utils.DatetimeParser()
@@ -275,51 +274,40 @@ def _read_backendlog_mac(backendlog, byteorder):
     data['SCANTYPE'][data['SCANTYPE']=='R\x00RO'] = 'R'
 
     ## arraydata
-    arraydata = data['ARRAYDATA'].astype(float)
+    usefg    = np.array(obs.data['iary_usefg'], dtype=bool)
+    isusb    = np.array(obs.data['csid_type'] == 'USB')[usefg]
+    arrayids = np.unique(data['ARRAYID'])
 
     ## apply scaling factor and offset
-    arraydata *= data['dary_scf'][:,np.newaxis]
-    arraydata += data['dary_offset'][:,np.newaxis]
+    data['ARRAYDATA'] *= data['dary_scf'][:,np.newaxis]
+    data['ARRAYDATA'] += data['dary_offset'][:,np.newaxis]
 
-    ## slices of each scantype of arraydata
-    ons  = fm.utils.slicewhere(data['SCANTYPE'] == 'ON')
-    rs   = fm.utils.slicewhere(data['SCANTYPE'] == 'R')
-    skys = fm.utils.slicewhere(data['SCANTYPE'] == 'SKY')
-    zero = fm.utils.slicewhere(data['SCANTYPE'] == 'ZERO')[0]
-
-    ## apply ZERO and coeff. to ON data
-    for on in ons:
-        for aid in np.unique(data['ARRAYID']):
-            aid_on   = (data['ARRAYID'][on] == aid)
-            aid_zero = (data['ARRAYID'][zero] == aid)
-            arraydata[on][aid_on] -= arraydata[zero][aid_zero]
-            arraydata[on][aid_on] *= np.mean(data['dalpha'][on][aid_on])
-
-    ## apply ZERO and coeff. to R data
-    for (r, sky) in zip(rs, skys):
-        for i, aid in enumerate(np.unique(data['ARRAYID'])):
-            aid_r = (data['ARRAYID'][r] == aid)
-            aid_sky  = (data['ARRAYID'][sky] == aid)
-            aid_zero = (data['ARRAYID'][zero] == aid)
-            arraydata[r][aid_r] -= arraydata[zero][aid_zero]
-            arraydata[r][aid_r] *= data['dbeta'][sky][aid_sky]
-
-    ## apply ZERO to SKY data
-    for sky in skys:
-        for aid in np.unique(data['ARRAYID']):
-            aid_sky  = (data['ARRAYID'][sky] == aid)
-            aid_zero = (data['ARRAYID'][zero] == aid)
-            arraydata[sky][aid_sky] -= arraydata[zero][aid_zero]
-
-    ## reverse array (if USB)
-    usefg = np.array(obs.data['iary_usefg'], dtype=bool)
-    isusb = np.array(obs.data['csid_type'])[usefg] == 'USB'
-    for arrayid in np.unique(data['ARRAYID'])[isusb]:
+    for i, arrayid in enumerate(arrayids):
         flag = (data['ARRAYID'] == arrayid)
-        arraydata[flag] = arraydata[flag,::-1]
 
-    ## finally
-    data['ARRAYDATA'] = arraydata
+        ## slices of each scantype
+        ons  = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'ON'))
+        rs   = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'R'))
+        skys = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'SKY'))
+        zero = fm.utils.slicewhere(flag & (data['SCANTYPE'] == 'ZERO'))[0]
+
+        ## apply ZERO and coeff. to ON data
+        for on in ons:
+            data['ARRAYDATA'][on] -= data['ARRAYDATA'][zero]
+            data['ARRAYDATA'][on] *= np.mean(data['dalpha'][on])
+
+        ## apply ZERO and coeff. to R data
+        for (r, sky) in zip(rs, skys):
+            data['ARRAYDATA'][r] -= data['ARRAYDATA'][zero]
+            data['ARRAYDATA'][r] *= data['dbeta'][sky]
+
+        ## apply ZERO to SKY data
+        for sky in skys:
+            data['ARRAYDATA'][sky] -= data['ARRAYDATA'][zero]
+
+        ## reverse array (if USB)
+        if arrayid in arrayids[isusb]:
+            data['ARRAYDATA'][flag] = data['ARRAYDATA'][flag,::-1]
 
     # read and edit formats
     fmts = dat.fitsformats
