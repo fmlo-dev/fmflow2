@@ -35,12 +35,13 @@ __all__ = [
 ]
 
 
-def array(array, fmch=None, coord=None, info=None):
+def array(array, fmch=None, coord=None, vrad=None, info=None):
     """Create a modulated fmarray from each argument.
 
     Args:
         array (masked array): A timestream array (mask is optional).
         fmch (array): Array of modulation frequencies in units of channel.
+        vrad (array): Array of radial velocities in units of m/s.
         coord (array): Array of observed coordinates in units of degrees.
         info (dict): Information of the array, observation, etc.
 
@@ -48,7 +49,7 @@ def array(array, fmch=None, coord=None, info=None):
         fmarray (FMArray): A modulated fmarray.
 
     """
-    fmarray = fm.FMArray.fromeach(array, fmch, coord, info)
+    fmarray = fm.FMArray.fromeach(array, fmch, coord, vrad, info)
     return fmarray
 
 

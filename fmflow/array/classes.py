@@ -27,7 +27,7 @@ import fmflow as fm
 __all__ = ['FMArray']
 
 # constants
-TABLE = lambda shape: np.zeros(shape, [('fmch', 'i8'), ('coord', '2f8')])
+TABLE = lambda shape: np.zeros(shape, [('fmch', 'i8'), ('vrad', 'f8'), ('coord', '2f8')])
 INFO  = lambda: {'fmstatus': 'FM', 'fmindex': (0,0), 'fmcutcol': (0,0)}
 
 
@@ -80,7 +80,7 @@ class FMArray(ma.MaskedArray):
         return obj
 
     @classmethod
-    def fromeach(cls, array=None, fmch=None, coord=None, info=None):
+    def fromeach(cls, array=None, fmch=None, vrad=None, coord=None, info=None):
         """Create a modulated fmarray from each argument.
 
         Normally, this method is for the internal use.
@@ -90,6 +90,7 @@ class FMArray(ma.MaskedArray):
         Args:
             array (masked array): A timestream array (mask is optional).
             fmch (array): Array of modulation frequencies in units of channel.
+            vrad (array): Array of radial velocities in units of m/s.
             coord (array): Array of observed coordinates in units of degrees.
             info (dict): Information of the fmarray, observation, etc.
 
@@ -102,6 +103,9 @@ class FMArray(ma.MaskedArray):
         # update table of array
         if fmch is not None:
             obj.fmch = fmch.copy()
+
+        if vrad is not None:
+            obj.vrad = vrad.copy()
 
         if coord is not None:
             obj.coord = coord.copy()
@@ -196,10 +200,10 @@ class FMArray(ma.MaskedArray):
 
     def toarray(self):
         """Convert the fmarray to a NumPy ndarray.
-        
+
         It is equivalent to the fm.toarray function (recommended to use).
         i.e. x.toarray() <=> fm.toarray(x)
-        
+
         """
         array = self.data
         return array
@@ -224,6 +228,16 @@ class FMArray(ma.MaskedArray):
     def fmch(self, value):
         """An array of modulation frequencies in units of channel."""
         self._optinfo['table'].fmch = value
+
+    @property
+    def vrad(self):
+        """Array of radial velocities in units of m/s."""
+        return self._optinfo['table'].vrad
+
+    @vrad.setter
+    def vrad(self, value):
+        """Array of radial velocities in units of m/s."""
+        self._optinfo['table'].vrad = value
 
     @property
     def coord(self):

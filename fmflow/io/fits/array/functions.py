@@ -79,9 +79,10 @@ def getarray(fitsname, arrayid, scantype):
         else:
             array = np.squeeze(backend.data.ARRAYDATA[flag_be][tflag_be])
 
-        # fmch
+        # fmch, vrad
         fmfreq = fmlolog.data.FMFREQ[flag_fmlo][tflag_fmlo]
         fmch = (fmfreq / info['chanwidth']).astype(int)
+        vrad = fmlolog.data.VRAD[flag_fmlo][tflag_fmlo]
 
         # coord (optional)
         if 'ANTENNA' in f:
@@ -92,6 +93,6 @@ def getarray(fitsname, arrayid, scantype):
             coord = None
 
         # fmarray
-        fmarray = fm.array(array, fmch, coord, info)
+        fmarray = fm.array(array, fmch, vrad, coord, info)
         return fmarray
 
