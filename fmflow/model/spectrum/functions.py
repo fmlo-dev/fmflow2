@@ -6,24 +6,22 @@ from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # the Python Package Index
+import fmflow as fm
 import numpy as np
 import numpy.ma as ma
-import fmflow as fm
 from astropy import units as u
 
 # imported items
 __all__ = ['getfrequency', 'getspectrum', 'getfreq', 'getspec']
 
 
-def getfrequency(fmarray, unit='GHz', **kwargs):
+def getfrequency(fmarray, unit='GHz'):
     if fmarray.ismodulated:
         fmarray = fm.demodulate(fmarray)
 
-    info = fmarray.info.copy()
-    info.update(kwargs)
-    fmindex = info['fmindex']
-    rest = info['restfreq']
-    step = info['chanwidth']
+    fmindex = fmarray.info['fmindex']
+    rest    = fmarray.info['restfreq']
+    step    = fmarray.info['chanwidth']
 
     start = rest - step*(0.5*(np.diff(fmindex)[0]-1)+fmindex[0])
     end   = start + step*fmarray.shape[1]
