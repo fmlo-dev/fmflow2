@@ -1,0 +1,38 @@
+# Chajnantor atmosphere
+# Ported from Chajnantor.amc
+
+amc: |
+  f {fmin} GHz {fmax} GHz {fstep} MHz
+  output f GHz tau Tb K
+
+  za 0 deg
+  tol 0
+  Nscale h2o 0
+  T0 2.7 K
+
+  layer
+  Pbase {Pbase} mbar
+  Tbase {Tbase} K
+  column o3 hydrostatic {O3col}
+
+layers:
+  - {Pbase: 3,   Tbase: 252, O3col: 2.591e-6}
+  - {Pbase: 6,   Tbase: 242, O3col: 7.771e-6}
+  - {Pbase: 9,   Tbase: 236, O3col: 9.641e-6}
+  - {Pbase: 12,  Tbase: 232, O3col: 10.320e-6}
+  - {Pbase: 15,  Tbase: 229, O3col: 10.089e-6}
+  - {Pbase: 20,  Tbase: 224, O3col: 8.661e-6}
+  - {Pbase: 25,  Tbase: 222, O3col: 6.656e-6}
+  - {Pbase: 30,  Tbase: 219, O3col: 4.974e-6}
+  - {Pbase: 40,  Tbase: 215, O3col: 3.211e-6}
+  - {Pbase: 50,  Tbase: 210, O3col: 1.857e-6}
+  - {Pbase: 60,  Tbase: 207, O3col: 1.083e-6}
+  - {Pbase: 80,  Tbase: 200, O3col: 0.473e-6}
+  - {Pbase: 100, Tbase: 199, O3col: 0.129e-6}
+  - {Pbase: 150, Tbase: 209, O3col: 0.064e-6}
+  - {Pbase: 200, Tbase: 220, O3col: 0.045e-6}
+  - {Pbase: 280, Tbase: 236, O3col: 0.042e-6}
+  - {Pbase: 360, Tbase: 249, O3col: 0.041e-6}
+  - {Pbase: 440, Tbase: 259, O3col: 0.043e-6}
+  - {Pbase: 520, Tbase: 267, O3col: 0.043e-6}
+  - {Pbase: 558, Tbase: 273, O3col: 0.040e-6}
