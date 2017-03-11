@@ -15,7 +15,7 @@ __all__ = ['pca', 'ppca']
 
 
 @fm.arrayfunc
-@fm.timechunk
+@fm.utils.timechunk
 def pca(fmarray_in, n_pc=0.9):
     if not (type(n_pc) == float or type(n_pc) == int):
         raise ValueError, 'n_pc must be float or int'
@@ -34,7 +34,7 @@ def pca(fmarray_in, n_pc=0.9):
 
 
 @fm.arrayfunc
-@fm.timechunk
+@fm.utils.timechunk
 def ppca(fmarray_in, max_pc=None):
     # PCA using SVD
     U, d, Vt = np.linalg.svd(fmarray_in, full_matrices=False)
