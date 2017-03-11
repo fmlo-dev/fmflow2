@@ -15,6 +15,7 @@ from .conditions import *
 from .datetime import *
 from .exceptions import *
 from .filtering import *
+from .formulae import *
 from .multiprocessing import *
 from .progress import *
 
@@ -25,6 +26,7 @@ __all__ += conditions.__all__
 __all__ += datetime.__all__
 __all__ += exceptions.__all__
 __all__ += filtering.__all__
+__all__ += formulae.__all__
 __all__ += multiprocessing.__all__
 __all__ += progress.__all__
 
@@ -34,5 +36,6 @@ del conditions
 del datetime
 del exceptions
 del filtering
+del formulae
 del multiprocessing
 del progress
