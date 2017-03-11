@@ -12,5 +12,5 @@ __author__  = 'Akio Taniguchi'
 # FMFlow submodules
 from . import utils  # import first!
 from .array import * # import second!
-from . import io
+from . import fits
 from . import model

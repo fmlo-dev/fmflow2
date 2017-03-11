@@ -6,4 +6,8 @@ from __future__ import division as _division
 from __future__ import print_function as _print_function
 
 # FMFlow submodules
-from . import fits
+from .classes import *
+
+# imported items
+__all__ = []
+__all__ += classes.__all__
