@@ -1,9 +1,5 @@
 # coding: utf-8
 
-"""Module for decorators of fmarray functions.
-
-"""
-
 # Python 3.x compatibility
 from __future__ import absolute_import as _absolute_import
 from __future__ import division as _division
@@ -14,52 +10,11 @@ from functools import partial, wraps
 from inspect import getargspec
 
 # the Python Package Index
-import numpy as np
 import fmflow as fm
+import numpy as np
 
 # imported items
-__all__ = ['arrayfunc', 'numchunk', 'timechunk']
-
-
-def arrayfunc(func):
-    """Make a function compatible with fmarray.
-
-    This function is used as a decorator like::
-
-        >>> @fm.arrayfunc
-        >>> def func(fmarray):
-        ...     return fmarray # do nothing
-        >>>
-        >>> result = func(fmarray)
-
-    Args:
-        func (function): A function to be wrapped. The first argument
-            of the function must be an fmarray to be processed.
-
-    Returns:
-        wrapper (function): A wrapped function.
-
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        fmarray_in = args[0]
-        fmarray_out = args[0].copy()
-
-        argnames = getargspec(func).args
-        if len(args) > 1:
-            for i in range(1, len(args)):
-                kwargs[argnames[i]] = args[i]
-
-        if type(fmarray_in) == fm.FMArray:
-            array_in = fm.toarray(fmarray_in)
-        else:
-            array_in = np.asarray(fmarray_in)
-
-        array_out = func(array_in, **kwargs)
-        fmarray_out[:] = array_out
-        return fmarray_out
-
-    return wrapper
+__all__ = ['numchunk', 'timechunk']
 
 
 def numchunk(func):
@@ -67,12 +22,11 @@ def numchunk(func):
 
     This function is used as a decorator like::
 
-        >>> @fm.arrayfunc
-        >>> @fm.numchunk
-        >>> def func(fmarray):
-        ...     return fmarray # do nothing
+        >>> @fm.utils.numchunk
+        >>> def func(array):
+        ...     return array # do nothing
         >>>
-        >>> result = func(fmarray, numchunk=10)
+        >>> result = func(array, numchunk=10)
 
     Args:
         func (function): A function to be wrapped. The first argument
@@ -110,12 +64,11 @@ def timechunk(func):
 
     This function is used as a decorator like::
 
-        >>> @fm.arrayfunc
-        >>> @fm.timechunk
-        >>> def func(fmarray):
-        ...     return fmarray # do nothing
+        >>> @fm.utils.timechunk
+        >>> def func(array):
+        ...     return array # do nothing
         >>>
-        >>> result = func(fmarray, timechunk=100)
+        >>> result = func(array, timechunk=100)
 
     Args:
         func (function): A function to be wrapped. The first argument
