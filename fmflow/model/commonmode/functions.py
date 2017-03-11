@@ -23,7 +23,7 @@ PARAMS['KernelPCA'] = {'fit_inverse_transform': True}
 
 
 @fm.arrayfunc
-@fm.timechunk
+@fm.utils.timechunk
 def reducedim(fmarray, decomposer='TruncatedSVD', **kwargs):
     """Compute a dimension-reduced fmarray via a decomposition algorithm.
 
