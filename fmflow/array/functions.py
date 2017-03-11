@@ -21,6 +21,7 @@ from __future__ import print_function as _print_function
 # the Python standard library
 import uuid
 from functools import wraps
+from inspect import getargspec
 
 # the Python Package Index
 import astropy.units as u
