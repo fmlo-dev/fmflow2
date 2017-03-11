@@ -7,10 +7,8 @@ from __future__ import print_function as _print_function
 
 # FMFlow submodules
 from .decomposition import *
-from .filtering import *
 
 # imported items
 __all__ = []
 __all__ += decomposition.__all__
-__all__ += filtering.__all__
 
