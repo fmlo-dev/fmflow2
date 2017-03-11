@@ -11,12 +11,12 @@ from subprocess import Popen, PIPE
 
 # the Python Package Index
 import yaml
-import numpy as np
 import fmflow as fm
+import numpy as np
 from astropy import units as u
 from astropy import constants as consts
 from scipy.interpolate import interp1d
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import filters
 from scipy.optimize import curve_fit
 
 # imported items
@@ -33,8 +33,7 @@ AM_MODELS  = {
 
 class OzoneModel(object):
     def __init__(self, model='midaltitude', smooth=50):
-        self.model  = model
-        self.smooth = smooth
+        self.info = {'model': model, 'smooth': smooth, 'tuned': False}
 
         with open(os.path.join(DIR_MODULE, AM_MODELS[model])) as f:
             d = yaml.load(f)
@@ -72,8 +71,12 @@ class OzoneModel(object):
         self.mfreq = mfreq
         self.mtaus = np.array(mtaus)
         self.mTbs  = np.array(mTbs)
+        self.info['tuned'] = True
 
     def retrievefrom(self, fmarray, weights=None, mode='normal'):
+        if not self.info['tuned']:
+            raise fm.utils.FMFlowError('not tuned yet')
+
         freq = fm.model.getfreq(fmarray, 'GHz')
         spec = fm.model.getspec(fmarray, 'K', weights)
         vrad = np.mean(fmarray.vrad) # m/s
@@ -93,6 +96,9 @@ class OzoneModel(object):
         return fmmodel
 
     def subtractfrom(self, fmarray, weights=None, mode='normal'):
+        if not self.info['tuned']:
+            raise fm.utils.FMFlowError('not tuned yet')
+
         fmarray -= self.retrievefrom(fmarray, weights, mode)
 
     def _fit(self, freq, spec):
@@ -117,7 +123,7 @@ class OzoneModel(object):
         dTbs = np.gradient(Tbs, axis=1)
 
         dspec = np.gradient(spec)
-        dspec -= gaussian_filter(dspec, self.smooth)
+        dspec -= filters.gaussian_filter(dspec, self.info['smooth'])
 
         def func(freq, *coeffs):
             coeffs = np.asarray(coeffs)[:,np.newaxis]
