@@ -5,15 +5,29 @@ from __future__ import absolute_import as _absolute_import
 from __future__ import division as _division
 from __future__ import print_function as _print_function
 
+# the Python standard library
+from functools import wraps
+from warnings import warn
+
 # the Python Package Index
-import numpy as np
 import fmflow as fm
+import numpy as np
 from scipy.special import gammaln
 
 # imported items
 __all__ = ['pca', 'ppca']
 
 
+def testing(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        warn(fm.utils.FMFlowWarning('this function is under testing'))
+        return func(*args, **kwargs)
+    
+    return wrapper
+
+
+@testing
 @fm.arrayfunc
 @fm.utils.timechunk
 def pca(fmarray_in, n_pc=0.9):
@@ -33,6 +47,7 @@ def pca(fmarray_in, n_pc=0.9):
     return fmarray_out
 
 
+@testing
 @fm.arrayfunc
 @fm.utils.timechunk
 def ppca(fmarray_in, max_pc=None):
