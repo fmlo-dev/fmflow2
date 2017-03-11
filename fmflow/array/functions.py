@@ -20,6 +20,7 @@ from __future__ import print_function as _print_function
 
 # the Python standard library
 import uuid
+from functools import wraps
 
 # the Python Package Index
 import astropy.units as u
@@ -31,7 +32,7 @@ import fmflow as fm
 __all__ = [
     'array', 'asarray', 'toarray', 'tomaskedarray', 'getarray',
     'demodulate', 'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like',
-    'concatenate', 'save', 'mad', 'median', 'load',
+    'concatenate', 'arrayfunc', 'save', 'load',
 ]
 
 
@@ -277,46 +278,45 @@ def concatenate(fmarray_ins):
     return fmarray_out
 
 
-def mad(fmarray, axis=None, keepdims=False):
-    """Compute the median absolute deviation (MAD) along the given axis.
+def arrayfunc(func):
+    """Make a function compatible with fmarray.
+
+    This function is used as a decorator like::
+
+        >>> @fm.arrayfunc
+        >>> def func(fmarray):
+        ...     return fmarray # do nothing
+        >>>
+        >>> result = func(fmarray)
 
     Args:
-        fmarray (FMArray): An input fmarray.
-        axis (int, optional): Axis along which the MADs are computed.
-            The default is to compute the MAD along a flattened version of the array.
-        keepdims (bool, optional): If True, the axes which are reduced are left
-            in the result as dimensions with size one.
+        func (function): A function to be wrapped. The first argument
+            of the function must be an fmarray to be processed.
 
     Returns:
-        mad (FMArray): A new array holding the result.
+        wrapper (function): A wrapped function.
 
     """
-    ad = ma.abs(fmarray - ma.median(fmarray, axis, keepdims=True))
-    mad = ma.median(ad, axis, keepdims=keepdims)
-    return mad
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        fmarray_in = args[0]
+        fmarray_out = args[0].copy()
 
+        argnames = getargspec(func).args
+        if len(args) > 1:
+            for i in range(1, len(args)):
+                kwargs[argnames[i]] = args[i]
 
-def median(fmarray, axis=None, out=None, overwrite_input=False, keepdims=False):
-    """Compute the median along the spacified axis.
+        if type(fmarray_in) == fm.FMArray:
+            array_in = fm.toarray(fmarray_in)
+        else:
+            array_in = np.asarray(fmarray_in)
 
-    It is equivalent to the np.ma.median function.
-    i.e. fm.median(x, **kwargs) <=> np.ma.median(x, **kwargs)
+        array_out = func(array_in, **kwargs)
+        fmarray_out[:] = array_out
+        return fmarray_out
 
-    Args:
-        fmarray (FMArray): An input fmarray.
-        axis (int, optional):  Axis or axes along which the medians are computed.
-        out (array, optional): Alternative output array in which to place the result.
-        overwrite_input (bool, optional): If True, then allow use of memory of input
-            fmarray for calculations. The input array will be modified by the call to median.
-        keepdims (bool, optional): If True, the axes which are reduced are left
-            in the result as dimensions with size one.
-
-    Returns:
-        median (FMArray): A new array holding the result.
-
-    """
-    median = ma.median(fmarray, axis, out, overwrite_input, keepdims)
-    return median
+    return wrapper
 
 
 def save(fmarray, filename=None):

@@ -10,7 +10,7 @@ __version__ = 'v0.2'
 __author__  = 'Akio Taniguchi'
 
 # FMFlow submodules
-from .array import *
+from . import utils  # import first!
+from .array import * # import second!
 from . import io
 from . import model
-from . import utils
