@@ -30,7 +30,7 @@ import fmflow as fm
 
 # imported items
 __all__ = [
-    'array', 'asarray', 'toarray', 'tomaskedarray', 'getarray',
+    'array', 'asarray', 'toarray', 'tomaskedarray',
     'demodulate', 'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like',
     'concatenate', 'arrayfunc', 'save', 'load',
 ]
@@ -98,26 +98,6 @@ def tomaskedarray(fmarray):
     """
     array = fmarray.tomaskedarray()
     return array
-
-
-def getarray(fitsname, arrayid, scantype):
-    """Create a modulated fmarray from a FMFITS.
-
-    This functions is equivalent to the fmflow.io.fits.getarray function
-    for the convenience (users can use it w/o importing fmflow.io.fits).
-
-    Args:
-        fitsname (str): File name of a FMFITS.
-        arrayid (str): An array ID with which the output fmarray is created.
-        scantype (str): A scan type with which the output fmarray is created.
-
-    Returns:
-        fmarray (FMArray): An output fmarray of the spacified array ID and scan type.
-
-    """
-    import fmflow as fm
-    fmarray = fm.io.fits.getarray(fitsname, arrayid, scantype)
-    return fmarray
 
 
 def demodulate(fmarray_in, reverse=False):
