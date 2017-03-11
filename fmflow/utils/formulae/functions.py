@@ -19,23 +19,30 @@ __all__ = [
 def gaussian(x, x0=0.0, fwhm=1.0, ampl=1.0):
     return ampl * np.exp(-4*np.log(2)*((x-x0)/fwhm)**2)
 
+
 def lorentzian(x, x0=0.0, fwhm=1.0, ampl=1.0):
     return ampl * (1+4*((x-x0)/fwhm)**2)**(-1)
+
 
 def pseudovoigt(x, x0=0.0, fwhm=1.0, ampl=1.0, frac=0.5):
     return frac*gaussian(x, x0, fwhm, ampl) + (1-frac)*lorentzian(x, x0, fwhm, ampl)
 
+
 def dgaussian(x, x0=0.0, fwhm=1.0, ampl=1.0):
     return -8*np.log(2)*(x-x0)/fwhm**2 * gaussian(x, x0, fwhm, ampl)
+
 
 def dlorentzian(x, x0=0.0, fwhm=1.0, ampl=1.0):
     return -8*(x-x0)/fwhm**2 * lorentzian(x, x0, fwhm, ampl)
 
+
 def dpseudovoigt(x, x0=0.0, fwhm=1.0, ampl=1.0, frac=0.5):
     return frac*dgaussian(x, x0, fwhm, ampl) + (1-frac)*dlorentzian(x, x0, fwhm, ampl)
 
+
 def normaldist(x, mean=0.0, variance=1.0):
-    return np.sqrt(2*np.pi*variance)**(-1) * np.exp(-(x-mean)**2/(2*variance)) 
+    return np.sqrt(2*np.pi*variance)**(-1) * np.exp(-(x-mean)**2/(2*variance))
+
 
 def mad(array, axis=None, keepdims=False):
     """Compute the median absolute deviation (MAD) along the given axis.
