@@ -26,7 +26,7 @@ class GaussianModel(object):
         }
 
     def tune(self, fmarray):
-        self.info['fwhm0'] = 5.0 * 1e-9 * fmarray.info['chanwidth'] # GHz
+        self.info['fwhm0'] = 5.0 * (1e-9*fmarray.info['chanwidth']) # GHz
         self.info['tuned'] = True
 
     def retrievefrom(self, fmarray, weights=None, mode='normal'):
@@ -42,14 +42,14 @@ class GaussianModel(object):
 
         fmarray -= self.retrievefrom(fmarray, weights, mode)
 
-    def _sn(self, spec):
+    def _snr(self, spec):
         return spec / fm.utils.mad(spec)
 
     def _fit(self, freq, spec):
         model = np.zeros_like(spec)
         resid = spec.copy()
 
-        while np.max(self._sn(resid)) > self.info['threshold']:
+        while np.max(self._snr(resid)) > self.info['threshold']:
             cent0 = freq[np.argmax(resid)]
             fwhm0 = self.info['fwhm0']
             ampl0 = np.max(resid)
@@ -69,7 +69,7 @@ class GaussianModel(object):
         dmodel = np.zeros_like(dspec)
         dresid = dspec.copy()
 
-        while np.max(self._sn(dresid)) > self.info['threshold']:
+        while np.max(self._snr(dresid)) > self.info['threshold']:
             fmax = freq[np.argmax(dresid)]
             smax = np.max(dresid)
 
