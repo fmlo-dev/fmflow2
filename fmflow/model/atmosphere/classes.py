@@ -33,7 +33,11 @@ AM_MODELS  = {
 
 class OzoneModel(object):
     def __init__(self, model='midaltitude', smooth=50):
-        self.info = {'model': model, 'smooth': smooth, 'tuned': False}
+        self.info = {
+            'model': model,
+            'smooth': smooth,
+            'tuned': False
+        }
 
         with open(os.path.join(DIR_MODULE, AM_MODELS[model])) as f:
             d = yaml.load(f)
@@ -113,7 +117,7 @@ class OzoneModel(object):
         popt, pcov = curve_fit(func, freq, spec, p0, bounds=bs)
 
         model = func(freq, *popt)
-        if np.max(model) < 3.0*fm.mad(spec):
+        if np.max(model) < 3.0*fm.utils.mad(spec):
             model[:] = 0.0
 
         return model
@@ -134,8 +138,9 @@ class OzoneModel(object):
         popt, pcov = curve_fit(func, freq, dspec, p0, bounds=bs)
 
         dmodel = func(freq, *popt)
-        if np.max(dmodel) < 3.0*fm.mad(dspec):
+        if np.max(dmodel) < 3.0*fm.utils.mad(dspec):
             dmodel[:] = 0.0
 
         model = np.cumsum(dmodel)
         return model
+
