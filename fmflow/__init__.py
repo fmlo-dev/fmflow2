@@ -13,4 +13,4 @@ __author__  = 'Akio Taniguchi'
 from . import utils  # import first!
 from .array import * # import second!
 from . import fits
-from . import model
+from . import models
