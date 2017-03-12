@@ -16,7 +16,7 @@ from scipy.optimize import curve_fit
 __all__ = ['GaussianModel']
 
 
-def GaussianModel(object):
+class GaussianModel(object):
     def __init__(self, threshold=5.0, smooth=50, gain=0.75):
         self.info = {
             'gain': gain,
