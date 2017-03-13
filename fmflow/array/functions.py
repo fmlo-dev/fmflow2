@@ -33,7 +33,7 @@ import fmflow as fm
 __all__ = [
     'array', 'asarray', 'toarray', 'tomaskedarray',
     'demodulate', 'modulate', 'zeros', 'ones', 'zeros_like', 'ones_like',
-    'concatenate', 'arrayfunc', 'save', 'load',
+    'concatenate', 'arrayfunc', 'savearray', 'loadarray',
 ]
 
 
@@ -300,7 +300,7 @@ def arrayfunc(func):
     return wrapper
 
 
-def save(fmarray, filename=None):
+def savearray(fmarray, filename=None):
     """Save a fmarray into a single file in uncompressed npz format.
 
     Args:
@@ -320,7 +320,7 @@ def save(fmarray, filename=None):
     np.savez(filename, data=data, mask=mask, table=table, info=info)
 
 
-def load(filename):
+def loadarray(filename):
     """Load a fmarray from a npz file.
 
     Args:
