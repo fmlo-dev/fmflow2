@@ -13,49 +13,52 @@ from scipy.ndimage import filters
 from scipy.optimize import curve_fit
 
 # imported items
-__all__ = ['GaussianModel']
+__all__ = ['GaussianLines', 'GaussianFilter']
 
 
-class GaussianModel(object):
-    def __init__(self, threshold=5.0, smooth=50, gain=0.75):
+class GaussianLines(object):
+    def __init__(self, smooth=100, threshold=10.0, gain=0.5):
         self.info = {
             'gain': gain,
             'smooth': smooth,
             'threshold': threshold,
-            'tuned': False
         }
 
-    def tune(self, fmarray):
-        self.info['fwhm0'] = 5.0 * (1e-9*fmarray.info['chanwidth']) # GHz
-        self.info['tuned'] = True
-
     def retrievefrom(self, fmarray, weights=None, mode='normal'):
-        if not self.info['tuned']:
-            raise fm.utils.FMFlowError('not tuned yet')
+        freq = fm.models.getfreq(fmarray, 'GHz')
+        spec = fm.models.getspec(fmarray, 'K', weights)
+        fwhm0 = 5.0 * (1e-9*fmarray.info['chanwidth']) # GHz
 
-        freq = fm.model.getfreq(fmarray, 'GHz')
-        spec = fm.model.getspec(fmarray, 'K', weights)
+        if mode == 'normal':
+            model = self._fit(freq, spec, fwhm0)
+        elif mode == 'diff':
+            model = self._dfit(freq, spec, fwhm0)
+        else:
+            raise fm.utils.FMFlowError('invalid mode')
+
+        fmmodel  = fm.zeros_like(fmarray)
+        fmmodel_ = fm.demodulate(fmmodel)
+        fmmodel_ += model
+        fmmodel  = fm.modulate(fmmodel_)
+        return fmmodel
 
     def subtractfrom(self, fmarray, weights=None, mode='normal'):
-        if not self.info['tuned']:
-            raise fm.utils.FMFlowError('not tuned yet')
-
         fmarray -= self.retrievefrom(fmarray, weights, mode)
 
-    def _snr(self, spec):
+    @staticmethod
+    def _sn(spec):
         return spec / fm.utils.mad(spec)
 
-    def _fit(self, freq, spec):
+    def _fit(self, freq, spec, fwhm0):
         model = np.zeros_like(spec)
         resid = spec.copy()
 
-        while np.max(self._snr(resid)) > self.info['threshold']:
+        while np.max(self._sn(resid)) > self.info['threshold']:
             cent0 = freq[np.argmax(resid)]
-            fwhm0 = self.info['fwhm0']
             ampl0 = np.max(resid)
 
             p0 = [cent0, fwhm0, ampl0]
-            bs = (0.0, [10.0*np.abs(ampl0), np.max(freq), 10.0*fwhm0])
+            bs = ([np.min(freq), 0.0, 0.0], [np.max(freq), 10.0*fwhm0, 10.0*ampl0])
             popt, pcov = curve_fit(fm.utils.gaussian, freq, resid, p0, bounds=bs)
 
             model += self.info['gain'] * fm.utils.gaussian(freq, *popt)
@@ -63,22 +66,21 @@ class GaussianModel(object):
 
         return model
 
-    def _dfit(self, freq, spec):
+    def _dfit(self, freq, spec, fwhm0):
         dspec  = np.gradient(spec)
         dspec -= filters.gaussian_filter(dspec, self.info['smooth'])
         dmodel = np.zeros_like(dspec)
         dresid = dspec.copy()
 
-        while np.max(self._snr(dresid)) > self.info['threshold']:
+        while np.max(self._sn(dresid)) > self.info['threshold']:
             fmax = freq[np.argmax(dresid)]
             smax = np.max(dresid)
 
             cent0 = fmax + fwhm0/np.sqrt(8*np.log(2))
-            fwhm0 = self.info['fwhm0']
             ampl0 = smax * np.exp(0.5) * fwhm0/np.sqrt(8*np.log(2))
 
             p0 = [cent0, fwhm0, ampl0]
-            bs = (0.0, [10.0*np.abs(ampl0), np.max(freq), 10.0*fwhm0])
+            bs = ([np.min(freq), 0.0, 0.0], [np.max(freq), 10.0*fwhm0, 10.0*ampl0])
             popt, pcov = curve_fit(fm.utils.dgaussian, freq, dresid, p0, bounds=bs)
 
             dmodel += self.info['gain'] * fm.utils.dgaussian(freq, *popt)
@@ -87,3 +89,33 @@ class GaussianModel(object):
         model = np.cumsum(dmodel)
         return model
 
+
+class GaussianFilter(object):
+    def __init__(self, smooth=100):
+        self.info = {'smooth': smooth}
+
+    def retrievefrom(self, fmarray, weights=None, mode='normal'):
+        spec = fm.models.getspec(fmarray, 'K', weights)
+
+        if mode == 'normal':
+            model = self._fit(spec)
+        elif mode == 'diff':
+            model = self._dfit(spec)
+        else:
+            raise fm.utils.FMFlowError('invalid mode')
+
+        fmmodel  = fm.zeros_like(fmarray)
+        fmmodel_ = fm.demodulate(fmmodel)
+        fmmodel_ += model
+        fmmodel  = fm.modulate(fmmodel_)
+        return fmmodel
+
+    def subtractfrom(self, fmarray, weights=None, mode='normal'):
+        fmarray -= self.retrievefrom(fmarray, weights, mode)
+
+    def _fit(self, spec):
+        return fm.utils.fmgf(spec, self.info['smooth'])
+
+    def _dfit(self, spec):
+        dspec  = np.gradient(spec)
+        return fm.utils.fmgf(dspec, self.info['smooth'])

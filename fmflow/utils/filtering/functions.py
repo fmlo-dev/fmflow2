@@ -23,9 +23,9 @@ def fmgf(array, sigma):
     y -= yg
 
     # digitizing
-    m = 11
+    m = 101
     dy = 6.0*fm.utils.mad(y) / m
-    ybin = np.arange(np.min(y)-m*dy, np.max(y)+m*dy+dy, dy)
+    ybin = np.arange(np.min(y)-5*dy, np.max(y)+5*dy+dy, dy)
     z = np.zeros([len(ybin), len(x)])
     z[np.digitize(y, ybin), x] = 1.0
 

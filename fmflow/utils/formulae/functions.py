@@ -8,6 +8,7 @@ from __future__ import print_function as _print_function
 # the Python Package Index
 import fmflow as fm
 import numpy as np
+import numpy.ma as ma
 
 # imported items
 __all__ = [
@@ -58,6 +59,6 @@ def mad(array, axis=None, keepdims=False):
         mad (array): A new array holding the result.
 
     """
-    ad = ma.abs(fmarray - ma.median(fmarray, axis, keepdims=True))
+    ad = ma.abs(array - ma.median(array, axis, keepdims=True))
     mad = ma.median(ad, axis, keepdims=keepdims)
     return mad

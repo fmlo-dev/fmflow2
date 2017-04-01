@@ -20,7 +20,7 @@ from scipy.ndimage import filters
 from scipy.optimize import curve_fit
 
 # imported items
-__all__ = ['OzoneModel']
+__all__ = ['OzoneLines']
 
 # constants
 C          = consts.c.value # spped of light in vacuum
@@ -31,7 +31,7 @@ AM_MODELS  = {
 } # am models
 
 
-class OzoneModel(object):
+class OzoneLines(object):
     def __init__(self, model='midaltitude', smooth=50):
         self.info = {
             'model': model,
